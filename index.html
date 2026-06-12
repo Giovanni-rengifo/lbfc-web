@@ -811,19 +811,17 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
 .profile-pos { font-size: .86rem; color: var(--text-dim); }
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: .55rem;
   margin-top: .9rem;
 }
 .stat-box {
-  grid-column: span 2;
   text-align: center;
   border: 1px solid var(--line);
   border-radius: 5px;
   padding: .65rem .3rem;
   background: var(--surface-2);
 }
-.stat-box.wide { grid-column: span 3; }
 .stat-box .num {
   font-weight: 700;
   font-size: 1.4rem;
@@ -1337,10 +1335,20 @@ function initAutocomplete(id) {
     toggle.classList.remove("open");
     activo = -1;
   }
+  let ignorarAbrir = false;
+
   function elegir(n) {
     input.value = n;
-    input.dispatchEvent(new Event("input"));
+    ignorarAbrir = true;
+    input.dispatchEvent(new Event("input")); // resalta sin reabrir dropdown
     cerrar();
+    input.blur(); // cierra teclado en móvil
+    setTimeout(() => {
+      ignorarAbrir = false;
+      // reposiciona al jugador tras cerrar el teclado
+      const hit = document.querySelector(".pitch-player.hit, .roster-cell.hit, .espera-row.hit");
+      if (hit) hit.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 350);
   }
 
   toggle.addEventListener("mousedown", e => {
@@ -1350,9 +1358,16 @@ function initAutocomplete(id) {
   });
 
   input.addEventListener("focus", abrir);
-  input.addEventListener("input", abrir);
+  input.addEventListener("input", () => { if (!ignorarAbrir) abrir(); });
   input.addEventListener("blur", () => setTimeout(cerrar, 120));
   input.addEventListener("keydown", e => {
+    // Sostener Backspace → borrar todo de una vez
+    if (e.key === "Backspace" && e.repeat) {
+      e.preventDefault();
+      input.value = "";
+      input.dispatchEvent(new Event("input"));
+      return;
+    }
     const items = [...lista.querySelectorAll(".ac-item")];
     if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       if (!lista.classList.contains("open")) { abrir(); return; }
@@ -2026,8 +2041,7 @@ function abrirPerfil(id) {
       <div class="stat-box"><div class="num">${s.goles}</div><div class="lbl">Goles</div></div>
       <div class="stat-box"><div class="num">${s.asistencias}</div><div class="lbl">Asistencias</div></div>
       <div class="stat-box"><div class="num">${s.mvps}</div><div class="lbl">MVPs</div></div>
-      <div class="stat-box wide"><div class="num">${s.difs}</div><div class="lbl">Diferenciador</div></div>
-      <div class="stat-box wide"><div class="num">${s.pct}%</div><div class="lbl">Fair Play</div></div>
+      <div class="stat-box"><div class="num">${s.pct}%</div><div class="lbl">Fair Play</div></div>
     </div>
     <div class="partidos-card">
       <div class="partidos-card-title">Partidos</div>
@@ -2048,7 +2062,7 @@ function abrirPerfil(id) {
       </div>
     </div>
     <div class="pilares">
-      <div class="pilares-title">Pilares del Caballero</div>
+      <div class="pilares-title">Perfil Jugador</div>
       ${PILARES.map(p => {
         if (!p.listo) return `
         <div class="pilar-row pendiente">
