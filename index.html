@@ -399,7 +399,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
 }
 .ali-note { font-size: .84rem; font-style: italic; color: var(--text-dim); margin-top: .35rem; }
 .ali-controls { display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: .8rem; }
-.ali-controls select, .ali-controls input {
+.ali-controls input {
   flex: 1 1 12rem;
   background: var(--surface);
   border: 1px solid var(--line);
@@ -409,15 +409,79 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
   padding: .55rem .7rem;
   border-radius: 5px;
 }
-.ali-controls select:focus, .ali-controls input:focus {
+.ali-controls input:focus {
   outline: none;
   border-color: var(--color-gold);
 }
 .ali-controls input::placeholder { color: var(--text-dim); }
 
+/* Selector de fechas custom (reemplaza el <select> nativo) */
+.cs-wrap { position: relative; flex: 1 1 12rem; }
+.cs-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .4rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--color-text-light);
+  font-family: var(--font-body);
+  font-size: .9rem;
+  padding: .55rem .7rem;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .15s;
+}
+.cs-btn:focus, .cs-btn.open { outline: none; border-color: var(--color-gold); }
+.cs-arrow { font-size: .75rem; color: var(--text-dim); flex-shrink: 0; transition: transform .2s, color .15s; }
+.cs-btn.open .cs-arrow { transform: rotate(180deg); color: var(--color-gold); }
+.cs-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cs-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0; right: 0;
+  z-index: 60;
+  background: var(--surface-2);
+  border: 1px solid var(--color-gold);
+  border-radius: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+  box-shadow: 0 10px 24px rgba(0,0,0,.55);
+  display: none;
+}
+.cs-list.open { display: block; }
+.cs-item {
+  padding: .5rem .8rem;
+  font-size: .9rem;
+  color: var(--color-text-light);
+  cursor: pointer;
+  border-bottom: 1px solid var(--line);
+}
+.cs-item:last-child { border-bottom: none; }
+.cs-item:hover { background: rgba(201,168,76,.15); color: var(--color-gold); }
+.cs-item.selected { color: var(--color-gold); font-weight: 600; }
+
 /* Autocompletado propio: la lista vive dentro de la página, con el estilo del sitio */
 .autocomplete { position: relative; flex: 1 1 12rem; display: flex; }
-.autocomplete input { width: 100%; }
+.autocomplete input { width: 100%; padding-right: 2.2rem; }
+.ac-toggle {
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 2.2rem;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: .8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color .15s, transform .2s;
+}
+.ac-toggle:hover { color: var(--color-gold); }
+.ac-toggle.open { transform: rotate(180deg); color: var(--color-gold); }
 .ac-list {
   position: absolute;
   top: calc(100% + 4px);
@@ -955,7 +1019,13 @@ footer {
       <p class="ali-note" id="ali-note"></p>
     </div>
     <div class="ali-controls">
-      <select id="ali-select" aria-label="Elegir fecha de alineación"></select>
+      <div class="cs-wrap" id="ali-select-wrap">
+        <button class="cs-btn" id="ali-select-btn" type="button" aria-haspopup="listbox" aria-label="Elegir fecha de alineación">
+          <span class="cs-label" id="ali-select-label">—</span>
+          <span class="cs-arrow">▾</span>
+        </button>
+        <div class="cs-list" id="ali-select-list" role="listbox"></div>
+      </div>
       <div class="autocomplete">
         <input id="ali-player" placeholder="Buscar jugador por nombre…"
                autocomplete="off" aria-label="Buscar jugador en la alineación">
@@ -1265,20 +1335,39 @@ function initAutocomplete(id) {
   const lista = document.getElementById(id + "-ac");
   let activo = -1;
 
+  // Botón toggle (flecha) inyectado dinámicamente
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "ac-toggle";
+  toggle.setAttribute("aria-label", "Desplegar opciones");
+  toggle.textContent = "▾";
+  input.parentElement.insertBefore(toggle, lista);
+
   function abrir() {
     const q = normalizar(input.value.trim());
     const nombres = (FUENTES_AC[id] || []).filter(n => !q || normalizar(n).includes(q));
     if (!nombres.length) { cerrar(); return; }
     lista.innerHTML = nombres.map(n => `<div class="ac-item">${n}</div>`).join("");
     lista.classList.add("open");
+    toggle.classList.add("open");
     activo = -1;
   }
-  function cerrar() { lista.classList.remove("open"); activo = -1; }
+  function cerrar() {
+    lista.classList.remove("open");
+    toggle.classList.remove("open");
+    activo = -1;
+  }
   function elegir(n) {
     input.value = n;
     input.dispatchEvent(new Event("input"));
     cerrar();
   }
+
+  toggle.addEventListener("mousedown", e => {
+    e.preventDefault();
+    if (lista.classList.contains("open")) { cerrar(); }
+    else { abrir(); input.focus(); }
+  });
 
   input.addEventListener("focus", abrir);
   input.addEventListener("input", abrir);
@@ -1300,7 +1389,6 @@ function initAutocomplete(id) {
       cerrar();
     }
   });
-  // mousedown (no click) para ganarle al blur del input
   lista.addEventListener("mousedown", e => {
     const item = e.target.closest(".ac-item");
     if (item) { e.preventDefault(); elegir(item.textContent); }
@@ -1601,7 +1689,7 @@ function lineasEquipo(ids) {
 
 function nombreCorto(id) {
   const partes = nombre(id).split(" ");
-  return partes.length > 1 ? `${partes[0]} ${partes[1][0]}.` : partes[0];
+  return partes.length > 1 ? `${partes[0]} ${partes[partes.length - 1]}` : partes[0];
 }
 
 function pitchHTML(ids, team, partido) {
@@ -1663,14 +1751,19 @@ function renderAlineacion() {
       ? "La alineación del próximo partido aún no se publica (sale el sábado)."
       : "";
 
-  // Selector de fechas
-  document.getElementById("ali-select").innerHTML = lista.map(x => {
+  // Selector de fechas custom
+  const csList = document.getElementById("ali-select-list");
+  const csLabel = document.getElementById("ali-select-label");
+  csList.innerHTML = lista.map(x => {
     const marcador = esJugado(x.partido)
       ? `Rojo ${x.partido.Goles_Rojo}-${x.partido.Goles_Azul} Azul`
       : "Próximo partido";
-    return `<option value="${x.ali.ID_Partido}" ${x.ali.ID_Partido === aliSeleccion ? "selected" : ""}>
-      ${fmtFechaCorta(x.partido.Fecha)} · ${marcador}</option>`;
+    const etiqueta = `${fmtFechaCorta(x.partido.Fecha)} · ${marcador}`;
+    const sel = x.ali.ID_Partido === aliSeleccion ? " selected" : "";
+    return `<div class="cs-item${sel}" data-id="${x.ali.ID_Partido}">${etiqueta}</div>`;
   }).join("");
+  const selItem = csList.querySelector(".cs-item.selected") || csList.querySelector(".cs-item");
+  if (selItem) csLabel.textContent = selItem.textContent;
 
   // Sugerencias del buscador con los jugadores de esta alineación
   FUENTES_AC["ali-player"] = [...sel.ali.Rojo, ...sel.ali.Azul]
@@ -1707,10 +1800,28 @@ function aplicarBusquedaAlineacion() {
   );
 }
 
-document.getElementById("ali-select").addEventListener("change", e => {
-  aliSeleccion = e.target.value;
-  renderAlineacion();
-});
+// Selector custom de fechas: toggle + selección
+(function () {
+  const btn = document.getElementById("ali-select-btn");
+  const list = document.getElementById("ali-select-list");
+  function csClose() { list.classList.remove("open"); btn.classList.remove("open"); }
+  btn.addEventListener("click", () => {
+    const abierto = list.classList.contains("open");
+    if (abierto) { csClose(); return; }
+    list.classList.add("open");
+    btn.classList.add("open");
+  });
+  list.addEventListener("click", e => {
+    const item = e.target.closest(".cs-item");
+    if (!item) return;
+    aliSeleccion = item.dataset.id;
+    csClose();
+    renderAlineacion();
+  });
+  document.addEventListener("click", e => {
+    if (!e.target.closest("#ali-select-wrap")) csClose();
+  });
+}());
 document.getElementById("ali-player").addEventListener("input", aplicarBusquedaAlineacion);
 document.getElementById("conv-player").addEventListener("input", aplicarBusquedaConvocatoria);
 initAutocomplete("conv-player");
@@ -2215,11 +2326,9 @@ function mostrarToast(msg) {
   toastTimer = setTimeout(() => t.classList.remove("show"), 2500);
 }
 
-document.getElementById("btnRefresh").addEventListener("click", async function () {
+document.getElementById("btnRefresh").addEventListener("click", function () {
   this.classList.add("spinning");
-  const aviso = await cargarDatos();
-  this.classList.remove("spinning");
-  mostrarToast(aviso || "Datos actualizados ✓");
+  setTimeout(() => window.location.reload(), 350);
 });
 
 // Carga automática al abrir
