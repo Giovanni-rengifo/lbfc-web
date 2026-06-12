@@ -829,6 +829,11 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
   font-variant-numeric: tabular-nums;
 }
 .stat-box .lbl { font-size: .62rem; text-transform: uppercase; letter-spacing: .1em; color: var(--text-dim); margin-top: .1rem; }
+.stat-trio { display: flex; width: 100%; }
+.stat-trio .part { flex: 1; text-align: center; }
+.stat-trio .part + .part { border-left: 1px solid var(--line); }
+.stat-trio .num { font-size: 1.1rem; }
+.stat-trio .lbl { font-size: .56rem; }
 .profile-note { text-align: center; margin-top: .9rem; font-style: italic; color: var(--text-dim); font-size: .86rem; }
 
 /* Pilares del jugador (perfil) */
@@ -1379,13 +1384,23 @@ function statsJugador(id) {
   const difs = MOCK_DATA.partidos.filter(p => p.Diferenciador === id).length;
   const total = idsJugados.size;
   const pct = total > 0 ? Math.round((jugados / total) * 100) : 0;
+  let ganados = 0, perdidos = 0;
+  MOCK_DATA.alineaciones.forEach(a => {
+    if (!idsJugados.has(a.ID_Partido)) return;
+    const p = MOCK_DATA.partidos.find(p => p.ID_Partido === a.ID_Partido);
+    if (!p || p.Goles_Rojo === p.Goles_Azul) return;
+    const equipo = a.Rojo.includes(id) ? "Rojo" : a.Azul.includes(id) ? "Azul" : null;
+    if (!equipo) return;
+    const gana = p.Goles_Rojo > p.Goles_Azul ? "Rojo" : "Azul";
+    if (equipo === gana) ganados++; else perdidos++;
+  });
   // Tipo de gol más frecuente
   const tipos = {};
   MOCK_DATA.eventos.filter(e => e.Goleador === id && !esAutogol(e))
     .forEach(e => { tipos[e.Tipo_Gol] = (tipos[e.Tipo_Gol] || 0) + 1; });
   const tipoDestacado = Object.entries(tipos).sort((a, b) => b[1] - a[1])[0];
   const equipoFrecuente = vecesRojo === vecesAzul ? "Equilibrado" : (vecesRojo > vecesAzul ? "Rojo" : "Azul");
-  return { goles, asistencias, jugados, pct, mvps, difs,
+  return { goles, asistencias, jugados, ganados, perdidos, pct, mvps, difs,
            tipoDestacado: tipoDestacado ? tipoDestacado[0] : "—", equipoFrecuente };
 }
 
@@ -1986,11 +2001,17 @@ function abrirPerfil(id) {
     </div>
     <div class="stat-grid">
       <div class="stat-box"><div class="num">${s.goles}</div><div class="lbl">Goles</div></div>
-      <div class="stat-box"><div class="num">${s.asistencias}</div><div class="lbl">Asist. de gol</div></div>
-      <div class="stat-box"><div class="num">${s.jugados}</div><div class="lbl">Partidos</div></div>
+      <div class="stat-box"><div class="num">${s.asistencias}</div><div class="lbl">Asistencias</div></div>
       <div class="stat-box"><div class="num">${s.mvps}</div><div class="lbl">MVPs</div></div>
       <div class="stat-box"><div class="num">${s.difs}</div><div class="lbl">Diferenciador</div></div>
-      <div class="stat-box"><div class="num">${s.pct}%</div><div class="lbl">Asistencia</div></div>
+      <div class="stat-box"><div class="num">${s.pct}%</div><div class="lbl">Fair Play</div></div>
+      <div class="stat-box">
+        <div class="stat-trio">
+          <div class="part"><div class="num">${s.jugados}</div><div class="lbl">Jugados</div></div>
+          <div class="part"><div class="num">${s.ganados}</div><div class="lbl">Ganados</div></div>
+          <div class="part"><div class="num">${s.perdidos}</div><div class="lbl">Perdidos</div></div>
+        </div>
+      </div>
     </div>
     <div class="pilares">
       <div class="pilares-title">Pilares del Caballero</div>
