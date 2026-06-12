@@ -750,28 +750,18 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
 }
 .goal-line.vacio { color: var(--text-dim); line-height: 1.9; }
 .gl-scorer {
-  display: flex;
-  align-items: center;
-  width: 100%;
+  display: block;
   cursor: pointer;
   line-height: 1.7;
 }
 .gl-scorer:hover { color: var(--color-text-light); }
-.gl-name {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.gcol.rojo .gl-name { text-align: right; }
-.gcol.azul .gl-name { text-align: left; }
 .goal-line .min {
-  flex-shrink: 0;
+  display: inline-block;
   color: var(--text-dim);
   font-size: .7rem;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  padding: 0 .3rem;
+  padding: 0 .2rem;
 }
 .gl-assist {
   font-size: .72rem;
