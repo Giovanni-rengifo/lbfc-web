@@ -2001,7 +2001,7 @@ function renderPartidos() {
         ? goles.map(e => {
             const nombre = `<span class="gl-name">${nombreCorto(e.Goleador)}${esAutogol(e) ? " (AG)" : ""}</span>`;
             const min = `<span class="min">${e.Minuto != null ? e.Minuto + "’" : ""}</span>`;
-            const scorer = esRojo ? min + nombre : nombre + min;
+            const scorer = esRojo ? nombre + min : min + nombre;
             const assist = e.Asistente
               ? `<div class="gl-assist" onclick="abrirPerfil(‘${e.Asistente}’);event.stopPropagation()">${esRojo ? nombreCorto(e.Asistente) + " ↲" : "↳ " + nombreCorto(e.Asistente)}</div>`
               : "";
