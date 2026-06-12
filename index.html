@@ -76,52 +76,6 @@ h1 {
   margin-top: .1rem;
 }
 
-/* ---------- Actualizar datos: botón flotante siempre visible ---------- */
-.fab-refresh {
-  position: fixed;
-  bottom: 1.1rem;
-  right: 1rem;
-  z-index: 90;
-  display: flex;
-  align-items: center;
-  gap: .45rem;
-  background: var(--color-gold);
-  color: var(--color-primary);
-  border: none;
-  border-radius: 999px;
-  padding: .72rem 1.1rem;
-  font-family: var(--font-title);
-  font-weight: 700;
-  font-size: .78rem;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, .5);
-  cursor: pointer;
-  transition: transform .15s, filter .15s;
-}
-.fab-refresh:hover { filter: brightness(1.08); transform: translateY(-1px); }
-.fab-refresh .icon { display: inline-block; font-size: 1.05rem; line-height: 1; }
-.fab-refresh.spinning .icon { animation: spin 1s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.toast {
-  position: fixed;
-  bottom: 4.6rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 95;
-  background: var(--surface-2);
-  border: 1px solid var(--color-gold);
-  color: var(--color-text-light);
-  padding: .5rem 1rem;
-  border-radius: 6px;
-  font-size: .84rem;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .3s;
-}
-.toast.show { opacity: 1; }
 
 /* ---------- Navegación: pestañas con subrayado ---------- */
 nav {
@@ -1060,10 +1014,6 @@ footer {
 </footer>
 
 <!-- Actualizar datos: acción crucial, siempre visible -->
-<button class="fab-refresh" id="btnRefresh" title="Actualizar datos">
-  <span class="icon">⟳</span> Actualizar
-</button>
-<div class="toast" id="toast" role="status"></div>
 
 <script>
 /* ============================================================
@@ -2324,21 +2274,6 @@ async function cargarDatos() {
   return aviso;
 }
 
-let toastTimer = null;
-function mostrarToast(msg) {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove("show"), 2500);
-}
-
-document.getElementById("btnRefresh").addEventListener("click", async function () {
-  this.classList.add("spinning");
-  const aviso = await cargarDatos();
-  this.classList.remove("spinning");
-  mostrarToast(aviso || "Datos actualizados ✓");
-});
 
 // Carga automática al abrir
 normalizarIdsMock();
