@@ -752,20 +752,27 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
 .gl-scorer {
   display: flex;
   align-items: center;
-  gap: .35rem;
+  width: 100%;
   cursor: pointer;
   line-height: 1.7;
 }
 .gl-scorer:hover { color: var(--color-text-light); }
+.gl-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gcol.rojo .gl-name { text-align: left; }
+.gcol.azul .gl-name { text-align: right; }
 .goal-line .min {
+  flex-shrink: 0;
   color: var(--text-dim);
   font-size: .7rem;
   font-variant-numeric: tabular-nums;
-  flex-shrink: 0;
   white-space: nowrap;
+  padding: 0 .3rem;
 }
-.gcol.rojo .gl-scorer .min { margin-left: auto; }
-.gcol.azul .gl-scorer .min { margin-right: auto; }
 .gl-assist {
   font-size: .72rem;
   color: var(--text-dim);
@@ -2002,7 +2009,7 @@ function renderPartidos() {
       const goles = evs.filter(e => e.Equipo === equipo);
       return goles.length
         ? goles.map(e => {
-            const nombre = `<span>${nombreCorto(e.Goleador)}${esAutogol(e) ? " (AG)" : ""}</span>`;
+            const nombre = `<span class="gl-name">${nombreCorto(e.Goleador)}${esAutogol(e) ? " (AG)" : ""}</span>`;
             const min = `<span class="min">${e.Minuto != null ? e.Minuto + "’" : ""}</span>`;
             const scorer = esRojo ? nombre + min : min + nombre;
             const assist = e.Asistente
