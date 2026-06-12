@@ -553,6 +553,16 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
 }
 .pp-name .n-nombre, .pod-name .n-nombre { display: block; white-space: nowrap; }
 .pp-name .n-ape, .pod-name .n-ape { display: block; white-space: nowrap; }
+.pp-pos-badge {
+  font-size: .5rem;
+  color: var(--text-dim);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  margin-top: .1rem;
+}
 .pp-tag {
   font-size: .54rem;
   font-weight: 700;
@@ -1681,7 +1691,8 @@ function lineasEquipo(ids, posiciones = {}) {
   const lineas = { Arquero: [], Defensa: [], Mediocampista: [], Delantero: [] };
   const sobrantes = [];
   ids.forEach(id => {
-    const f = FORMACION.find(f => f.pos === (posiciones[id] || posicion(id)));
+    const posId = posiciones[id]?.linea || posiciones[id] || posicion(id);
+    const f = FORMACION.find(f => f.pos === posId);
     if (f && lineas[f.pos].length < f.cupo) lineas[f.pos].push(id);
     else sobrantes.push(id);
   });
@@ -1706,13 +1717,17 @@ function nombreDosLineas(id) {
 
 function pitchHTML(ids, team, partido, posiciones = {}) {
   const l = lineasEquipo(ids, posiciones);
-  const chip = id => `
+  const chip = id => {
+    const posEsp = posiciones[id]?.especifica || posicion(id);
+    return `
     <div class="pitch-player ${mvpsDe(partido).includes(id) ? "is-mvp" : ""}" data-id="${id}" onclick="abrirPerfil('${id}')">
       <div class="avatar ${team}">${iniciales(nombre(id))}</div>
       <div class="pp-name">${nombreDosLineas(id)}</div>
+      <div class="pp-pos-badge">${posEsp}</div>
       ${mvpsDe(partido).includes(id) ? `<div class="pp-tag">MVP</div>` :
         partido.Diferenciador === id ? `<div class="pp-tag dif">DIF</div>` : ""}
     </div>`;
+  };
   const fila = arr => `<div class="p-line">${arr.map(chip).join("")}</div>`;
   return `
     <div class="pitch ${team}">
@@ -2286,8 +2301,9 @@ function transformarDatosReales(json) {
     if (!noAsistio && (equipo === "Rojo" || equipo === "Azul")) porFecha[f][equipo].push(id);
     if (String(campo(a, "mvp")).toUpperCase() === "SI") porFecha[f].MVP.push(id);
     if (String(campo(a, "diferenciador")).trim() !== "") porFecha[f].Dif.push(id);
-    const posJ = normalizar(String(campo(a, "posicion_jugador")));
-    if (posJ && POS_CANON[posJ]) porFecha[f].Posiciones[id] = POS_CANON[posJ];
+    const posJRaw = String(campo(a, "posicion_jugador")).trim();
+    const posJ = normalizar(posJRaw);
+    if (posJ && POS_CANON[posJ]) porFecha[f].Posiciones[id] = { linea: POS_CANON[posJ], especifica: posJRaw };
   });
   MOCK_DATA.alineaciones = Object.entries(porFecha)
     .map(([f, d]) => ({ ID_Partido: f, Rojo: d.Rojo, Azul: d.Azul, Posiciones: d.Posiciones }));
