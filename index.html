@@ -751,8 +751,8 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
 .goal-line.vacio { color: var(--text-dim); line-height: 1.9; }
 .gl-scorer {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: .35rem;
   cursor: pointer;
   line-height: 1.7;
 }
@@ -762,7 +762,10 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
   font-size: .7rem;
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
+  white-space: nowrap;
 }
+.gcol.rojo .gl-scorer .min { margin-left: auto; }
+.gcol.azul .gl-scorer .min { margin-right: auto; }
 .gl-assist {
   font-size: .72rem;
   color: var(--text-dim);
