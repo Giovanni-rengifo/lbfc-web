@@ -1677,11 +1677,11 @@ const FORMACION = [
   { pos: "Delantero",     cupo: 3 }
 ];
 
-function lineasEquipo(ids) {
+function lineasEquipo(ids, posiciones = {}) {
   const lineas = { Arquero: [], Defensa: [], Mediocampista: [], Delantero: [] };
   const sobrantes = [];
   ids.forEach(id => {
-    const f = FORMACION.find(f => f.pos === posicion(id));
+    const f = FORMACION.find(f => f.pos === (posiciones[id] || posicion(id)));
     if (f && lineas[f.pos].length < f.cupo) lineas[f.pos].push(id);
     else sobrantes.push(id);
   });
@@ -1704,8 +1704,8 @@ function nombreDosLineas(id) {
   return `<span class="n-nombre">${partes[0]}</span><span class="n-ape">${partes[partes.length - 1]}</span>`;
 }
 
-function pitchHTML(ids, team, partido) {
-  const l = lineasEquipo(ids);
+function pitchHTML(ids, team, partido, posiciones = {}) {
+  const l = lineasEquipo(ids, posiciones);
   const chip = id => `
     <div class="pitch-player ${mvpsDe(partido).includes(id) ? "is-mvp" : ""}" data-id="${id}" onclick="abrirPerfil('${id}')">
       <div class="avatar ${team}">${iniciales(nombre(id))}</div>
@@ -1794,11 +1794,11 @@ function renderAlineacion() {
   document.getElementById("alineacion-grid").innerHTML = `
     <div class="card team-card">
       <div class="team-head rojo">Equipo Rojo</div>
-      ${pitchHTML(sel.ali.Rojo, "rojo", p)}
+      ${pitchHTML(sel.ali.Rojo, "rojo", p, sel.ali.Posiciones || {})}
     </div>
     <div class="card team-card">
       <div class="team-head azul">Equipo Azul</div>
-      ${pitchHTML(sel.ali.Azul, "azul", p)}
+      ${pitchHTML(sel.ali.Azul, "azul", p, sel.ali.Posiciones || {})}
     </div>`;
 
   aplicarBusquedaAlineacion();
@@ -2234,8 +2234,13 @@ async function leerDatosXlsx() {
      ID_Asistidor, Tipo_Asistencia, Minuto.                          */
 
 const POS_CANON = {
-  "portero": "Arquero", "arquero": "Arquero", "defensa": "Defensa",
-  "mediocampista": "Mediocampista", "delantero": "Delantero"
+  "portero": "Arquero", "arquero": "Arquero",
+  "defensa": "Defensa", "central": "Defensa",
+  "lateral derecho": "Defensa", "lateral izquierdo": "Defensa",
+  "mediocampista": "Mediocampista",
+  "mediocampista derecho": "Mediocampista", "mediocampista izquierdo": "Mediocampista",
+  "delantero": "Delantero",
+  "extremo derecho": "Delantero", "extremo izquierdo": "Delantero"
 };
 
 function esFormatoReal(json) {
@@ -2275,15 +2280,17 @@ function transformarDatosReales(json) {
     const f = aFechaISO(campo(a, "fecha_partido"));
     const id = String(campo(a, "id_jugador"));
     if (!f || !id || !idsValidos.has(id)) return;
-    if (!porFecha[f]) porFecha[f] = { Rojo: [], Azul: [], MVP: [], Dif: [] };
+    if (!porFecha[f]) porFecha[f] = { Rojo: [], Azul: [], MVP: [], Dif: [], Posiciones: {} };
     const equipo = String(campo(a, "equipo"));
     const noAsistio = normalizar(String(campo(a, "asistencia"))) === "no asistio";
     if (!noAsistio && (equipo === "Rojo" || equipo === "Azul")) porFecha[f][equipo].push(id);
     if (String(campo(a, "mvp")).toUpperCase() === "SI") porFecha[f].MVP.push(id);
     if (String(campo(a, "diferenciador")).trim() !== "") porFecha[f].Dif.push(id);
+    const posJ = normalizar(String(campo(a, "posicion_jugador")));
+    if (posJ && POS_CANON[posJ]) porFecha[f].Posiciones[id] = POS_CANON[posJ];
   });
   MOCK_DATA.alineaciones = Object.entries(porFecha)
-    .map(([f, d]) => ({ ID_Partido: f, Rojo: d.Rojo, Azul: d.Azul }));
+    .map(([f, d]) => ({ ID_Partido: f, Rojo: d.Rojo, Azul: d.Azul, Posiciones: d.Posiciones }));
 
   // Partidos: fechas de la hoja Partidos + las vistas en Alineaciones.
   // Marcador derivado de Evento; sin resultado si la fecha es futura.
