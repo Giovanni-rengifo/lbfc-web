@@ -1,0 +1,2231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Los Bigotes F.C. — Dashboard Deportivo</title>
+<meta name="description" content="Dashboard deportivo de Los Bigotes F.C. — Convocatorias, alineaciones, goleadores y estadísticas del club.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<!-- SheetJS: lee datos.xlsx en el navegador (modo archivo manual) -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<style>
+/* ============================================================
+   LOS BIGOTES F.C. — Identidad visual
+   Superficie dominante: azul petróleo (color de club).
+   Dorado solo como acento heráldico: nombre del club, pestaña
+   activa, MVP, primer puesto. Sin glows, sin neón.
+   ============================================================ */
+:root {
+  --color-primary:    #1B3A4B;  /* Azul petróleo */
+  --color-secondary:  #8B1A1A;  /* Rojo vino */
+  --color-gold:       #C9A84C;  /* Dorado */
+  --color-black:      #0A0A0A;
+  --color-parchment:  #E8D5A3;  /* Pergamino */
+  --color-text-light: #F0E6CC;  /* Texto sobre oscuro */
+
+  /* Derivados de superficie (todos tintados al azul petróleo) */
+  --bg:        #0E222E;
+  --surface:   #16303F;
+  --surface-2: #1C3A4B;
+  --azul-team: #24506A;  /* bloque del Equipo Azul, distinguible del fondo */
+  --azul-chip: #4E8CAC;  /* texto/markers del Azul sobre oscuro */
+  --rojo-chip: #C45050;  /* texto/markers del Rojo sobre oscuro */
+  --line:      rgba(232, 213, 163, .14);
+  --text-dim:  rgba(240, 230, 204, .62);
+
+  --font-title: 'Cinzel', serif;
+  --font-body:  'Lora', serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--color-text-light);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  line-height: 1.55;
+}
+
+/* ---------- Header: franja de club ---------- */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .9rem;
+  padding: 1.1rem 1rem 1rem;
+  border-bottom: 2px solid var(--color-gold);
+  background: var(--color-primary);
+}
+.crest { width: 54px; height: 60px; flex: 0 0 54px; display: block; }
+.club-id { text-align: left; }
+h1 {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: clamp(1.15rem, 4.5vw, 1.7rem);
+  letter-spacing: .1em;
+  color: var(--color-gold);
+  text-transform: uppercase;
+  line-height: 1.15;
+}
+.club-sub {
+  font-size: .8rem;
+  color: var(--text-dim);
+  margin-top: .1rem;
+}
+
+/* ---------- Actualizar datos: botón flotante siempre visible ---------- */
+.fab-refresh {
+  position: fixed;
+  bottom: 1.1rem;
+  right: 1rem;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  background: var(--color-gold);
+  color: var(--color-primary);
+  border: none;
+  border-radius: 999px;
+  padding: .72rem 1.1rem;
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: .78rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .5);
+  cursor: pointer;
+  transition: transform .15s, filter .15s;
+}
+.fab-refresh:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.fab-refresh .icon { display: inline-block; font-size: 1.05rem; line-height: 1; }
+.fab-refresh.spinning .icon { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.toast {
+  position: fixed;
+  bottom: 4.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 95;
+  background: var(--surface-2);
+  border: 1px solid var(--color-gold);
+  color: var(--color-text-light);
+  padding: .5rem 1rem;
+  border-radius: 6px;
+  font-size: .84rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+}
+.toast.show { opacity: 1; }
+
+/* ---------- Navegación: pestañas con subrayado ---------- */
+nav {
+  display: flex;
+  overflow-x: auto;
+  padding: 0 .5rem;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-primary);
+  border-bottom: 1px solid var(--line);
+  scrollbar-width: none;
+}
+nav::-webkit-scrollbar { display: none; }
+.tab {
+  flex: 0 0 auto;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--text-dim);
+  font-family: var(--font-title);
+  font-size: .74rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  padding: .85rem .8rem .7rem;
+  cursor: pointer;
+  transition: color .2s, border-color .2s;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--color-text-light); }
+.tab.active { color: var(--color-gold); border-bottom-color: var(--color-gold); }
+
+/* ---------- Layout ---------- */
+main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
+.view { display: none; animation: fadeIn .25s ease-out; }
+.view.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.view-title {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--color-text-light);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.view-sub {
+  font-style: italic;
+  color: var(--text-dim);
+  font-size: .9rem;
+  margin: .15rem 0 1.2rem;
+}
+
+/* ---------- Secciones y listas ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.section-label {
+  font-family: var(--font-title);
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--color-parchment);
+  margin: 1.5rem 0 .6rem;
+}
+.section-label .count {
+  color: var(--text-dim);
+  font-family: var(--font-body);
+  letter-spacing: 0;
+  margin-left: .3rem;
+}
+
+/* ---------- Convocatoria: cuadrícula compacta ---------- */
+.roster-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.roster-cell {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .5rem .6rem;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background .15s;
+  min-width: 0;
+}
+.roster-cell:nth-child(odd) { border-right: 1px solid var(--line); }
+.roster-cell:hover { background: var(--surface-2); }
+.roster-cell:nth-last-child(1), .roster-cell:nth-last-child(2):nth-child(odd) { border-bottom: none; }
+.roster-cell .avatar { width: 30px; height: 30px; flex: 0 0 30px; font-size: .6rem; }
+.rc-info { min-width: 0; }
+.rc-name {
+  font-weight: 600;
+  font-size: .84rem;
+  color: var(--color-text-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rc-pos { font-size: .68rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Lista de espera: claramente "en reserva" */
+.espera-card {
+  background: transparent;
+  border: 1px dashed rgba(232, 213, 163, .4);
+}
+.espera-row {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .45rem .7rem;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background .15s;
+}
+.espera-row:last-child { border-bottom: none; }
+.espera-row:hover { background: var(--surface-2); }
+.espera-num {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: .85rem;
+  color: var(--text-dim);
+  min-width: 1.4rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.espera-row .avatar {
+  width: 30px; height: 30px; flex: 0 0 30px;
+  font-size: .6rem;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--text-dim);
+}
+.espera-row .rc-name { color: var(--color-parchment); font-weight: 500; }
+
+/* Resaltado del buscador en convocatoria */
+.roster-cell.dimmed, .espera-row.dimmed { opacity: .3; }
+.roster-cell.hit, .espera-row.hit { background: rgba(201, 168, 76, .15); }
+.roster-cell.hit .avatar, .espera-row.hit .avatar {
+  border: 1.5px solid var(--color-gold);
+  box-shadow: 0 0 0 1.5px var(--color-gold);
+  color: var(--color-text-light);
+}
+.roster-cell.hit .rc-name, .espera-row.hit .rc-name { color: var(--color-gold); font-weight: 700; }
+
+/* ---------- Fila de jugador ---------- */
+.player-row {
+  display: flex; align-items: center; gap: .8rem;
+  padding: .6rem .8rem;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background .15s;
+}
+.player-row:last-child { border-bottom: none; }
+.player-row:hover { background: var(--surface-2); }
+.avatar {
+  width: 40px; height: 40px;
+  flex: 0 0 40px;
+  border-radius: 50%;
+  background: var(--azul-team);
+  color: var(--color-text-light);
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: .8rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.avatar.rojo { background: var(--color-secondary); }
+.avatar.azul { background: var(--azul-team); }
+.p-name { font-weight: 600; font-size: .96rem; color: var(--color-text-light); }
+.p-pos  { font-size: .78rem; color: var(--text-dim); }
+.p-info { flex: 1; min-width: 0; }
+.p-stat {
+  font-weight: 700;
+  color: var(--color-text-light);
+  font-size: 1.1rem;
+  text-align: right;
+  min-width: 2.6rem;
+  font-variant-numeric: tabular-nums;
+}
+.p-stat small {
+  display: block;
+  font-weight: 400;
+  font-size: .6rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.badge {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: .64rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  padding: .1rem .42rem;
+  border-radius: 3px;
+  background: rgba(232,213,163,.12);
+  color: var(--color-parchment);
+  margin-left: .4rem;
+  vertical-align: middle;
+  text-transform: uppercase;
+}
+.badge.mvp { background: var(--color-gold); color: var(--color-primary); }
+
+.rank-num {
+  font-weight: 700;
+  font-size: .92rem;
+  color: var(--text-dim);
+  min-width: 1.7rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.rank-num.first { color: var(--color-gold); font-size: 1.05rem; }
+
+/* ---------- Marcador (banner del último partido) ---------- */
+.score-banner {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.score-banner .fecha { font-size: .82rem; color: var(--text-dim); margin-bottom: .5rem; }
+.score-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: .9rem;
+}
+.score-team {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: .95rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.score-team.rojo { color: var(--rojo-chip); }
+.score-team.azul { color: var(--azul-chip); }
+.score-nums {
+  font-family: var(--font-title);
+  font-weight: 900;
+  font-size: 2.1rem;
+  color: var(--color-text-light);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Alineación: cabecera de fecha y controles ---------- */
+.ali-header { text-align: center; margin: .5rem 0 1rem; }
+.ali-status {
+  display: inline-block;
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: .68rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  padding: .22rem .65rem;
+  border-radius: 3px;
+}
+.ali-status.proximo { background: var(--color-gold); color: var(--color-primary); }
+.ali-status.pasado { background: rgba(232,213,163,.16); color: var(--color-parchment); }
+.ali-fecha {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: clamp(1.25rem, 5.5vw, 1.8rem);
+  color: var(--color-text-light);
+  letter-spacing: .04em;
+  margin-top: .35rem;
+  line-height: 1.2;
+}
+.ali-note { font-size: .84rem; font-style: italic; color: var(--text-dim); margin-top: .35rem; }
+.ali-controls { display: flex; gap: .6rem; flex-wrap: wrap; margin-bottom: .8rem; }
+.ali-controls select, .ali-controls input {
+  flex: 1 1 12rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--color-text-light);
+  font-family: var(--font-body);
+  font-size: .9rem;
+  padding: .55rem .7rem;
+  border-radius: 5px;
+}
+.ali-controls select:focus, .ali-controls input:focus {
+  outline: none;
+  border-color: var(--color-gold);
+}
+.ali-controls input::placeholder { color: var(--text-dim); }
+
+/* Autocompletado propio: la lista vive dentro de la página, con el estilo del sitio */
+.autocomplete { position: relative; flex: 1 1 12rem; display: flex; }
+.autocomplete input { width: 100%; }
+.ac-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0; right: 0;
+  z-index: 60;
+  background: var(--surface-2);
+  border: 1px solid var(--color-gold);
+  border-radius: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .55);
+  display: none;
+}
+.ac-list.open { display: block; }
+.ac-item {
+  padding: .5rem .8rem;
+  font-size: .9rem;
+  color: var(--color-text-light);
+  cursor: pointer;
+  border-bottom: 1px solid var(--line);
+}
+.ac-item:last-child { border-bottom: none; }
+.ac-item:hover, .ac-item.active { background: rgba(201, 168, 76, .15); color: var(--color-gold); }
+.pitch-player.dimmed { opacity: .3; }
+.pitch-player.hit .avatar {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 2px var(--color-gold);
+}
+.pitch-player.hit .pp-name { background: var(--color-gold); color: var(--color-primary); font-weight: 700; }
+
+/* ---------- Alineación: cancha de fútbol ---------- */
+.versus-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+.team-card { overflow: hidden; }
+.team-head {
+  font-family: var(--font-title);
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  font-size: .88rem;
+  padding: .6rem;
+  color: var(--color-text-light);
+}
+.team-head.rojo { background: var(--color-secondary); }
+.team-head.azul { background: var(--azul-team); }
+
+/* Media cancha vertical: ataque hacia arriba, arquero abajo.
+   Franjas de césped en el color del equipo. */
+.pitch { position: relative; padding: 1rem .35rem .8rem; }
+.pitch.rojo { background: repeating-linear-gradient(180deg, #5C1414 0 54px, #521111 54px 108px); }
+.pitch.azul { background: repeating-linear-gradient(180deg, #1E4459 0 54px, #1A3C50 54px 108px); }
+.pl-outer, .pl-circle, .pl-box, .pl-box-in {
+  position: absolute;
+  border: 1.5px solid rgba(240, 230, 204, .28);
+  pointer-events: none;
+}
+.pl-outer { inset: 7px; }
+.pl-circle {
+  top: 7px; left: 50%;
+  transform: translateX(-50%);
+  width: 96px; height: 48px;
+  border-top: none;
+  border-radius: 0 0 96px 96px;
+}
+.pl-box {
+  bottom: 7px; left: 50%;
+  transform: translateX(-50%);
+  width: 60%; height: 62px;
+  border-bottom: none;
+}
+.pl-box-in {
+  bottom: 7px; left: 50%;
+  transform: translateX(-50%);
+  width: 30%; height: 26px;
+  border-bottom: none;
+}
+.pitch-rows {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: .7rem;
+  min-height: 420px;
+}
+.p-line { display: flex; justify-content: space-evenly; align-items: flex-start; }
+.pitch-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .18rem;
+  cursor: pointer;
+  width: 25%;
+  max-width: 80px;
+}
+.pitch-player .avatar {
+  width: 38px; height: 38px;
+  flex: 0 0 auto;
+  border: 1.5px solid rgba(232, 213, 163, .55);
+  font-size: .72rem;
+}
+.pitch-player.is-mvp .avatar {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 1.5px var(--color-gold);
+}
+.pp-name {
+  font-size: .62rem;
+  color: var(--color-text-light);
+  background: rgba(8, 18, 26, .5);
+  padding: .06rem .32rem;
+  border-radius: 3px;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pp-tag {
+  font-size: .54rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  background: var(--color-gold);
+  padding: 0 .3rem;
+  border-radius: 2px;
+}
+.pp-tag.dif { background: var(--color-parchment); }
+
+/* ---------- Estadísticas: hub de categorías ---------- */
+.stats-hub { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: .85rem .8rem;
+  cursor: pointer;
+  transition: border-color .2s, background .15s;
+}
+.stat-card:hover { border-color: var(--acc, var(--color-gold)); background: var(--surface-2); }
+.sc-title {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: .7rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--color-parchment);
+}
+.sc-value {
+  font-family: var(--font-title);
+  font-weight: 900;
+  font-size: 1.8rem;
+  color: var(--acc, var(--color-gold));
+  margin-top: .35rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.sc-value small {
+  display: block;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: .62rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-top: .2rem;
+}
+.sc-leader { display: flex; align-items: center; gap: .45rem; margin-top: .6rem; }
+.sc-leader .avatar { width: 28px; height: 28px; flex: 0 0 28px; font-size: .56rem; }
+.sc-leader-name {
+  font-size: .76rem;
+  color: var(--color-text-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sc-cta { font-size: .66rem; color: var(--text-dim); margin-top: .55rem; }
+
+/* ---------- Estadísticas: detalle de categoría ---------- */
+.stat-back {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  background: none;
+  border: none;
+  color: var(--color-parchment);
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: .76rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: .35rem .2rem;
+  margin: .2rem 0 .4rem;
+}
+.stat-back:hover { color: var(--color-gold); }
+/* Podio con medallas: oro / plata / bronce, alturas bien contrastadas */
+.podium {
+  --oro: #C9A84C;
+  --plata: #AEB6BD;
+  --bronce: #A8703D;
+  display: flex; align-items: flex-end; justify-content: center; gap: .55rem; margin: 1.1rem 0 1.3rem;
+}
+.pod { text-align: center; flex: 1; max-width: 110px; cursor: pointer; }
+.pod .avatar { margin: 0 auto .3rem; width: 40px; height: 40px; flex-basis: auto; font-size: .72rem; }
+.pod-1 .avatar { width: 60px; height: 60px; font-size: 1rem; border: 2.5px solid var(--oro); }
+.pod-2 .avatar { border: 2px solid var(--plata); }
+.pod-3 .avatar { border: 2px solid var(--bronce); }
+.pod-medal {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: .64rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: .25rem;
+}
+.pod-1 .pod-medal { color: var(--oro); }
+.pod-2 .pod-medal { color: var(--plata); }
+.pod-3 .pod-medal { color: var(--bronce); }
+.pod-name { font-size: .72rem; color: var(--color-text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pod-1 .pod-name { font-size: .8rem; font-weight: 600; }
+.pod-val { font-weight: 700; font-size: .86rem; color: var(--color-parchment); font-variant-numeric: tabular-nums; }
+.pod-1 .pod-val { color: var(--oro); font-size: 1.15rem; }
+.pod-base {
+  margin-top: .4rem;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-title);
+  font-weight: 900;
+  font-size: 1.05rem;
+}
+.pod-1 .pod-base {
+  height: 76px;
+  border-top: 3px solid var(--oro);
+  color: var(--oro);
+  background: linear-gradient(180deg, rgba(201,168,76,.16), var(--surface-2));
+  font-size: 1.4rem;
+}
+.pod-2 .pod-base { height: 40px; border-top: 3px solid var(--plata); color: var(--plata); }
+.pod-3 .pod-base { height: 22px; border-top: 3px solid var(--bronce); color: var(--bronce); }
+.stat-rows { border-top: 1px solid var(--line); }
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  padding: .55rem .75rem;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background .15s;
+}
+.stat-row:hover { background: var(--surface-2); }
+.stat-row .rank-num { min-width: 1.4rem; }
+.sr-mid { flex: 1; min-width: 0; }
+.sr-name { font-size: .84rem; color: var(--color-text-light); margin-bottom: .25rem; }
+.sr-bar { height: 7px; background: rgba(232,213,163,.1); border-radius: 3px; overflow: hidden; }
+.sr-fill { height: 100%; border-radius: 3px; background: var(--acc, var(--color-parchment)); opacity: .85; }
+.sr-val { font-weight: 700; font-size: .92rem; font-variant-numeric: tabular-nums; min-width: 2.4rem; text-align: right; }
+
+@media (min-width: 900px) {
+  .stats-hub { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ---------- Historial: tarjetas de partido (estilo Premier League) ---------- */
+.match-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: .9rem .8rem 1rem;
+  margin-bottom: .8rem;
+  text-align: center;
+}
+.mc-date {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: .7rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.mc-score {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: .9rem;
+  margin-top: .45rem;
+}
+.mc-score .score-nums { font-size: 1.7rem; }
+.mc-result {
+  font-size: .76rem;
+  font-style: italic;
+  color: var(--text-dim);
+  margin: .1rem 0 .7rem;
+}
+.mc-goals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--line);
+  padding-top: .65rem;
+}
+.gcol { padding: 0 .7rem; }
+.gcol.rojo { text-align: right; border-right: 1px solid var(--line); }
+.gcol.azul { text-align: left; }
+.goal-line {
+  font-size: .8rem;
+  color: var(--color-parchment);
+  line-height: 1.9;
+  cursor: pointer;
+}
+.goal-line:hover { color: var(--color-text-light); }
+.goal-line.vacio { color: var(--text-dim); cursor: default; }
+.goal-line .min {
+  color: var(--text-dim);
+  font-size: .7rem;
+  font-variant-numeric: tabular-nums;
+}
+.mc-mvp {
+  margin-top: .75rem;
+  padding-top: .65rem;
+  border-top: 1px solid var(--line);
+  font-size: .82rem;
+  color: var(--color-text-light);
+}
+.mc-mvp .badge { margin: 0 .35rem 0 0; }
+.mvp-name { cursor: pointer; }
+.mvp-name:hover { color: var(--color-gold); }
+
+/* ---------- Modal perfil ---------- */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(10, 22, 30, .8);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--color-gold);
+  border-radius: 12px 12px 0 0;
+  width: 100%;
+  max-width: 520px;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 1.3rem 1.2rem 1.8rem;
+  animation: slideUp .25s ease-out;
+}
+@keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: none; opacity: 1; } }
+.modal-close {
+  float: right;
+  background: none; border: none;
+  color: var(--text-dim);
+  font-size: 1.4rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.modal-close:hover { color: var(--color-text-light); }
+.profile-head { text-align: center; margin-bottom: 1rem; }
+.profile-head .avatar { width: 68px; height: 68px; flex-basis: 68px; font-size: 1.25rem; margin: 0 auto .5rem; }
+.profile-name {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--color-text-light);
+  letter-spacing: .06em;
+}
+.profile-pos { font-size: .86rem; color: var(--text-dim); }
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: .55rem;
+  margin-top: .9rem;
+}
+.stat-box {
+  text-align: center;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: .65rem .3rem;
+  background: var(--surface-2);
+}
+.stat-box .num {
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--color-text-light);
+  font-variant-numeric: tabular-nums;
+}
+.stat-box .lbl { font-size: .62rem; text-transform: uppercase; letter-spacing: .1em; color: var(--text-dim); margin-top: .1rem; }
+.profile-note { text-align: center; margin-top: .9rem; font-style: italic; color: var(--text-dim); font-size: .86rem; }
+
+/* Pilares del jugador (perfil) */
+.pilares { margin-top: 1.1rem; }
+.pilares-title {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: .72rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  text-align: center;
+  margin-bottom: .65rem;
+}
+.pilar-row { display: flex; align-items: center; gap: .6rem; padding: .3rem 0; }
+.pilar-nombre { flex: 0 0 8.2rem; font-size: .8rem; color: var(--color-text-light); }
+.pilar-bar { flex: 1; height: 9px; background: rgba(232,213,163,.1); border-radius: 4px; overflow: hidden; }
+.pilar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #8a7233, var(--color-gold));
+}
+.pilares-note {
+  margin-top: .6rem;
+  text-align: center;
+  font-size: .7rem;
+  font-style: italic;
+  color: var(--text-dim);
+}
+.pilar-val {
+  flex: 0 0 2.9rem;
+  text-align: right;
+  font-weight: 700;
+  font-size: .88rem;
+  color: var(--color-gold);
+  font-variant-numeric: tabular-nums;
+}
+.pilar-row.pendiente .pilar-nombre { color: var(--text-dim); }
+.pilar-row.pendiente .pilar-val { color: var(--text-dim); font-weight: 400; font-size: .68rem; font-style: italic; }
+
+/* ---------- Footer ---------- */
+footer {
+  text-align: center;
+  padding: 1.4rem 1rem 2rem;
+  border-top: 1px solid var(--line);
+  font-size: .78rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.empty-msg { text-align: center; font-style: italic; color: var(--text-dim); padding: 1.5rem; }
+
+/* Convocatoria cerrada: los convocados ya tienen equipo y alineación */
+.conv-cerrada { text-align: center; padding: 1.6rem 1.2rem; }
+.conv-cerrada p { font-size: .95rem; color: var(--color-parchment); margin-bottom: 1rem; }
+.btn-ir-alineacion {
+  background: transparent;
+  border: 1px solid var(--color-gold);
+  color: var(--color-gold);
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: .76rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .6rem 1.1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.btn-ir-alineacion:hover { background: var(--color-gold); color: var(--color-primary); }
+
+/* ---------- Tablet / Desktop ---------- */
+@media (min-width: 600px) {
+  .versus-grid { grid-template-columns: 1fr 1fr; }
+  .roster-grid { grid-template-columns: repeat(3, 1fr); }
+  .roster-cell { border-right: 1px solid var(--line); }
+  .roster-cell:nth-child(3n) { border-right: none; }
+  nav { justify-content: center; }
+  .modal-overlay { align-items: center; padding: 1rem; }
+  .modal { border-radius: 12px; }
+  .match-card { grid-template-columns: 6.5rem 1fr 14rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <!-- Escudo heráldico: partido per pale rojo/azul, bigote de pergamino -->
+  <svg class="crest" viewBox="0 0 64 72" role="img" aria-label="Escudo de Los Bigotes F.C.">
+    <defs>
+      <clipPath id="shieldClip">
+        <path d="M32 2 L62 10 V38 C62 55 49 65 32 70 C15 65 2 55 2 38 V10 Z"/>
+      </clipPath>
+    </defs>
+    <g clip-path="url(#shieldClip)">
+      <rect x="0" y="0" width="32" height="72" fill="#8B1A1A"/>
+      <rect x="32" y="0" width="32" height="72" fill="#24506A"/>
+    </g>
+    <path d="M32 2 L62 10 V38 C62 55 49 65 32 70 C15 65 2 55 2 38 V10 Z"
+          fill="none" stroke="#C9A84C" stroke-width="2.5"/>
+    <path d="M32 34 C30 27 21 24 14 28 C9 31 9 38 14 40 C18 41 22 39 25 37 C27 36 30 36 32 37 C34 36 37 36 39 37 C42 39 46 41 50 40 C55 38 55 31 50 28 C43 24 34 27 32 34 Z"
+          fill="#E8D5A3"/>
+    <text x="32" y="58" text-anchor="middle" font-family="Cinzel, serif" font-size="10" font-weight="700" fill="#C9A84C">2009</text>
+  </svg>
+  <div class="club-id">
+    <h1>Los Bigotes F.C.</h1>
+    <p class="club-sub">Fundado en 2009 · Domingos 6:00 am</p>
+  </div>
+</header>
+
+<nav id="nav">
+  <button class="tab active" data-view="convocatoria">Convocatoria</button>
+  <button class="tab" data-view="alineacion">Alineación</button>
+  <button class="tab" data-view="estadisticas">Estadísticas</button>
+  <button class="tab" data-view="partidos">Partidos</button>
+</nav>
+
+<main>
+  <!-- Vista 1: Convocatoria -->
+  <section class="view active" id="view-convocatoria">
+    <div class="ali-header">
+      <span class="ali-status proximo">Convocatoria</span>
+      <div class="ali-fecha" id="conv-fecha"></div>
+      <p class="ali-note">Se juega de 6:00 a 8:00 am</p>
+    </div>
+    <div class="ali-controls">
+      <div class="autocomplete">
+        <input id="conv-player" placeholder="Buscar jugador por nombre…"
+               autocomplete="off" aria-label="Buscar jugador en la convocatoria">
+        <div class="ac-list" id="conv-player-ac"></div>
+      </div>
+    </div>
+    <div class="section-label" id="label-convocados">Convocados</div>
+    <div class="card" id="lista-convocados"></div>
+    <div class="section-label" id="label-espera">Lista de espera</div>
+    <div class="card espera-card" id="lista-espera"></div>
+  </section>
+
+  <!-- Vista 2: Alineación -->
+  <section class="view" id="view-alineacion">
+    <div class="ali-header">
+      <span class="ali-status" id="ali-status"></span>
+      <div class="ali-fecha" id="ali-fecha"></div>
+      <p class="ali-note" id="ali-note"></p>
+    </div>
+    <div class="ali-controls">
+      <select id="ali-select" aria-label="Elegir fecha de alineación"></select>
+      <div class="autocomplete">
+        <input id="ali-player" placeholder="Buscar jugador por nombre…"
+               autocomplete="off" aria-label="Buscar jugador en la alineación">
+        <div class="ac-list" id="ali-player-ac"></div>
+      </div>
+    </div>
+    <div class="score-banner" id="alineacion-score"></div>
+    <div class="versus-grid" id="alineacion-grid"></div>
+  </section>
+
+  <!-- Vista 3: Estadísticas (hub de categorías → detalle con podio y barras) -->
+  <section class="view" id="view-estadisticas">
+    <div id="estadisticas-content"></div>
+  </section>
+
+  <!-- Vista: Historial de partidos -->
+  <section class="view" id="view-partidos">
+    <p class="view-sub" style="margin-top:.4rem">Historial Rojo vs Azul · Temporada 2026</p>
+    <div id="lista-partidos"></div>
+  </section>
+</main>
+
+<!-- Vista 5: Perfil (modal) -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<footer>
+  Los Bigotes F.C. — Honor, bigote y camaradería
+</footer>
+
+<!-- Actualizar datos: acción crucial, siempre visible -->
+<button class="fab-refresh" id="btnRefresh" title="Actualizar datos">
+  <span class="icon">⟳</span> Actualizar
+</button>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ============================================================
+   FASE 1 — DATOS MOCK
+   Estructura idéntica a las tablas de las Google Sheets reales.
+   En Fase 2, MOCK_DATA se reemplaza por fetch() a los 2 Apps
+   Scripts. NUNCA se incluyen campos financieros (Monto, Estado,
+   Perdonado) — ni siquiera en mock.
+   ============================================================ */
+const MOCK_DATA = {
+
+  // SHEET 1 — Estadísticas :: tabla Jugadores
+  jugadores: [
+    { ID_Jugador: 1,  Nombre: "Alex Diaz",          Posicion: "Delantero" },
+    { ID_Jugador: 2,  Nombre: "Carlos Rengifo",     Posicion: "Mediocampista" },
+    { ID_Jugador: 3,  Nombre: "Jhonattan Tibocha",  Posicion: "Defensa" },
+    { ID_Jugador: 4,  Nombre: "Jose Oviedo",        Posicion: "Arquero" },
+    { ID_Jugador: 5,  Nombre: "Giovanni Rengifo",   Posicion: "Mediocampista" },
+    { ID_Jugador: 6,  Nombre: "Andrés Mora",        Posicion: "Defensa" },
+    { ID_Jugador: 7,  Nombre: "David Pardo",        Posicion: "Delantero" },
+    { ID_Jugador: 8,  Nombre: "Felipe Castro",      Posicion: "Mediocampista" },
+    { ID_Jugador: 9,  Nombre: "Juan Camilo Ríos",   Posicion: "Defensa" },
+    { ID_Jugador: 10, Nombre: "Miguel Suárez",      Posicion: "Delantero" },
+    { ID_Jugador: 11, Nombre: "Oscar Vargas",       Posicion: "Mediocampista" },
+    { ID_Jugador: 12, Nombre: "Ricardo León",       Posicion: "Defensa" },
+    { ID_Jugador: 13, Nombre: "Santiago Peña",      Posicion: "Arquero" },
+    { ID_Jugador: 14, Nombre: "Sebastián Cruz",     Posicion: "Delantero" },
+    { ID_Jugador: 15, Nombre: "Diego Herrera",      Posicion: "Mediocampista" },
+    { ID_Jugador: 16, Nombre: "Luis Beltrán",       Posicion: "Defensa" },
+    { ID_Jugador: 17, Nombre: "Mauricio Pinto",     Posicion: "Mediocampista" },
+    { ID_Jugador: 18, Nombre: "Camilo Duarte",      Posicion: "Delantero" },
+    { ID_Jugador: 19, Nombre: "Julián Acosta",      Posicion: "Arquero" },
+    { ID_Jugador: 20, Nombre: "Esteban Gil",        Posicion: "Defensa" },
+    { ID_Jugador: 21, Nombre: "Nicolás Lara",       Posicion: "Defensa" },
+    { ID_Jugador: 22, Nombre: "Pedro Salazar",      Posicion: "Defensa" },
+    { ID_Jugador: 23, Nombre: "Hernán Quintero",    Posicion: "Defensa" },
+    { ID_Jugador: 24, Nombre: "Iván Cárdenas",      Posicion: "Mediocampista" },
+    { ID_Jugador: 25, Nombre: "Manuel Rojas",       Posicion: "Mediocampista" },
+    { ID_Jugador: 26, Nombre: "Jorge Patiño",       Posicion: "Mediocampista" },
+    { ID_Jugador: 27, Nombre: "Fabián Torres",      Posicion: "Delantero" },
+    { ID_Jugador: 28, Nombre: "Wilson Niño",        Posicion: "Delantero" }
+  ],
+
+  // SHEET 1 — Estadísticas :: tabla Partidos
+  // Marcador convención: Rojo - Azul
+  partidos: [
+    { ID_Partido: 1,  Fecha: "2026-01-11", Goles_Rojo: 3, Goles_Azul: 2, MVP: 1,  Diferenciador: 5  },
+    { ID_Partido: 2,  Fecha: "2026-01-25", Goles_Rojo: 1, Goles_Azul: 4, MVP: 10, Diferenciador: 3  },
+    { ID_Partido: 3,  Fecha: "2026-02-08", Goles_Rojo: 2, Goles_Azul: 2, MVP: 4,  Diferenciador: 8  },
+    { ID_Partido: 4,  Fecha: "2026-02-22", Goles_Rojo: 5, Goles_Azul: 3, MVP: [7, 15], Diferenciador: 2 },
+    { ID_Partido: 5,  Fecha: "2026-03-08", Goles_Rojo: 0, Goles_Azul: 2, MVP: 13, Diferenciador: 6  },
+    { ID_Partido: 6,  Fecha: "2026-03-22", Goles_Rojo: 4, Goles_Azul: 4, MVP: 1,  Diferenciador: 11 },
+    { ID_Partido: 7,  Fecha: "2026-04-12", Goles_Rojo: 2, Goles_Azul: 1, MVP: 14, Diferenciador: 9  },
+    { ID_Partido: 8,  Fecha: "2026-04-26", Goles_Rojo: 3, Goles_Azul: 3, MVP: 5,  Diferenciador: 12 },
+    { ID_Partido: 9,  Fecha: "2026-05-10", Goles_Rojo: 1, Goles_Azul: 2, MVP: 10, Diferenciador: 15 },
+    { ID_Partido: 10, Fecha: "2026-05-24", Goles_Rojo: 4, Goles_Azul: 1, MVP: 7,  Diferenciador: 1  },
+    { ID_Partido: 11, Fecha: "2026-06-07", Goles_Rojo: 2, Goles_Azul: 3, MVP: 2,  Diferenciador: 10 },
+    // Próximo partido: sin resultado todavía (la alineación se publica el sábado)
+    { ID_Partido: 12, Fecha: "2026-06-14", Goles_Rojo: null, Goles_Azul: null, MVP: null, Diferenciador: null }
+  ],
+
+  // SHEET 1 — Estadísticas :: tabla Alineaciones
+  // Compacta: { ID_Partido, Rojo: [ids], Azul: [ids] }
+  alineaciones: [
+    { ID_Partido: 1,  Rojo: [1,3,5,8,12,13,14,16,20,21,24,27],  Azul: [2,4,6,7,9,10,11,15,22,23,25,28] },
+    { ID_Partido: 2,  Rojo: [2,4,6,8,11,12,14,17,22,23,25,28],  Azul: [1,3,5,7,9,10,15,16,20,21,26,27] },
+    { ID_Partido: 3,  Rojo: [1,2,6,9,11,13,14,18,19,20,25,27],  Azul: [3,4,5,7,8,10,12,15,21,23,24,28] },
+    { ID_Partido: 4,  Rojo: [3,5,7,9,12,13,15,17,21,22,26,28],  Azul: [1,2,4,6,8,10,11,14,19,20,24,27] },
+    { ID_Partido: 5,  Rojo: [1,4,6,8,10,12,16,18,23,24,26,27],  Azul: [2,3,5,7,9,11,13,15,20,21,22,25] },
+    { ID_Partido: 6,  Rojo: [1,3,4,7,9,11,15,16,20,22,24,28],   Azul: [2,5,6,8,10,12,13,14,21,23,26,27] },
+    { ID_Partido: 7,  Rojo: [2,4,5,9,10,14,16,17,21,23,25,27],  Azul: [1,3,6,7,8,11,12,13,19,22,24,28] },
+    { ID_Partido: 8,  Rojo: [1,2,5,6,10,13,16,18,19,21,26,28],  Azul: [3,4,7,8,9,11,12,15,20,23,25,27] },
+    { ID_Partido: 9,  Rojo: [3,4,5,8,11,14,16,17,20,22,25,28],  Azul: [1,2,6,7,9,10,13,15,21,24,26,27] },
+    { ID_Partido: 10, Rojo: [1,4,6,7,9,12,15,18,19,23,24,27],   Azul: [2,3,5,8,10,11,13,14,20,22,26,28] },
+    { ID_Partido: 11, Rojo: [2,3,6,8,12,13,14,16,24,25,27,28],  Azul: [1,4,5,7,9,10,11,15,20,21,22,26] },
+    { ID_Partido: 12, Rojo: [1,2,3,4,8,9,12,14,20,24,26,27],    Azul: [5,6,7,10,11,13,15,16,21,22,25,28] }
+  ],
+
+  // SHEET 1 — Estadísticas :: tabla Evento (goles y asistencias)
+  // Tipo_Gol: "Jugada", "Tiro libre", "Penal", "Cabeza", "Olímpico", "Autogol"
+  // Minuto: minuto del gol (el partido dura 2 horas: 1-120)
+  eventos: [
+    // Partido 1 — Rojo 3 : 2 Azul
+    { ID_Partido: 1, Goleador: 1,  Asistente: 5,    Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 12 },
+    { ID_Partido: 1, Goleador: 14, Asistente: 8,    Equipo: "Rojo", Tipo_Gol: "Cabeza",     Minuto: 38 },
+    { ID_Partido: 1, Goleador: 1,  Asistente: null, Equipo: "Rojo", Tipo_Gol: "Tiro libre", Minuto: 74 },
+    { ID_Partido: 1, Goleador: 10, Asistente: 2,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 51 },
+    { ID_Partido: 1, Goleador: 7,  Asistente: 11,   Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 96 },
+    // Partido 2 — Rojo 1 : 4 Azul
+    { ID_Partido: 2, Goleador: 14, Asistente: 11,   Equipo: "Rojo", Tipo_Gol: "Penal",      Minuto: 62 },
+    { ID_Partido: 2, Goleador: 10, Asistente: 5,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 9 },
+    { ID_Partido: 2, Goleador: 10, Asistente: 1,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 33 },
+    { ID_Partido: 2, Goleador: 1,  Asistente: 5,    Equipo: "Azul", Tipo_Gol: "Cabeza",     Minuto: 78 },
+    { ID_Partido: 2, Goleador: 7,  Asistente: null, Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 104 },
+    // Partido 3 — Rojo 2 : 2 Azul
+    { ID_Partido: 3, Goleador: 14, Asistente: 2,    Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 21 },
+    { ID_Partido: 3, Goleador: 18, Asistente: 11,   Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 87 },
+    { ID_Partido: 3, Goleador: 10, Asistente: 8,    Equipo: "Azul", Tipo_Gol: "Penal",      Minuto: 45 },
+    { ID_Partido: 3, Goleador: 7,  Asistente: 5,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 99 },
+    // Partido 4 — Rojo 5 : 3 Azul
+    { ID_Partido: 4, Goleador: 7,  Asistente: 5,    Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 8 },
+    { ID_Partido: 4, Goleador: 7,  Asistente: 15,   Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 27 },
+    { ID_Partido: 4, Goleador: 7,  Asistente: null, Equipo: "Rojo", Tipo_Gol: "Tiro libre", Minuto: 56 },
+    { ID_Partido: 4, Goleador: 17, Asistente: 5,    Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 81 },
+    { ID_Partido: 4, Goleador: 15, Asistente: 3,    Equipo: "Rojo", Tipo_Gol: "Cabeza",     Minuto: 112 },
+    { ID_Partido: 4, Goleador: 1,  Asistente: 2,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 35 },
+    { ID_Partido: 4, Goleador: 10, Asistente: 8,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 68 },
+    { ID_Partido: 4, Goleador: 14, Asistente: 1,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 93 },
+    // Partido 5 — Rojo 0 : 2 Azul
+    { ID_Partido: 5, Goleador: 7,  Asistente: 5,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 49 },
+    { ID_Partido: 5, Goleador: 11, Asistente: 9,    Equipo: "Azul", Tipo_Gol: "Olímpico",   Minuto: 84 },
+    // Partido 6 — Rojo 4 : 4 Azul
+    { ID_Partido: 6, Goleador: 1,  Asistente: 11,   Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 6 },
+    { ID_Partido: 6, Goleador: 1,  Asistente: 7,    Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 41 },
+    { ID_Partido: 6, Goleador: 7,  Asistente: 15,   Equipo: "Rojo", Tipo_Gol: "Cabeza",     Minuto: 72 },
+    { ID_Partido: 6, Goleador: 15, Asistente: null, Equipo: "Rojo", Tipo_Gol: "Tiro libre", Minuto: 108 },
+    { ID_Partido: 6, Goleador: 10, Asistente: 5,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 17 },
+    { ID_Partido: 6, Goleador: 14, Asistente: 8,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 54 },
+    { ID_Partido: 6, Goleador: 14, Asistente: 2,    Equipo: "Azul", Tipo_Gol: "Penal",      Minuto: 89 },
+    { ID_Partido: 6, Goleador: 8,  Asistente: 10,   Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 116 },
+    // Partido 7 — Rojo 2 : 1 Azul
+    { ID_Partido: 7, Goleador: 14, Asistente: 5,    Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 34 },
+    { ID_Partido: 7, Goleador: 10, Asistente: 17,   Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 77 },
+    { ID_Partido: 7, Goleador: 1,  Asistente: 8,    Equipo: "Azul", Tipo_Gol: "Penal",      Minuto: 59 },
+    // Partido 8 — Rojo 3 : 3 Azul
+    { ID_Partido: 8, Goleador: 10, Asistente: 5,    Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 13 },
+    { ID_Partido: 8, Goleador: 1,  Asistente: 2,    Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 52 },
+    { ID_Partido: 8, Goleador: 18, Asistente: 6,    Equipo: "Rojo", Tipo_Gol: "Cabeza",     Minuto: 86 },
+    { ID_Partido: 8, Goleador: 7,  Asistente: 8,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 29 },
+    { ID_Partido: 8, Goleador: 7,  Asistente: 11,   Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 67 },
+    { ID_Partido: 8, Goleador: 15, Asistente: null, Equipo: "Azul", Tipo_Gol: "Tiro libre", Minuto: 101 },
+    // Partido 9 — Rojo 1 : 2 Azul
+    { ID_Partido: 9, Goleador: 14, Asistente: 5,    Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 44 },
+    { ID_Partido: 9, Goleador: 10, Asistente: 2,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 23 },
+    { ID_Partido: 9, Goleador: 1,  Asistente: 7,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 71 },
+    // Partido 10 — Rojo 4 : 1 Azul
+    { ID_Partido: 10, Goleador: 7,  Asistente: 15,  Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 7 },
+    { ID_Partido: 10, Goleador: 7,  Asistente: 1,   Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 39 },
+    { ID_Partido: 10, Goleador: 1,  Asistente: 9,   Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 63 },
+    { ID_Partido: 10, Goleador: 18, Asistente: null, Equipo: "Rojo", Tipo_Gol: "Penal",     Minuto: 92 },
+    { ID_Partido: 10, Goleador: 10, Asistente: 5,   Equipo: "Azul", Tipo_Gol: "Cabeza",     Minuto: 110 },
+    // Partido 11 — Rojo 2 : 3 Azul
+    { ID_Partido: 11, Goleador: 14, Asistente: 2,   Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 28 },
+    { ID_Partido: 11, Goleador: 8,  Asistente: 3,   Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 75 },
+    { ID_Partido: 11, Goleador: 10, Asistente: 5,   Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 16 },
+    { ID_Partido: 11, Goleador: 1,  Asistente: 7,   Equipo: "Azul", Tipo_Gol: "Tiro libre", Minuto: 58 },
+    { ID_Partido: 11, Goleador: 7,  Asistente: 9,   Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 102 }
+  ],
+
+  // SHEET 2 — Finanzas :: tabla Asignacion_Pagos
+  // SOLO campos públicos. Monto/Estado/Perdonado NO existen aquí.
+  // Tipo_Asignacion real: "Convocado" (en convocatoria), "Lista de espera",
+  // "Partido" (ya asignado a una alineación — sale de la convocatoria),
+  // "Torneo" (no aplica a esta vista).
+  asignacionPagos: [
+    // Próximo partido: domingo 14 de junio de 2026
+    { ID_Jugador: 1,  Nombre_Jugador: "Alex Diaz",         Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 2,  Nombre_Jugador: "Carlos Rengifo",    Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 3,  Nombre_Jugador: "Jhonattan Tibocha", Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 4,  Nombre_Jugador: "Jose Oviedo",       Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 5,  Nombre_Jugador: "Giovanni Rengifo",  Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 6,  Nombre_Jugador: "Andrés Mora",       Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 7,  Nombre_Jugador: "David Pardo",       Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 8,  Nombre_Jugador: "Felipe Castro",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 9,  Nombre_Jugador: "Juan Camilo Ríos",  Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 10, Nombre_Jugador: "Miguel Suárez",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 11, Nombre_Jugador: "Oscar Vargas",      Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 12, Nombre_Jugador: "Ricardo León",      Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 13, Nombre_Jugador: "Santiago Peña",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 14, Nombre_Jugador: "Sebastián Cruz",    Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 15, Nombre_Jugador: "Diego Herrera",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 16, Nombre_Jugador: "Luis Beltrán",      Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 20, Nombre_Jugador: "Esteban Gil",       Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 21, Nombre_Jugador: "Nicolás Lara",      Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 22, Nombre_Jugador: "Pedro Salazar",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 24, Nombre_Jugador: "Iván Cárdenas",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 25, Nombre_Jugador: "Manuel Rojas",      Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 26, Nombre_Jugador: "Jorge Patiño",      Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 27, Nombre_Jugador: "Fabián Torres",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 28, Nombre_Jugador: "Wilson Niño",       Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 17, Nombre_Jugador: "Mauricio Pinto",    Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Lista de espera" },
+    { ID_Jugador: 18, Nombre_Jugador: "Camilo Duarte",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Lista de espera" },
+    { ID_Jugador: 19, Nombre_Jugador: "Julián Acosta",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Lista de espera" },
+    { ID_Jugador: 23, Nombre_Jugador: "Hernán Quintero",   Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Lista de espera" }
+  ]
+};
+
+/* ============================================================
+   CAPA DE DATOS — derivaciones desde las tablas crudas
+   ============================================================ */
+// Índice de jugadores; se reconstruye cuando llegan datos reales.
+// Todos los IDs internos son STRINGS (los reales son tipo "J01").
+let byId = {};
+function indexarJugadores() {
+  byId = Object.fromEntries(MOCK_DATA.jugadores.map(j => [j.ID_Jugador, j]));
+}
+
+// Los IDs del mock son numéricos: se convierten a string una sola vez
+// para que todo el código compare siempre string === string.
+function normalizarIdsMock() {
+  MOCK_DATA.jugadores.forEach(j => { j.ID_Jugador = String(j.ID_Jugador); });
+  MOCK_DATA.partidos.forEach(p => {
+    p.ID_Partido = String(p.ID_Partido);
+    if (p.MVP != null) p.MVP = (Array.isArray(p.MVP) ? p.MVP : [p.MVP]).map(String);
+    if (p.Diferenciador != null) p.Diferenciador = String(p.Diferenciador);
+  });
+  MOCK_DATA.alineaciones.forEach(a => {
+    a.ID_Partido = String(a.ID_Partido);
+    a.Rojo = a.Rojo.map(String);
+    a.Azul = a.Azul.map(String);
+  });
+  MOCK_DATA.eventos.forEach(e => {
+    e.ID_Partido = String(e.ID_Partido);
+    e.Goleador = String(e.Goleador);
+    if (e.Asistente != null) e.Asistente = String(e.Asistente);
+  });
+  MOCK_DATA.asignacionPagos.forEach(p => { p.ID_Jugador = String(p.ID_Jugador); });
+}
+
+function nombre(id) { return byId[id] ? byId[id].Nombre : "—"; }
+
+// Cruce por nombre: los IDs de Finanzas y Estadísticas son numeraciones
+// INDEPENDIENTES (J15 es una persona distinta en cada archivo), así que
+// la Convocatoria enlaza al perfil buscando el nombre en Jugadores.
+function idPorNombre(nombreBuscado) {
+  const q = normalizar(String(nombreBuscado));
+  const j = MOCK_DATA.jugadores.find(j => normalizar(j.Nombre) === q);
+  return j ? j.ID_Jugador : null;
+}
+function posicion(id) { return byId[id] ? byId[id].Posicion : ""; }
+function iniciales(n) {
+  return n.split(" ").map(p => p[0]).slice(0, 2).join("").toUpperCase();
+}
+function fmtFecha(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  const dias = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+  const date = new Date(y, m - 1, d);
+  return `${dias[date.getDay()]} ${d} de ${meses[m - 1]} de ${y}`;
+}
+function fmtFechaCorta(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  const meses = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+  return `${d} ${meses[m - 1]} ${y}`;
+}
+
+// Un partido está jugado cuando tiene resultado; el próximo aún no lo tiene
+function esJugado(p) { return p.Goles_Rojo != null && p.Goles_Azul != null; }
+
+// El MVP puede ser uno o varios: acepta número o lista en el campo MVP
+function mvpsDe(p) {
+  if (p.MVP == null) return [];
+  return Array.isArray(p.MVP) ? p.MVP : [p.MVP];
+}
+
+// Autogol con tolerancia a mayúsculas/tildes
+function esAutogol(e) { return normalizar(String(e.Tipo_Gol)) === "autogol"; }
+
+// Comparación de nombres sin acentos ni mayúsculas
+function normalizar(s) {
+  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+// Autocompletado propio (el datalist nativo no se puede estilizar).
+// Cada input toma sus sugerencias de FUENTES_AC[id], que las vistas
+// actualizan al renderizar. Soporta flechas, Enter, Escape y click.
+const FUENTES_AC = {};
+
+function initAutocomplete(id) {
+  const input = document.getElementById(id);
+  const lista = document.getElementById(id + "-ac");
+  let activo = -1;
+
+  function abrir() {
+    const q = normalizar(input.value.trim());
+    const nombres = (FUENTES_AC[id] || []).filter(n => !q || normalizar(n).includes(q));
+    if (!nombres.length) { cerrar(); return; }
+    lista.innerHTML = nombres.map(n => `<div class="ac-item">${n}</div>`).join("");
+    lista.classList.add("open");
+    activo = -1;
+  }
+  function cerrar() { lista.classList.remove("open"); activo = -1; }
+  function elegir(n) {
+    input.value = n;
+    input.dispatchEvent(new Event("input"));
+    cerrar();
+  }
+
+  input.addEventListener("focus", abrir);
+  input.addEventListener("input", abrir);
+  input.addEventListener("blur", () => setTimeout(cerrar, 120));
+  input.addEventListener("keydown", e => {
+    const items = [...lista.querySelectorAll(".ac-item")];
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      if (!lista.classList.contains("open")) { abrir(); return; }
+      activo = e.key === "ArrowDown"
+        ? Math.min(activo + 1, items.length - 1)
+        : Math.max(activo - 1, 0);
+      items.forEach((el, i) => el.classList.toggle("active", i === activo));
+      if (items[activo]) items[activo].scrollIntoView({ block: "nearest" });
+      e.preventDefault();
+    } else if (e.key === "Enter") {
+      if (activo >= 0 && items[activo]) { elegir(items[activo].textContent); e.preventDefault(); }
+      else cerrar();
+    } else if (e.key === "Escape") {
+      cerrar();
+    }
+  });
+  // mousedown (no click) para ganarle al blur del input
+  lista.addEventListener("mousedown", e => {
+    const item = e.target.closest(".ac-item");
+    if (item) { e.preventDefault(); elegir(item.textContent); }
+  });
+}
+
+// Resalta en las celdas dadas a los jugadores cuyo nombre coincide con lo
+// escrito; atenúa el resto y hace scroll hasta el primero. Vacío = limpiar.
+function resaltarPorNombre(texto, celdas) {
+  const q = normalizar(texto.trim());
+  celdas.forEach(c => c.classList.remove("hit", "dimmed"));
+  if (!q) return;
+  let primero = null;
+  celdas.forEach(c => {
+    const nombreCelda = c.dataset.nombre || nombre(c.dataset.id);
+    const coincide = normalizar(nombreCelda).includes(q);
+    c.classList.add(coincide ? "hit" : "dimmed");
+    if (coincide && !primero) primero = c;
+  });
+  if (primero) primero.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+// Estadísticas agregadas por jugador (derivadas, nunca hardcodeadas).
+// Solo cuentan los partidos ya jugados — la alineación futura no suma.
+function statsJugador(id) {
+  const goles = MOCK_DATA.eventos.filter(e => e.Goleador === id && !esAutogol(e)).length;
+  const asistencias = MOCK_DATA.eventos.filter(e => e.Asistente === id).length;
+  const idsJugados = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+  let jugados = 0, vecesRojo = 0, vecesAzul = 0;
+  MOCK_DATA.alineaciones.forEach(a => {
+    if (!idsJugados.has(a.ID_Partido)) return;
+    if (a.Rojo.includes(id)) { jugados++; vecesRojo++; }
+    if (a.Azul.includes(id)) { jugados++; vecesAzul++; }
+  });
+  const mvps = MOCK_DATA.partidos.filter(p => mvpsDe(p).includes(id)).length;
+  const difs = MOCK_DATA.partidos.filter(p => p.Diferenciador === id).length;
+  const total = idsJugados.size;
+  const pct = total > 0 ? Math.round((jugados / total) * 100) : 0;
+  // Tipo de gol más frecuente
+  const tipos = {};
+  MOCK_DATA.eventos.filter(e => e.Goleador === id && !esAutogol(e))
+    .forEach(e => { tipos[e.Tipo_Gol] = (tipos[e.Tipo_Gol] || 0) + 1; });
+  const tipoDestacado = Object.entries(tipos).sort((a, b) => b[1] - a[1])[0];
+  const equipoFrecuente = vecesRojo === vecesAzul ? "Equilibrado" : (vecesRojo > vecesAzul ? "Rojo" : "Azul");
+  return { goles, asistencias, jugados, pct, mvps, difs,
+           tipoDestacado: tipoDestacado ? tipoDestacado[0] : "—", equipoFrecuente };
+}
+
+/* ============================================================
+   PILARES DEL JUGADOR
+   4 pilares: Poder Ofensivo, Visión de Juego, Poder Defensivo,
+   Fair Play. Las fórmulas reales viven en AppSheet; aquí cada
+   pilar se calcula desde los datos crudos con PESOS CONFIGURABLES
+   (provisionales hasta calibrar con la fórmula oficial del club).
+   ============================================================ */
+
+// MODELO (decisión del club, ver Contexto Real): Sistema Acumulativo
+// Ponderado. NUNCA porcentajes ni promedios como métrica principal,
+// NUNCA normalizar a 100 (satura y aplana diferencias). Cada partido
+// el jugador puede sumar hasta 10 pts por pilar (Individual + Colectivo,
+// para que nadie quede invisible) y el valor de temporada es la SUMA:
+// la constancia manda — 8 goles en 8 partidos > 2 goles en 1.
+
+// --- PILAR 1: PODER OFENSIVO ---
+// ⚠ PESOS AJUSTABLES — calibrar con los pesos reales de AppSheet
+const OF_CONFIG = {
+  // Claves normalizadas (sin tildes/mayúsculas) — cubre el vocabulario
+  // real de la Sheet: Gol, Penal, Cabeza, Tiro libre, Fuera del Área…
+  pesosTipoGol: {
+    "gol": 1.0,
+    "jugada": 1.0,
+    "cabeza": 1.2,
+    "tiro libre": 1.3,
+    "penal": 0.8,
+    "fuera del area": 1.3,
+    "olimpico": 1.5
+    // Autogol nunca suma aquí: resta en el colectivo
+  },
+  bonusGolVictoria: 1.0,  // el gol que superó el total final del rival
+  bonusHatTrick: 1.0,     // 3+ goles en un partido
+  topeIndividual: 7,
+  porGolEquipo: 0.5,      // colectivo: cada gol del equipo suma a todos
+  topeColectivo: 3,
+  penalAutogol: -1.0,     // resta en el colectivo de quien lo anota
+  topePartido: 10
+};
+
+function eventosDelPartido(idPartido) {
+  return MOCK_DATA.eventos
+    .filter(e => e.ID_Partido === idPartido)
+    .sort((a, b) => (a.Minuto || 0) - (b.Minuto || 0));
+}
+
+// Gol de la victoria: en un 4-3, el 4º gol del ganador (superó los 3 del rival)
+function esGolVictoria(evento, p) {
+  if (p.Goles_Rojo === p.Goles_Azul) return false;
+  const ganador = p.Goles_Rojo > p.Goles_Azul ? "Rojo" : "Azul";
+  if (evento.Equipo !== ganador) return false;
+  const golesRival = ganador === "Rojo" ? p.Goles_Azul : p.Goles_Rojo;
+  const golesGanador = eventosDelPartido(p.ID_Partido).filter(e => e.Equipo === ganador);
+  return golesGanador[golesRival] === evento;
+}
+
+// Puntos ofensivos de un jugador en un partido (0 a 10)
+function ofPartido(id, p, ali) {
+  const equipo = ali.Rojo.includes(id) ? "Rojo" : (ali.Azul.includes(id) ? "Azul" : null);
+  if (!equipo) return null;
+  const evs = eventosDelPartido(p.ID_Partido);
+
+  // Individual: goles propios ponderados por tipo + bonus
+  let individual = 0, golesPropios = 0;
+  evs.forEach(e => {
+    if (e.Goleador !== id || esAutogol(e) || e.Equipo !== equipo) return;
+    golesPropios++;
+    individual += OF_CONFIG.pesosTipoGol[normalizar(e.Tipo_Gol)] ?? 1;
+    if (esGolVictoria(e, p)) individual += OF_CONFIG.bonusGolVictoria;
+  });
+  if (golesPropios >= 3) individual += OF_CONFIG.bonusHatTrick;
+  individual = Math.min(individual, OF_CONFIG.topeIndividual);
+
+  // Colectivo: el ataque del equipo suma a todos los que jugaron
+  const golesEquipo = equipo === "Rojo" ? p.Goles_Rojo : p.Goles_Azul;
+  let colectivo = Math.min(golesEquipo * OF_CONFIG.porGolEquipo, OF_CONFIG.topeColectivo);
+  if (evs.some(e => e.Goleador === id && esAutogol(e))) {
+    colectivo += OF_CONFIG.penalAutogol;
+  }
+
+  return Math.max(0, Math.min(OF_CONFIG.topePartido, individual + colectivo));
+}
+
+// Temporada: suma de todos los partidos jugados (sin techo)
+function poderOfensivo(id) {
+  let total = 0;
+  MOCK_DATA.alineaciones.forEach(a => {
+    const p = MOCK_DATA.partidos.find(x => x.ID_Partido === a.ID_Partido);
+    if (!p || !esJugado(p)) return;
+    const v = ofPartido(id, p, a);
+    if (v != null) total += v;
+  });
+  return Math.round(total * 10) / 10;
+}
+
+// Los otros 3 pilares se calibran después con sus fórmulas de AppSheet
+const PILARES = [
+  { nombre: "Poder Ofensivo",  calc: poderOfensivo, listo: true },
+  { nombre: "Visión de Juego", calc: null, listo: false },
+  { nombre: "Poder Defensivo", calc: null, listo: false },
+  { nombre: "Fair Play",       calc: null, listo: false }
+];
+
+/* ============================================================
+   RENDERIZADO DE VISTAS
+   ============================================================ */
+function avatarHTML(id, team) {
+  return `<div class="avatar ${team || ""}">${iniciales(nombre(id))}</div>`;
+}
+
+function playerRowHTML(id, extras) {
+  return `
+    <div class="player-row" onclick="abrirPerfil('${id}')">
+      ${avatarHTML(id)}
+      <div class="p-info">
+        <div class="p-name">${nombre(id)}${extras && extras.badges ? extras.badges : ""}</div>
+        <div class="p-pos">${posicion(id)}${extras && extras.sub ? " · " + extras.sub : ""}</div>
+      </div>
+    </div>`;
+}
+
+// ---- Vista 1: Convocatoria ----
+function renderConvocatoria() {
+  const pagos = MOCK_DATA.asignacionPagos;
+  if (pagos.length === 0) {
+    document.getElementById("lista-convocados").innerHTML = `<p class="empty-msg">Aún no hay convocatoria publicada.</p>`;
+    return;
+  }
+  // Solo cuentan los tipos del ciclo de partido — "Torneo" tiene sus
+  // propias fechas (incluso futuras lejanas) y no toca la convocatoria
+  const TIPOS_PARTIDO = ["Convocado", "Lista de espera", "Partido"];
+  const relevantes = pagos.filter(p => TIPOS_PARTIDO.includes(p.Tipo_Asignacion));
+  if (relevantes.length === 0) {
+    document.getElementById("lista-convocados").innerHTML = `<p class="empty-msg">Aún no hay convocatoria publicada.</p>`;
+    return;
+  }
+  // Fecha del partido más cercano: la próxima desde hoy; si no hay
+  // futuras, la última jugada (no la máxima — puede haber fechas lejanas)
+  const fechas = [...new Set(relevantes.map(p => p.Fecha_Asignacion))].sort();
+  const hoy = fechaISO(new Date());
+  const ultimaFecha = fechas.find(f => f >= hoy) || fechas.at(-1);
+  const fecha = fmtFecha(ultimaFecha);
+  document.getElementById("conv-fecha").textContent =
+    fecha.charAt(0).toUpperCase() + fecha.slice(1);
+
+  const deLaFecha = relevantes.filter(p => p.Fecha_Asignacion === ultimaFecha);
+  // "Convocado" → en convocatoria; "Lista de espera" → reserva;
+  // "Partido" → ya fue asignado a una alineación (sale de esta vista)
+  const convocados = deLaFecha.filter(p => p.Tipo_Asignacion === "Convocado");
+  const espera = deLaFecha.filter(p => p.Tipo_Asignacion === "Lista de espera");
+  const yaAsignados = deLaFecha.filter(p => p.Tipo_Asignacion === "Partido");
+
+  // Sugerencias del buscador: los nombres vienen de la propia fila de
+  // Finanzas (sus IDs no son compatibles con los de Estadísticas)
+  FUENTES_AC["conv-player"] = [...convocados, ...espera]
+    .map(p => p.Nombre_Jugador)
+    .sort((a, b) => a.localeCompare(b, "es"));
+
+  document.getElementById("label-espera").innerHTML =
+    `Lista de espera <span class="count">(${espera.length})</span>`;
+
+  // Convocados: si todos ya pasaron a una alineación → mensaje de cierre.
+  // La lista de espera se muestra igual (aún entran si alguien se baja).
+  if (!convocados.length && yaAsignados.length) {
+    document.getElementById("label-convocados").textContent = "Convocatoria cerrada";
+    document.getElementById("lista-convocados").innerHTML = `
+      <div class="conv-cerrada">
+        <p>Los ${yaAsignados.length} convocados ya fueron asignados a su equipo y alineación.</p>
+        <button class="btn-ir-alineacion" onclick="irAVista('alineacion')">
+          Ver la alineación →
+        </button>
+      </div>`;
+  } else {
+    document.getElementById("label-convocados").innerHTML =
+      `Convocados <span class="count">(${convocados.length})</span>`;
+    // Cuadrícula compacta (2 col en celular) para evitar scroll largo.
+    // Nombre y avatar desde la fila de Finanzas; el perfil se enlaza por
+    // nombre (si existe en Jugadores de Estadísticas).
+    document.getElementById("lista-convocados").innerHTML =
+      convocados.length
+        ? `<div class="roster-grid">` + convocados.map(p => {
+            const idEst = idPorNombre(p.Nombre_Jugador);
+            return `
+            <div class="roster-cell" data-nombre="${p.Nombre_Jugador}"
+                 ${idEst ? `onclick="abrirPerfil('${idEst}')"` : ""}>
+              <div class="avatar">${iniciales(p.Nombre_Jugador)}</div>
+              <div class="rc-info">
+                <div class="rc-name">${p.Nombre_Jugador}</div>
+                <div class="rc-pos">${idEst ? posicion(idEst) : ""}</div>
+              </div>
+            </div>`;
+          }).join("") + `</div>`
+        : `<p class="empty-msg">Sin convocados aún.</p>`;
+  }
+
+  // Lista de espera: en orden de turno, con estilo de reserva
+  document.getElementById("lista-espera").innerHTML =
+    espera.length
+      ? espera.map((p, i) => {
+          const idEst = idPorNombre(p.Nombre_Jugador);
+          return `
+          <div class="espera-row" data-nombre="${p.Nombre_Jugador}"
+               ${idEst ? `onclick="abrirPerfil('${idEst}')"` : ""}>
+            <div class="espera-num">${i + 1}</div>
+            <div class="avatar">${iniciales(p.Nombre_Jugador)}</div>
+            <div class="rc-info">
+              <div class="rc-name">${p.Nombre_Jugador}</div>
+            </div>
+          </div>`;
+        }).join("")
+      : `<p class="empty-msg">Nadie en lista de espera.</p>`;
+
+  aplicarBusquedaConvocatoria();
+}
+
+// Resalta en la convocatoria a quien coincida con lo digitado
+function aplicarBusquedaConvocatoria() {
+  resaltarPorNombre(
+    document.getElementById("conv-player").value,
+    document.querySelectorAll("#lista-convocados .roster-cell, #lista-espera .espera-row")
+  );
+}
+
+// ---- Vista 2: Alineación (cancha) ----
+// Formación 1-4-4-3 (12 jugadores por equipo). Si las posiciones reales
+// no alcanzan, se rellena de abajo hacia arriba: arquero, defensa,
+// mediocampista, delantero, con lo que haya disponible.
+const FORMACION = [
+  { pos: "Arquero",       cupo: 1 },
+  { pos: "Defensa",       cupo: 4 },
+  { pos: "Mediocampista", cupo: 4 },
+  { pos: "Delantero",     cupo: 3 }
+];
+
+function lineasEquipo(ids) {
+  const lineas = { Arquero: [], Defensa: [], Mediocampista: [], Delantero: [] };
+  const sobrantes = [];
+  ids.forEach(id => {
+    const f = FORMACION.find(f => f.pos === posicion(id));
+    if (f && lineas[f.pos].length < f.cupo) lineas[f.pos].push(id);
+    else sobrantes.push(id);
+  });
+  FORMACION.forEach(f => {
+    while (lineas[f.pos].length < f.cupo && sobrantes.length) lineas[f.pos].push(sobrantes.shift());
+  });
+  // Más de 12: las líneas se amplían de abajo hacia arriba (desde defensa)
+  let i = 1;
+  while (sobrantes.length) { lineas[FORMACION[Math.min(i, 3)].pos].push(sobrantes.shift()); i++; }
+  return lineas;
+}
+
+function nombreCorto(id) {
+  const partes = nombre(id).split(" ");
+  return partes.length > 1 ? `${partes[0]} ${partes[1][0]}.` : partes[0];
+}
+
+function pitchHTML(ids, team, partido) {
+  const l = lineasEquipo(ids);
+  const chip = id => `
+    <div class="pitch-player ${mvpsDe(partido).includes(id) ? "is-mvp" : ""}" data-id="${id}" onclick="abrirPerfil('${id}')">
+      <div class="avatar ${team}">${iniciales(nombre(id))}</div>
+      <div class="pp-name">${nombreCorto(id)}</div>
+      ${mvpsDe(partido).includes(id) ? `<div class="pp-tag">MVP</div>` :
+        partido.Diferenciador === id ? `<div class="pp-tag dif">DIF</div>` : ""}
+    </div>`;
+  const fila = arr => `<div class="p-line">${arr.map(chip).join("")}</div>`;
+  return `
+    <div class="pitch ${team}">
+      <div class="pl-outer"></div><div class="pl-circle"></div>
+      <div class="pl-box"></div><div class="pl-box-in"></div>
+      <div class="pitch-rows">
+        ${fila(l.Delantero)}
+        ${fila(l.Mediocampista)}
+        ${fila(l.Defensa)}
+        ${fila(l.Arquero)}
+      </div>
+    </div>`;
+}
+
+// Alineaciones con su partido, de la más reciente a la más antigua.
+// Por defecto se muestra la primera: la futura si ya fue publicada,
+// si no, la del último partido jugado.
+let aliSeleccion = null; // ID_Partido elegido en el selector
+
+function listaAlineaciones() {
+  return MOCK_DATA.alineaciones
+    .map(a => ({ ali: a, partido: MOCK_DATA.partidos.find(p => p.ID_Partido === a.ID_Partido) }))
+    .filter(x => x.partido)
+    .sort((a, b) => b.partido.Fecha.localeCompare(a.partido.Fecha));
+}
+
+function renderAlineacion() {
+  const lista = listaAlineaciones();
+  if (!lista.length) {
+    document.getElementById("alineacion-grid").innerHTML = `<p class="empty-msg">Aún no hay alineaciones registradas.</p>`;
+    return;
+  }
+  const sel = lista.find(x => x.ali.ID_Partido === aliSeleccion) || lista[0];
+  aliSeleccion = sel.ali.ID_Partido;
+  const p = sel.partido;
+  const jugado = esJugado(p);
+
+  // Cabecera: estado + fecha grande, sin lugar a confusión
+  const status = document.getElementById("ali-status");
+  status.textContent = jugado ? "Partido jugado" : "Próximo partido";
+  status.className = "ali-status " + (jugado ? "pasado" : "proximo");
+  const fecha = fmtFecha(p.Fecha);
+  document.getElementById("ali-fecha").textContent = fecha.charAt(0).toUpperCase() + fecha.slice(1);
+  // Si lo más reciente que existe es un partido pasado, avisar que la
+  // alineación del próximo aún no se publica
+  document.getElementById("ali-note").textContent =
+    (jugado && sel === lista[0])
+      ? "La alineación del próximo partido aún no se publica (sale el sábado)."
+      : "";
+
+  // Selector de fechas
+  document.getElementById("ali-select").innerHTML = lista.map(x => {
+    const marcador = esJugado(x.partido)
+      ? `Rojo ${x.partido.Goles_Rojo}-${x.partido.Goles_Azul} Azul`
+      : "Próximo partido";
+    return `<option value="${x.ali.ID_Partido}" ${x.ali.ID_Partido === aliSeleccion ? "selected" : ""}>
+      ${fmtFechaCorta(x.partido.Fecha)} · ${marcador}</option>`;
+  }).join("");
+
+  // Sugerencias del buscador con los jugadores de esta alineación
+  FUENTES_AC["ali-player"] = [...sel.ali.Rojo, ...sel.ali.Azul]
+    .sort((a, b) => nombre(a).localeCompare(nombre(b), "es"))
+    .map(nombre);
+
+  // Marcador (solo si ya se jugó); para el próximo, ROJO vs AZUL
+  document.getElementById("alineacion-score").innerHTML = `
+    <div class="score-line">
+      <span class="score-team rojo">Rojo</span>
+      <span class="score-nums">${jugado ? `${p.Goles_Rojo} — ${p.Goles_Azul}` : "vs"}</span>
+      <span class="score-team azul">Azul</span>
+    </div>
+  `;
+
+  document.getElementById("alineacion-grid").innerHTML = `
+    <div class="card team-card">
+      <div class="team-head rojo">Equipo Rojo</div>
+      ${pitchHTML(sel.ali.Rojo, "rojo", p)}
+    </div>
+    <div class="card team-card">
+      <div class="team-head azul">Equipo Azul</div>
+      ${pitchHTML(sel.ali.Azul, "azul", p)}
+    </div>`;
+
+  aplicarBusquedaAlineacion();
+}
+
+// Resalta en la cancha a quien coincida con lo digitado
+function aplicarBusquedaAlineacion() {
+  resaltarPorNombre(
+    document.getElementById("ali-player").value,
+    document.querySelectorAll("#alineacion-grid .pitch-player")
+  );
+}
+
+document.getElementById("ali-select").addEventListener("change", e => {
+  aliSeleccion = e.target.value;
+  renderAlineacion();
+});
+document.getElementById("ali-player").addEventListener("input", aplicarBusquedaAlineacion);
+document.getElementById("conv-player").addEventListener("input", aplicarBusquedaConvocatoria);
+initAutocomplete("conv-player");
+initAutocomplete("ali-player");
+
+// ---- Vista 3: Estadísticas (TOP 10 por categoría) ----
+// Métrica defensiva: goles en contra del equipo en que jugó cada partido.
+// Menor promedio = mejor. También cuenta vallas invictas (rival en 0).
+function statsDefensivas(id) {
+  let jugados = 0, contra = 0, vallas = 0;
+  const partidosById = Object.fromEntries(MOCK_DATA.partidos.map(p => [p.ID_Partido, p]));
+  MOCK_DATA.alineaciones.forEach(a => {
+    const p = partidosById[a.ID_Partido];
+    if (!p || !esJugado(p)) return;
+    let recibidos = null;
+    if (a.Rojo.includes(id)) recibidos = p.Goles_Azul;
+    else if (a.Azul.includes(id)) recibidos = p.Goles_Rojo;
+    if (recibidos === null) return;
+    jugados++;
+    contra += recibidos;
+    if (recibidos === 0) vallas++;
+  });
+  return { jugados, contra, vallas, promedio: jugados ? contra / jugados : null };
+}
+
+// Categorías del hub. "inverso" = menor es mejor (métricas defensivas).
+const CATEGORIAS = {
+  goleadores: {
+    titulo: "Goleadores", unidad: "goles", acc: "var(--color-gold)",
+    desc: "Goles anotados en la temporada", inverso: false
+  },
+  asistidores: {
+    titulo: "Asistidores", unidad: "asist. gol", acc: "var(--color-parchment)",
+    desc: "Pases gol en la temporada", inverso: false
+  },
+  defensas: {
+    titulo: "Mejores defensas", unidad: "GC/partido", acc: "var(--azul-chip)",
+    desc: "Goles en contra por partido · menor es mejor", inverso: true
+  },
+  arqueros: {
+    titulo: "Promedio arqueros", unidad: "GC/partido", acc: "var(--rojo-chip)",
+    desc: "Goles recibidos por partido · menor es mejor", inverso: true
+  }
+};
+
+function datosCategoria(key) {
+  if (key === "goleadores" || key === "asistidores") {
+    const todos = MOCK_DATA.jugadores.map(j => ({ id: j.ID_Jugador, ...statsJugador(j.ID_Jugador) }));
+    if (key === "goleadores")
+      return todos.filter(s => s.goles > 0)
+        .sort((a, b) => b.goles - a.goles || b.asistencias - a.asistencias)
+        .slice(0, 10).map(s => ({ id: s.id, valor: s.goles, texto: String(s.goles) }));
+    return todos.filter(s => s.asistencias > 0)
+      .sort((a, b) => b.asistencias - a.asistencias || b.goles - a.goles)
+      .slice(0, 10).map(s => ({ id: s.id, valor: s.asistencias, texto: String(s.asistencias) }));
+  }
+  // Defensivas: mínimo 3 partidos para defensas, 1 para arqueros
+  const pos = key === "defensas" ? "Defensa" : "Arquero";
+  const minimo = key === "defensas" ? 3 : 1;
+  return MOCK_DATA.jugadores.filter(j => j.Posicion === pos)
+    .map(j => ({ id: j.ID_Jugador, ...statsDefensivas(j.ID_Jugador) }))
+    .filter(s => s.jugados >= minimo)
+    .sort((a, b) => a.promedio - b.promedio || b.vallas - a.vallas)
+    .slice(0, 10).map(s => ({ id: s.id, valor: s.promedio, texto: s.promedio.toFixed(1) }));
+}
+
+// Largo de barra proporcional al desempeño (en inverso, el mejor llena más)
+function barraPct(valor, datos, inverso) {
+  if (inverso) {
+    const min = Math.min(...datos.map(d => d.valor));
+    return valor > 0 ? Math.max(8, Math.round((min / valor) * 100)) : 100;
+  }
+  const max = Math.max(...datos.map(d => d.valor));
+  return max > 0 ? Math.max(8, Math.round((valor / max) * 100)) : 0;
+}
+
+let categoriaActiva = null;
+
+function abrirCategoria(key) {
+  categoriaActiva = key;
+  renderEstadisticas();
+  window.scrollTo({ top: 0 });
+}
+function cerrarCategoria() {
+  categoriaActiva = null;
+  renderEstadisticas();
+}
+
+function renderEstadisticas() {
+  const cont = document.getElementById("estadisticas-content");
+
+  // --- Hub: 4 cards, una por categoría ---
+  if (!categoriaActiva) {
+    cont.innerHTML = `
+      <p class="view-sub" style="margin-top:.4rem">Temporada 2026 · Elige una categoría</p>
+      <div class="stats-hub">` +
+      Object.entries(CATEGORIAS).map(([key, c]) => {
+        const datos = datosCategoria(key);
+        const lider = datos[0];
+        return `
+        <div class="stat-card" style="--acc:${c.acc}" onclick="abrirCategoria('${key}')">
+          <div class="sc-title">${c.titulo}</div>
+          ${lider ? `
+            <div class="sc-value">${lider.texto}<small>${c.unidad}</small></div>
+            <div class="sc-leader">${avatarHTML(lider.id)}<span class="sc-leader-name">${nombre(lider.id)}</span></div>`
+            : `<div class="sc-value">—<small>sin datos</small></div>`}
+          <div class="sc-cta">Ver top 10 →</div>
+        </div>`;
+      }).join("") + `</div>`;
+    return;
+  }
+
+  // --- Detalle: podio top 3 + barras 4-10 ---
+  const c = CATEGORIAS[categoriaActiva];
+  const datos = datosCategoria(categoriaActiva);
+  const podio = datos.slice(0, 3);
+  const resto = datos.slice(3);
+  const ordenPodio = [podio[1], podio[0], podio[2]].filter(Boolean);
+
+  cont.innerHTML = `
+    <button class="stat-back" onclick="cerrarCategoria()">← Estadísticas</button>
+    <h2 class="view-title">${c.titulo}</h2>
+    <p class="view-sub">${c.desc}</p>
+    ${datos.length === 0 ? `<p class="empty-msg">Sin datos en esta categoría todavía.</p>` : `
+    <div class="podium">
+      ${ordenPodio.map(d => {
+        const puesto = podio.indexOf(d) + 1;
+        const medalla = ["Oro", "Plata", "Bronce"][puesto - 1];
+        return `
+        <div class="pod pod-${puesto}" onclick="abrirPerfil('${d.id}')">
+          <div class="pod-medal">${medalla}</div>
+          ${avatarHTML(d.id)}
+          <div class="pod-name">${nombreCorto(d.id)}</div>
+          <div class="pod-val">${d.texto}</div>
+          <div class="pod-base">${puesto}°</div>
+        </div>`;
+      }).join("")}
+    </div>
+    <div class="stat-rows" style="--acc:${c.acc}">
+      ${resto.map((d, i) => `
+        <div class="stat-row" onclick="abrirPerfil('${d.id}')">
+          <div class="rank-num">${i + 4}</div>
+          <div class="sr-mid">
+            <div class="sr-name">${nombre(d.id)}</div>
+            <div class="sr-bar"><div class="sr-fill" style="width:${barraPct(d.valor, datos, c.inverso)}%"></div></div>
+          </div>
+          <div class="sr-val">${d.texto}</div>
+        </div>`).join("")}
+    </div>`}`;
+}
+
+// ---- Vista: Historial de partidos (estilo Premier League) ----
+function renderPartidos() {
+  const orden = MOCK_DATA.partidos.filter(esJugado).sort((a, b) => b.Fecha.localeCompare(a.Fecha));
+  document.getElementById("lista-partidos").innerHTML = orden.map(p => {
+    const resultado = p.Goles_Rojo === p.Goles_Azul ? "Empate"
+      : (p.Goles_Rojo > p.Goles_Azul ? "Victoria Roja" : "Victoria Azul");
+    const evs = MOCK_DATA.eventos
+      .filter(e => e.ID_Partido === p.ID_Partido)
+      .sort((a, b) => (a.Minuto || 0) - (b.Minuto || 0));
+    const golesDe = equipo => {
+      const goles = evs.filter(e => e.Equipo === equipo);
+      return goles.length
+        ? goles.map(e => `
+            <div class="goal-line" onclick="abrirPerfil('${e.Goleador}')">
+              ${nombreCorto(e.Goleador)}${esAutogol(e) ? " (AG)" : ""}
+              <span class="min">${e.Minuto != null ? e.Minuto + "’" : ""}</span>
+            </div>`).join("")
+        : `<div class="goal-line vacio">—</div>`;
+    };
+    const mvps = mvpsDe(p);
+    return `
+    <div class="match-card">
+      <div class="mc-date">${fmtFecha(p.Fecha)}</div>
+      <div class="mc-score">
+        <span class="score-team rojo">Rojo</span>
+        <span class="score-nums">${p.Goles_Rojo} — ${p.Goles_Azul}</span>
+        <span class="score-team azul">Azul</span>
+      </div>
+      <div class="mc-result">${resultado}</div>
+      <div class="mc-goals">
+        <div class="gcol rojo">${golesDe("Rojo")}</div>
+        <div class="gcol azul">${golesDe("Azul")}</div>
+      </div>
+      ${mvps.length ? `
+      <div class="mc-mvp">
+        <span class="badge mvp">MVP</span>
+        ${mvps.map(id => `<span class="mvp-name" onclick="abrirPerfil('${id}')">${nombre(id)}</span>`).join(" · ")}
+      </div>` : ""}
+    </div>`;
+  }).join("");
+}
+
+// ---- Vista 5: Perfil (modal) ----
+function abrirPerfil(id) {
+  const j = byId[id];
+  if (!j) return;
+  const s = statsJugador(id);
+  document.getElementById("modalContent").innerHTML = `
+    <button class="modal-close" onclick="cerrarPerfil()" aria-label="Cerrar">✕</button>
+    <div class="profile-head">
+      <div class="avatar">${iniciales(j.Nombre)}</div>
+      <div class="profile-name">${j.Nombre}</div>
+      <div class="profile-pos">${j.Posicion} · Equipo frecuente: ${s.equipoFrecuente}</div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="num">${s.goles}</div><div class="lbl">Goles</div></div>
+      <div class="stat-box"><div class="num">${s.asistencias}</div><div class="lbl">Asist. de gol</div></div>
+      <div class="stat-box"><div class="num">${s.jugados}</div><div class="lbl">Partidos</div></div>
+      <div class="stat-box"><div class="num">${s.mvps}</div><div class="lbl">MVPs</div></div>
+      <div class="stat-box"><div class="num">${s.difs}</div><div class="lbl">Diferenciador</div></div>
+      <div class="stat-box"><div class="num">${s.pct}%</div><div class="lbl">Asistencia</div></div>
+    </div>
+    <div class="pilares">
+      <div class="pilares-title">Pilares del Caballero</div>
+      ${PILARES.map(p => {
+        if (!p.listo) return `
+        <div class="pilar-row pendiente">
+          <div class="pilar-nombre">${p.nombre}</div>
+          <div class="pilar-bar"></div>
+          <div class="pilar-val">pronto</div>
+        </div>`;
+        const v = p.calc(id);
+        const maximo = Math.max(...MOCK_DATA.jugadores.map(j => p.calc(j.ID_Jugador)), 0);
+        const ancho = maximo > 0 ? Math.round((v / maximo) * 100) : 0;
+        return `
+        <div class="pilar-row">
+          <div class="pilar-nombre">${p.nombre}</div>
+          <div class="pilar-bar"><div class="pilar-fill" style="width:${ancho}%"></div></div>
+          <div class="pilar-val">${v}</div>
+        </div>`;
+      }).join("")}
+      <p class="pilares-note">Puntos acumulados de la temporada (máx. 10 por partido) — la constancia manda.</p>
+    </div>
+    ${s.goles > 0 ? `<p class="profile-note">Gol característico: ${s.tipoDestacado}</p>` : ""}
+  `;
+  document.getElementById("modalOverlay").classList.add("open");
+}
+function cerrarPerfil() {
+  document.getElementById("modalOverlay").classList.remove("open");
+}
+document.getElementById("modalOverlay").addEventListener("click", e => {
+  if (e.target === e.currentTarget) cerrarPerfil();
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") cerrarPerfil(); });
+
+/* ============================================================
+   NAVEGACIÓN Y CARGA
+   ============================================================ */
+function irAVista(v) {
+  const btn = document.querySelector(`.tab[data-view="${v}"]`);
+  if (btn) btn.click();
+}
+
+document.getElementById("nav").addEventListener("click", e => {
+  const btn = e.target.closest(".tab");
+  if (!btn) return;
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t === btn));
+  document.querySelectorAll(".view").forEach(v =>
+    v.classList.toggle("active", v.id === "view-" + btn.dataset.view));
+  window.scrollTo({ top: 0 });
+});
+
+function renderTodo() {
+  renderConvocatoria();
+  renderAlineacion();
+  renderEstadisticas();
+  renderPartidos();
+}
+
+/* ============================================================
+   FASE 2 — DATOS REALES (solo lectura, fetch GET)
+   Pegar aquí la URL del Apps Script publicado como Web App.
+   Si la URL está vacía o el fetch falla, se usan los datos
+   mock / los últimos datos cargados.
+   ============================================================ */
+// MODO DE DATOS (decisión final): archivo manual `datos.xlsx` en la
+// carpeta de la app. Los originales son .xlsx conectados a AppSheet y
+// Apps Script no puede leerlos, así que el camino automático no existe.
+// Flujo de Giovanni: copia de Estadísticas + pestaña con las 4 columnas
+// públicas de Asignacion_Pagos → guardar como datos.xlsx aquí → subir.
+// ⚠ A esta carpeta JAMÁS entran los archivos reales: todo se publica.
+// Las URLs quedan por si algún día se migra a Sheets nativas (en vivo).
+const FUENTES = {
+  estadisticas: "",
+  finanzas: ""
+};
+
+// Convierte cualquier representación de fecha del xlsx a "yyyy-MM-dd":
+// objeto Date, serial de Excel (p.ej. 46040) o texto.
+function aFechaISO(v) {
+  if (v instanceof Date) return fechaISO(v);
+  if (typeof v === "number" && v > 20000) {
+    const d = new Date(Date.UTC(1899, 11, 30) + Math.round(v) * 86400000);
+    const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
+    const dd = String(d.getUTCDate()).padStart(2, "0");
+    return `${d.getUTCFullYear()}-${mm}-${dd}`;
+  }
+  const s = String(v || "").trim();
+  // Texto "M/D/YYYY" (algunas celdas guardan la fecha como texto)
+  const us = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (us) return `${us[3]}-${us[1].padStart(2, "0")}-${us[2].padStart(2, "0")}`;
+  return s.slice(0, 10);
+}
+
+// Lee un campo tolerando tildes y mayúsculas en la cabecera
+// ("Posición_Jugador", "ID_Alineación", "Asignacion" vs "Asignación")
+function campo(obj, nombreNorm) {
+  for (const k in obj) { if (normalizar(k) === nombreNorm) return obj[k]; }
+  return "";
+}
+
+// Sanea cada fila a los 4 campos públicos. Monto, Estado y Perdonado
+// NUNCA se almacenan aunque el archivo los trajera por error.
+function sanearAsignaciones(filas) {
+  return filas
+    .filter(f => f && campo(f, "id_jugador") !== "")
+    .map(f => ({
+      ID_Jugador: String(campo(f, "id_jugador")),
+      Nombre_Jugador: String(campo(f, "nombre_jugador")),
+      Fecha_Asignacion: aFechaISO(campo(f, "fecha_asignacion")),
+      Tipo_Asignacion: String(campo(f, "tipo_asignacion"))
+    }));
+}
+
+async function fetchJson(url) {
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error("HTTP " + resp.status);
+  return resp.json();
+}
+
+// Datos crudos de Estadísticas (hojas reales); se mapearán a las
+// tablas internas en el siguiente paso de la Fase 2.
+let DATOS_ESTADISTICAS = null;
+
+function fechaISO(d) {
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${mm}-${dd}`;
+}
+
+// Lee datos.xlsx de la carpeta de la app y lo convierte al mismo
+// formato JSON que entregaría un Apps Script: {NombreHoja: [filas]}
+async function leerDatosXlsx() {
+  if (typeof XLSX === "undefined") return null; // CDN no disponible
+  let resp = null;
+  for (const nombre of ["LBFC 2026.xlsx", "datos.xlsx"]) {
+    resp = await fetch(encodeURI(nombre) + "?v=" + Date.now()).catch(() => null);
+    if (resp && resp.ok) break;
+  }
+  if (!resp || !resp.ok) return null; // sin archivo → mock
+  const buffer = await resp.arrayBuffer();
+  const libro = XLSX.read(buffer, { cellDates: true });
+  const json = {};
+  libro.SheetNames.forEach(nombre => {
+    json[nombre] = XLSX.utils.sheet_to_json(libro.Sheets[nombre], { defval: "" })
+      .map(fila => {
+        const obj = {};
+        for (const k in fila) {
+          obj[k] = fila[k] instanceof Date ? fechaISO(fila[k]) : fila[k];
+        }
+        return obj;
+      });
+  });
+  return json;
+}
+
+/* ── Mapeo de las hojas reales a las tablas internas ──
+   Estructura real (LBFC 2026.xlsx):
+   - Jugadores: ID_Jugador ("J01"), Nombre_Jugador, Posición_Jugador
+     (Portero/Defensa/Mediocampista/Delantero), Estado, Fotos.
+   - Partidos: solo la lista de fechas → el marcador se DERIVA de Evento.
+   - Alineaciones (fila-jugador): Fecha_Partido, ID_Jugador, Equipo,
+     Asistencia (Asistió/No asistió/Pendiente), Hora_Llegada,
+     Tiempo_Cancha, MVP (SI/NO), Diferenciador.
+   - Evento: Fecha_Partido, Gol_Equipo, ID_Goleador, Tipo_Gol,
+     ID_Asistidor, Tipo_Asistencia, Minuto.                          */
+
+const POS_CANON = {
+  "portero": "Arquero", "arquero": "Arquero", "defensa": "Defensa",
+  "mediocampista": "Mediocampista", "delantero": "Delantero"
+};
+
+function esFormatoReal(json) {
+  return Array.isArray(json.Alineaciones) && json.Alineaciones.length > 0
+    && campo(json.Alineaciones[0], "fecha_partido") !== "";
+}
+
+function transformarDatosReales(json) {
+  // Jugadores
+  MOCK_DATA.jugadores = (json.Jugadores || [])
+    .filter(j => campo(j, "id_jugador") !== "")
+    .map(j => ({
+      ID_Jugador: String(campo(j, "id_jugador")),
+      Nombre: String(campo(j, "nombre_jugador")),
+      Posicion: POS_CANON[normalizar(String(campo(j, "posicion_jugador")))] || "",
+      Estado: String(campo(j, "estado"))
+    }));
+
+  // Eventos (goles): conserva Tipo_Asistencia para el pilar VJ
+  MOCK_DATA.eventos = (json.Evento || [])
+    .filter(e => campo(e, "id_goleador") !== "")
+    .map(e => ({
+      ID_Partido: aFechaISO(campo(e, "fecha_partido")),
+      Goleador: String(campo(e, "id_goleador")),
+      Asistente: campo(e, "id_asistidor") !== "" ? String(campo(e, "id_asistidor")) : null,
+      Equipo: String(campo(e, "gol_equipo")),
+      Tipo_Gol: String(campo(e, "tipo_gol")),
+      Tipo_Asistencia: String(campo(e, "tipo_asistencia")),
+      Minuto: Number(campo(e, "minuto")) || null
+    }));
+
+  // Alineaciones agrupadas por fecha; MVP/Diferenciador salen de aquí.
+  // Solo se aceptan IDs que existan en Jugadores (filtra filas corruptas).
+  const idsValidos = new Set(MOCK_DATA.jugadores.map(j => j.ID_Jugador));
+  const porFecha = {};
+  (json.Alineaciones || []).forEach(a => {
+    const f = aFechaISO(campo(a, "fecha_partido"));
+    const id = String(campo(a, "id_jugador"));
+    if (!f || !id || !idsValidos.has(id)) return;
+    if (!porFecha[f]) porFecha[f] = { Rojo: [], Azul: [], MVP: [], Dif: [] };
+    const equipo = String(campo(a, "equipo"));
+    const noAsistio = normalizar(String(campo(a, "asistencia"))) === "no asistio";
+    if (!noAsistio && (equipo === "Rojo" || equipo === "Azul")) porFecha[f][equipo].push(id);
+    if (String(campo(a, "mvp")).toUpperCase() === "SI") porFecha[f].MVP.push(id);
+    if (String(campo(a, "diferenciador")).trim() !== "") porFecha[f].Dif.push(id);
+  });
+  MOCK_DATA.alineaciones = Object.entries(porFecha)
+    .map(([f, d]) => ({ ID_Partido: f, Rojo: d.Rojo, Azul: d.Azul }));
+
+  // Partidos: fechas de la hoja Partidos + las vistas en Alineaciones.
+  // Marcador derivado de Evento; sin resultado si la fecha es futura.
+  const fechas = new Set(
+    (json.Partidos || []).map(p => aFechaISO(campo(p, "fecha_partido"))).filter(Boolean)
+  );
+  Object.keys(porFecha).forEach(f => fechas.add(f));
+  const hoy = fechaISO(new Date());
+  MOCK_DATA.partidos = [...fechas].sort().map(f => {
+    const jugado = f <= hoy;
+    const d = porFecha[f] || { MVP: [], Dif: [] };
+    return {
+      ID_Partido: f,
+      Fecha: f,
+      Goles_Rojo: jugado ? MOCK_DATA.eventos.filter(e => e.ID_Partido === f && e.Equipo === "Rojo").length : null,
+      Goles_Azul: jugado ? MOCK_DATA.eventos.filter(e => e.ID_Partido === f && e.Equipo === "Azul").length : null,
+      MVP: d.MVP,
+      Diferenciador: d.Dif.length ? d.Dif[0] : null
+    };
+  });
+}
+
+// Vuelca el JSON {Hoja: [filas]} sobre los datos activos
+function aplicarDatos(json) {
+  // Asignacion_Pagos (tolerante a tildes en el nombre de la pestaña)
+  const claveAsig = Object.keys(json).find(k => normalizar(k).startsWith("asignacion_pagos"));
+  if (claveAsig && Array.isArray(json[claveAsig])) {
+    MOCK_DATA.asignacionPagos = sanearAsignaciones(json[claveAsig]);
+  }
+  if (esFormatoReal(json)) transformarDatosReales(json);
+  DATOS_ESTADISTICAS = json;
+  indexarJugadores();
+}
+
+async function cargarDatos() {
+  let aviso = null;
+  try {
+    if (FUENTES.finanzas || FUENTES.estadisticas) {
+      // Modo en vivo (solo si algún día se migra a Sheets nativas)
+      const tareas = [];
+      if (FUENTES.finanzas) {
+        tareas.push(fetchJson(FUENTES.finanzas).then(json => {
+          const filas = Array.isArray(json) ? json : json.Asignacion_Pagos;
+          if (Array.isArray(filas)) MOCK_DATA.asignacionPagos = sanearAsignaciones(filas);
+        }));
+      }
+      if (FUENTES.estadisticas) {
+        tareas.push(fetchJson(FUENTES.estadisticas).then(json => { DATOS_ESTADISTICAS = json; }));
+      }
+      const resultados = await Promise.allSettled(tareas);
+      if (resultados.some(r => r.status === "rejected")) {
+        aviso = "Sin conexión con la Sheet — mostrando últimos datos";
+      }
+    } else {
+      // Modo archivo (el elegido): datos.xlsx junto al index
+      const json = await leerDatosXlsx();
+      if (json) aplicarDatos(json);
+      // Sin datos.xlsx → mock, sin avisos (desarrollo)
+    }
+  } catch (err) {
+    aviso = "No se pudo leer datos.xlsx — mostrando últimos datos";
+  }
+  renderTodo();
+  return aviso;
+}
+
+let toastTimer = null;
+function mostrarToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2500);
+}
+
+document.getElementById("btnRefresh").addEventListener("click", async function () {
+  this.classList.add("spinning");
+  const aviso = await cargarDatos();
+  this.classList.remove("spinning");
+  mostrarToast(aviso || "Datos actualizados ✓");
+});
+
+// Carga automática al abrir
+normalizarIdsMock();
+indexarJugadores();
+cargarDatos();
+</script>
+</body>
+</html>
