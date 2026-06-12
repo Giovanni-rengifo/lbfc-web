@@ -779,8 +779,8 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
   line-height: 1.5;
   cursor: pointer;
 }
-.gcol.rojo .gl-assist { text-align: left; padding-left: .9rem; }
-.gcol.azul .gl-assist { text-align: right; padding-right: .9rem; }
+.gcol.rojo .gl-assist { text-align: right; padding-right: .9rem; }
+.gcol.azul .gl-assist { text-align: left; padding-left: .9rem; }
 .gl-assist:hover { color: var(--color-gold); }
 .mc-mvp {
   margin-top: .75rem;
@@ -2013,7 +2013,7 @@ function renderPartidos() {
             const min = `<span class="min">${e.Minuto != null ? e.Minuto + "’" : ""}</span>`;
             const scorer = esRojo ? nombre + min : min + nombre;
             const assist = e.Asistente
-              ? `<div class="gl-assist" onclick="abrirPerfil(‘${e.Asistente}’);event.stopPropagation()">${esRojo ? "↳ " + nombreCorto(e.Asistente) : nombreCorto(e.Asistente) + " ↳"}</div>`
+              ? `<div class="gl-assist" onclick="abrirPerfil(‘${e.Asistente}’);event.stopPropagation()">${esRojo ? nombreCorto(e.Asistente) + " ↳" : "↳ " + nombreCorto(e.Asistente)}</div>`
               : "";
             return `<div class="goal-line"><div class="gl-scorer" onclick="abrirPerfil(‘${e.Goleador}’)">${scorer}</div>${assist}</div>`;
           }).join("")
