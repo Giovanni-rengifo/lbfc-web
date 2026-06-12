@@ -59,7 +59,7 @@ header {
   border-bottom: 2px solid var(--color-gold);
   background: var(--color-primary);
 }
-.crest { width: 54px; height: 60px; flex: 0 0 54px; display: block; }
+.crest { width: 64px; height: 64px; flex: 0 0 64px; display: block; object-fit: contain; }
 .club-id { text-align: left; }
 h1 {
   font-family: var(--font-title);
@@ -746,16 +746,32 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
 .goal-line {
   font-size: .8rem;
   color: var(--color-parchment);
-  line-height: 1.9;
-  cursor: pointer;
+  margin-bottom: .3rem;
 }
-.goal-line:hover { color: var(--color-text-light); }
-.goal-line.vacio { color: var(--text-dim); cursor: default; }
+.goal-line.vacio { color: var(--text-dim); line-height: 1.9; }
+.gl-scorer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  line-height: 1.7;
+}
+.gl-scorer:hover { color: var(--color-text-light); }
 .goal-line .min {
   color: var(--text-dim);
   font-size: .7rem;
   font-variant-numeric: tabular-nums;
+  margin-left: .4rem;
+  flex-shrink: 0;
 }
+.gl-assist {
+  font-size: .72rem;
+  color: var(--text-dim);
+  padding-left: .7rem;
+  line-height: 1.5;
+  cursor: pointer;
+}
+.gl-assist:hover { color: var(--color-gold); }
 .mc-mvp {
   margin-top: .75rem;
   padding-top: .65rem;
@@ -943,22 +959,7 @@ footer {
 
 <header>
   <!-- Escudo heráldico: partido per pale rojo/azul, bigote de pergamino -->
-  <svg class="crest" viewBox="0 0 64 72" role="img" aria-label="Escudo de Los Bigotes F.C.">
-    <defs>
-      <clipPath id="shieldClip">
-        <path d="M32 2 L62 10 V38 C62 55 49 65 32 70 C15 65 2 55 2 38 V10 Z"/>
-      </clipPath>
-    </defs>
-    <g clip-path="url(#shieldClip)">
-      <rect x="0" y="0" width="32" height="72" fill="#8B1A1A"/>
-      <rect x="32" y="0" width="32" height="72" fill="#24506A"/>
-    </g>
-    <path d="M32 2 L62 10 V38 C62 55 49 65 32 70 C15 65 2 55 2 38 V10 Z"
-          fill="none" stroke="#C9A84C" stroke-width="2.5"/>
-    <path d="M32 34 C30 27 21 24 14 28 C9 31 9 38 14 40 C18 41 22 39 25 37 C27 36 30 36 32 37 C34 36 37 36 39 37 C42 39 46 41 50 40 C55 38 55 31 50 28 C43 24 34 27 32 34 Z"
-          fill="#E8D5A3"/>
-    <text x="32" y="58" text-anchor="middle" font-family="Cinzel, serif" font-size="10" font-weight="700" fill="#C9A84C">2009</text>
-  </svg>
+  <img src="escudo.png" class="crest" alt="Escudo Los Bigotes F.C.">
   <div class="club-id">
     <h1>Los Bigotes F.C.</h1>
     <p class="club-sub">Fundado en 2009 · Domingos 6:00 am</p>
@@ -1996,9 +1997,12 @@ function renderPartidos() {
       const goles = evs.filter(e => e.Equipo === equipo);
       return goles.length
         ? goles.map(e => `
-            <div class="goal-line" onclick="abrirPerfil('${e.Goleador}')">
-              ${nombreCorto(e.Goleador)}${esAutogol(e) ? " (AG)" : ""}
-              <span class="min">${e.Minuto != null ? e.Minuto + "’" : ""}</span>
+            <div class="goal-line">
+              <div class="gl-scorer" onclick="abrirPerfil(‘${e.Goleador}’)">
+                <span>${nombreCorto(e.Goleador)}${esAutogol(e) ? " (AG)" : ""}</span>
+                <span class="min">${e.Minuto != null ? e.Minuto + "’" : ""}</span>
+              </div>
+              ${e.Asistente ? `<div class="gl-assist" onclick="abrirPerfil(‘${e.Asistente}’);event.stopPropagation()">↳ ${nombreCorto(e.Asistente)}</div>` : ""}
             </div>`).join("")
         : `<div class="goal-line vacio">—</div>`;
     };
