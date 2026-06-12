@@ -751,8 +751,8 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
 .goal-line.vacio { color: var(--text-dim); line-height: 1.9; }
 .gl-scorer {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: .4rem;
   cursor: pointer;
   line-height: 1.7;
 }
@@ -761,16 +761,16 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
   color: var(--text-dim);
   font-size: .7rem;
   font-variant-numeric: tabular-nums;
-  margin-left: .4rem;
   flex-shrink: 0;
 }
 .gl-assist {
   font-size: .72rem;
   color: var(--text-dim);
-  padding-left: .7rem;
+  padding-left: .9rem;
   line-height: 1.5;
   cursor: pointer;
 }
+.gcol.rojo .gl-assist { padding-left: 0; padding-right: .9rem; }
 .gl-assist:hover { color: var(--color-gold); }
 .mc-mvp {
   margin-top: .75rem;
@@ -1027,7 +1027,7 @@ footer {
 
   <!-- Vista: Historial de partidos -->
   <section class="view" id="view-partidos">
-    <p class="view-sub" style="margin-top:.4rem">Historial Rojo vs Azul · Temporada 2026</p>
+    <p class="view-sub" style="margin-top:.4rem">Historial de partidos · Temporada 2026</p>
     <div id="lista-partidos"></div>
   </section>
 </main>
@@ -1995,16 +1995,18 @@ function renderPartidos() {
       .filter(e => e.ID_Partido === p.ID_Partido)
       .sort((a, b) => (a.Minuto || 0) - (b.Minuto || 0));
     const golesDe = equipo => {
+      const esRojo = equipo === "Rojo";
       const goles = evs.filter(e => e.Equipo === equipo);
       return goles.length
-        ? goles.map(e => `
-            <div class="goal-line">
-              <div class="gl-scorer" onclick="abrirPerfil(‘${e.Goleador}’)">
-                <span>${nombreCorto(e.Goleador)}${esAutogol(e) ? " (AG)" : ""}</span>
-                <span class="min">${e.Minuto != null ? e.Minuto + "’" : ""}</span>
-              </div>
-              ${e.Asistente ? `<div class="gl-assist" onclick="abrirPerfil(‘${e.Asistente}’);event.stopPropagation()">↳ ${nombreCorto(e.Asistente)}</div>` : ""}
-            </div>`).join("")
+        ? goles.map(e => {
+            const nombre = `<span>${nombreCorto(e.Goleador)}${esAutogol(e) ? " (AG)" : ""}</span>`;
+            const min = `<span class="min">${e.Minuto != null ? e.Minuto + "’" : ""}</span>`;
+            const scorer = esRojo ? nombre + min : min + nombre;
+            const assist = e.Asistente
+              ? `<div class="gl-assist" onclick="abrirPerfil(‘${e.Asistente}’);event.stopPropagation()">${esRojo ? nombreCorto(e.Asistente) + " ↳" : "↳ " + nombreCorto(e.Asistente)}</div>`
+              : "";
+            return `<div class="goal-line"><div class="gl-scorer" onclick="abrirPerfil(‘${e.Goleador}’)">${scorer}</div>${assist}</div>`;
+          }).join("")
         : `<div class="goal-line vacio">—</div>`;
     };
     const mvps = mvpsDe(p);
