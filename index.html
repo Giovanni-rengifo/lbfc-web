@@ -1320,7 +1320,7 @@ function resaltarPorNombre(texto, celdas) {
     c.classList.add(coincide ? "hit" : "dimmed");
     if (coincide && !primero) primero = c;
   });
-  if (primero) primero.scrollIntoView({ behavior: "smooth", block: "center" });
+  if (primero) primero.scrollIntoView({ behavior: "instant", block: "center" });
 }
 
 // Estadísticas agregadas por jugador (derivadas, nunca hardcodeadas).
