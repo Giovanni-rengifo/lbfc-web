@@ -811,17 +811,19 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
 .profile-pos { font-size: .86rem; color: var(--text-dim); }
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: .55rem;
   margin-top: .9rem;
 }
 .stat-box {
+  grid-column: span 2;
   text-align: center;
   border: 1px solid var(--line);
   border-radius: 5px;
   padding: .65rem .3rem;
   background: var(--surface-2);
 }
+.stat-box.wide { grid-column: span 3; }
 .stat-box .num {
   font-weight: 700;
   font-size: 1.4rem;
@@ -829,11 +831,32 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
   font-variant-numeric: tabular-nums;
 }
 .stat-box .lbl { font-size: .62rem; text-transform: uppercase; letter-spacing: .1em; color: var(--text-dim); margin-top: .1rem; }
-.stat-trio { display: flex; width: 100%; }
-.stat-trio .part { flex: 1; text-align: center; }
-.stat-trio .part + .part { border-left: 1px solid var(--line); }
-.stat-trio .num { font-size: 1.1rem; }
-.stat-trio .lbl { font-size: .56rem; }
+
+/* Card de Partidos con barras de progreso */
+.partidos-card {
+  margin-top: .55rem;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: .6rem .8rem;
+  background: var(--surface-2);
+}
+.partidos-card-title {
+  font-size: .62rem;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: .55rem;
+}
+.pb-row { display: flex; align-items: center; gap: .5rem; }
+.pb-row + .pb-row { margin-top: .38rem; }
+.pb-lbl { font-size: .65rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-dim); min-width: 4.4rem; }
+.pb-track { flex: 1; height: 8px; background: rgba(232,213,163,.1); border-radius: 3px; overflow: hidden; }
+.pb-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
+.pb-fill.pb-total { background: var(--color-parchment); opacity: .65; }
+.pb-fill.pb-win   { background: var(--color-gold); }
+.pb-fill.pb-loss  { background: var(--color-secondary); opacity: .9; }
+.pb-val { font-size: .84rem; font-weight: 700; font-variant-numeric: tabular-nums; min-width: 1.6rem; text-align: right; color: var(--color-text-light); }
 .profile-note { text-align: center; margin-top: .9rem; font-style: italic; color: var(--text-dim); font-size: .86rem; }
 
 /* Pilares del jugador (perfil) */
@@ -2003,14 +2026,25 @@ function abrirPerfil(id) {
       <div class="stat-box"><div class="num">${s.goles}</div><div class="lbl">Goles</div></div>
       <div class="stat-box"><div class="num">${s.asistencias}</div><div class="lbl">Asistencias</div></div>
       <div class="stat-box"><div class="num">${s.mvps}</div><div class="lbl">MVPs</div></div>
-      <div class="stat-box"><div class="num">${s.difs}</div><div class="lbl">Diferenciador</div></div>
-      <div class="stat-box"><div class="num">${s.pct}%</div><div class="lbl">Fair Play</div></div>
-      <div class="stat-box">
-        <div class="stat-trio">
-          <div class="part"><div class="num">${s.jugados}</div><div class="lbl">Jugados</div></div>
-          <div class="part"><div class="num">${s.ganados}</div><div class="lbl">Ganados</div></div>
-          <div class="part"><div class="num">${s.perdidos}</div><div class="lbl">Perdidos</div></div>
-        </div>
+      <div class="stat-box wide"><div class="num">${s.difs}</div><div class="lbl">Diferenciador</div></div>
+      <div class="stat-box wide"><div class="num">${s.pct}%</div><div class="lbl">Fair Play</div></div>
+    </div>
+    <div class="partidos-card">
+      <div class="partidos-card-title">Partidos</div>
+      <div class="pb-row">
+        <span class="pb-lbl">Jugados</span>
+        <div class="pb-track"><div class="pb-fill pb-total" style="width:100%"></div></div>
+        <span class="pb-val">${s.jugados}</span>
+      </div>
+      <div class="pb-row">
+        <span class="pb-lbl">Ganados</span>
+        <div class="pb-track"><div class="pb-fill pb-win" style="width:${s.jugados ? Math.round(s.ganados/s.jugados*100) : 0}%"></div></div>
+        <span class="pb-val">${s.ganados}</span>
+      </div>
+      <div class="pb-row">
+        <span class="pb-lbl">Perdidos</span>
+        <div class="pb-track"><div class="pb-fill pb-loss" style="width:${s.jugados ? Math.round(s.perdidos/s.jugados*100) : 0}%"></div></div>
+        <span class="pb-val">${s.perdidos}</span>
       </div>
     </div>
     <div class="pilares">
