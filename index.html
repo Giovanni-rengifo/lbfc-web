@@ -1687,6 +1687,14 @@ const FORMACION = [
   { pos: "Delantero",     cupo: 3 }
 ];
 
+// Orden dentro de cada línea (izquierda → derecha). Menor número = más a la izquierda.
+const POS_ORDER = {
+  "Portero": 2, "Arquero": 2,
+  "Lateral Izquierdo": 0, "Central": 2, "Defensa": 2, "Lateral Derecho": 4,
+  "Mediocampista Izquierdo": 0, "Mediocampista": 2, "Mediocampista Derecho": 4,
+  "Extremo Izquierdo": 0, "Delantero": 2, "Extremo Derecho": 4
+};
+
 function lineasEquipo(ids, posiciones = {}) {
   const lineas = { Arquero: [], Defensa: [], Mediocampista: [], Delantero: [] };
   const sobrantes = [];
@@ -1702,6 +1710,14 @@ function lineasEquipo(ids, posiciones = {}) {
   // Más de 12: las líneas se amplían de abajo hacia arriba (desde defensa)
   let i = 1;
   while (sobrantes.length) { lineas[FORMACION[Math.min(i, 3)].pos].push(sobrantes.shift()); i++; }
+  // Ordenar cada línea por posición específica (izquierda → derecha)
+  Object.keys(lineas).forEach(linea => {
+    lineas[linea].sort((a, b) => {
+      const pA = POS_ORDER[posiciones[a]?.especifica] ?? POS_ORDER[posicion(a)] ?? 2;
+      const pB = POS_ORDER[posiciones[b]?.especifica] ?? POS_ORDER[posicion(b)] ?? 2;
+      return pA - pB;
+    });
+  });
   return lineas;
 }
 
