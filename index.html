@@ -574,6 +574,22 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
   border-radius: 2px;
 }
 .pp-tag.dif { background: var(--color-parchment); }
+.avatar-wrap { position: relative; display: inline-flex; }
+.cap-badge {
+  position: absolute;
+  top: -4px; right: -4px;
+  width: 14px; height: 14px;
+  background: var(--color-gold);
+  color: var(--color-primary);
+  border-radius: 50%;
+  font-size: .46rem;
+  font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-title);
+  border: 1.5px solid #0c1c24;
+  pointer-events: none;
+}
+.avatar.portero { background: #1e5228; }
 
 /* ---------- Estadísticas: hub de categorías ---------- */
 .stats-hub { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
@@ -1731,13 +1747,19 @@ function nombreDosLineas(id) {
   return `<span class="n-nombre">${partes[0]}</span><span class="n-ape">${partes[partes.length - 1]}</span>`;
 }
 
-function pitchHTML(ids, team, partido, posiciones = {}) {
+function pitchHTML(ids, team, partido, posiciones = {}, capitanes = {}) {
   const l = lineasEquipo(ids, posiciones);
   const chip = id => {
     const posEsp = posiciones[id]?.especifica || posicion(id);
+    const esCap = !!capitanes[id];
+    const esPortero = (posiciones[id]?.linea || posicion(id)) === "Arquero";
+    const avatarEl = `<div class="avatar ${esPortero ? "portero" : team}">${iniciales(nombre(id))}</div>`;
+    const avatarWrapped = esCap
+      ? `<div class="avatar-wrap">${avatarEl}<div class="cap-badge">C</div></div>`
+      : avatarEl;
     return `
     <div class="pitch-player ${mvpsDe(partido).includes(id) ? "is-mvp" : ""}" data-id="${id}" onclick="abrirPerfil('${id}')">
-      <div class="avatar ${team}">${iniciales(nombre(id))}</div>
+      ${avatarWrapped}
       <div class="pp-name">${nombreDosLineas(id)}</div>
       <div class="pp-pos-badge">${posEsp}</div>
       ${mvpsDe(partido).includes(id) ? `<div class="pp-tag">MVP</div>` :
@@ -1825,11 +1847,11 @@ function renderAlineacion() {
   document.getElementById("alineacion-grid").innerHTML = `
     <div class="card team-card">
       <div class="team-head rojo">Equipo Rojo</div>
-      ${pitchHTML(sel.ali.Rojo, "rojo", p, sel.ali.Posiciones || {})}
+      ${pitchHTML(sel.ali.Rojo, "rojo", p, sel.ali.Posiciones || {}, sel.ali.Capitanes || {})}
     </div>
     <div class="card team-card">
       <div class="team-head azul">Equipo Azul</div>
-      ${pitchHTML(sel.ali.Azul, "azul", p, sel.ali.Posiciones || {})}
+      ${pitchHTML(sel.ali.Azul, "azul", p, sel.ali.Posiciones || {}, sel.ali.Capitanes || {})}
     </div>`;
 
   aplicarBusquedaAlineacion();
@@ -2311,7 +2333,7 @@ function transformarDatosReales(json) {
     const f = aFechaISO(campo(a, "fecha_partido"));
     const id = String(campo(a, "id_jugador"));
     if (!f || !id || !idsValidos.has(id)) return;
-    if (!porFecha[f]) porFecha[f] = { Rojo: [], Azul: [], MVP: [], Dif: [], Posiciones: {} };
+    if (!porFecha[f]) porFecha[f] = { Rojo: [], Azul: [], MVP: [], Dif: [], Posiciones: {}, Capitanes: {} };
     const equipo = String(campo(a, "equipo"));
     const noAsistio = normalizar(String(campo(a, "asistencia"))) === "no asistio";
     if (!noAsistio && (equipo === "Rojo" || equipo === "Azul")) porFecha[f][equipo].push(id);
@@ -2320,9 +2342,11 @@ function transformarDatosReales(json) {
     const posJRaw = String(campo(a, "posicion_jugador")).trim();
     const posJ = normalizar(posJRaw);
     if (posJ && POS_CANON[posJ]) porFecha[f].Posiciones[id] = { linea: POS_CANON[posJ], especifica: posJRaw };
+    const esCapitan = normalizar(String(campo(a, "capitan"))) === "true";
+    if (esCapitan && (equipo === "Rojo" || equipo === "Azul")) porFecha[f].Capitanes[equipo] = id;
   });
   MOCK_DATA.alineaciones = Object.entries(porFecha)
-    .map(([f, d]) => ({ ID_Partido: f, Rojo: d.Rojo, Azul: d.Azul, Posiciones: d.Posiciones }));
+    .map(([f, d]) => ({ ID_Partido: f, Rojo: d.Rojo, Azul: d.Azul, Posiciones: d.Posiciones, Capitanes: d.Capitanes || {} }));
 
   // Partidos: fechas de la hoja Partidos + las vistas en Alineaciones.
   // Marcador derivado de Evento; sin resultado si la fecha es futura.
