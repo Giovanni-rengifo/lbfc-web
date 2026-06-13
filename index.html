@@ -2342,8 +2342,9 @@ function transformarDatosReales(json) {
     const posJRaw = String(campo(a, "posicion_jugador")).trim();
     const posJ = normalizar(posJRaw);
     if (posJ && POS_CANON[posJ]) porFecha[f].Posiciones[id] = { linea: POS_CANON[posJ], especifica: posJRaw };
-    const esCapitan = normalizar(String(campo(a, "capitan"))) === "true";
-    if (esCapitan && (equipo === "Rojo" || equipo === "Azul")) porFecha[f].Capitanes[equipo] = id;
+    const capRaw = campo(a, "capitan");
+    const esCapitan = capRaw === true || ["true", "verdadero"].includes(normalizar(String(capRaw)));
+    if (esCapitan && (equipo === "Rojo" || equipo === "Azul")) porFecha[f].Capitanes[id] = true;
   });
   MOCK_DATA.alineaciones = Object.entries(porFecha)
     .map(([f, d]) => ({ ID_Partido: f, Rojo: d.Rojo, Azul: d.Azul, Posiciones: d.Posiciones, Capitanes: d.Capitanes || {} }));
