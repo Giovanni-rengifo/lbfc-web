@@ -1754,7 +1754,7 @@ function pitchHTML(ids, team, partido, posiciones = {}, capitanes = {}) {
     const esPortero = (posiciones[id]?.linea || posicion(id)) === "Arquero";
     return `
     <div class="pitch-player ${mvpsDe(partido).includes(id) ? "is-mvp" : ""} ${esCap ? "is-capitan" : ""}" data-id="${id}" onclick="abrirPerfil('${id}')">
-      ${esCap ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="cap-corona-svg" aria-hidden="true"><path fill="#C9A84C" d="M384,167L256,51.1L128,167L0,98.6v274.5h512V98.6L384,167z"/><rect fill="#C9A84C" y="411.8" width="512" height="49.1"/><text x="61" y="350" font-family="Cinzel,serif" font-size="180" font-weight="900" fill="#1B3A4B">CAP</text></svg>` : ""}
+      ${esCap ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="cap-corona-svg" aria-hidden="true"><path fill="#C9A84C" d="M384,167L256,51.1L128,167L0,98.6v274.5h512V98.6L384,167z"/><rect fill="#C9A84C" y="411.8" width="512" height="49.1"/></svg>` : ""}
       <div class="avatar ${esPortero ? "portero" : team}">${iniciales(nombre(id))}</div>
       <div class="pp-name">${nombreDosLineas(id)}</div>
       <div class="pp-pos-badge">${posEsp}</div>
