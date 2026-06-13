@@ -343,8 +343,8 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
 .ali-status.proximo { background: var(--color-gold); color: var(--color-primary); }
 .ali-status.pasado { background: rgba(232,213,163,.16); color: var(--color-parchment); }
 .ali-status.conv { background: transparent; color: var(--color-gold); border: 1.5px solid var(--color-gold); }
-#conv-fecha { font-size: clamp(.95rem, 3.5vw, 1.25rem); }
-.conv-desc { font-size: clamp(.82rem, 2.5vw, .95rem); color: var(--color-parchment); margin-top: .4rem; }
+#conv-fecha { font-size: clamp(.85rem, 3vw, 1rem); color: var(--text-dim); margin-top: .2rem; }
+.conv-desc { font-size: clamp(1rem, 4vw, 1.35rem); color: var(--color-text-light); font-family: var(--font-title); font-weight: 700; margin-top: .3rem; }
 .ali-fecha {
   font-family: var(--font-title);
   font-weight: 700;
@@ -1009,9 +1009,9 @@ footer {
   <section class="view active" id="view-convocatoria">
     <div class="ali-header">
       <span class="ali-status conv">Convocatoria</span>
+      <p class="conv-desc">Jugadores llamados a este partido · La alineación se publica el sábado</p>
       <div class="ali-fecha" id="conv-fecha"></div>
       <p class="ali-note">Se juega de 6:00 a 8:00 am</p>
-      <p class="conv-desc">Jugadores llamados a este partido · La alineación se publica el sábado</p>
     </div>
     <div class="ali-controls">
       <div class="autocomplete">
