@@ -574,28 +574,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
   border-radius: 2px;
 }
 .pp-tag.dif { background: var(--color-parchment); }
-.cap-corona-wrap {
-  position: relative;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  line-height: 1;
-}
-.cap-corona {
-  font-size: 1.3rem;
-  color: var(--color-gold);
-  line-height: 1;
-}
-.cap-c {
-  position: absolute;
-  font-size: .42rem;
-  font-weight: 900;
-  font-family: var(--font-title);
-  color: var(--color-primary);
-  top: 55%;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
+.cap-corona-svg { width: 26px; height: 26px; display: block; }
 .pitch-player.is-capitan .avatar {
   border: 2.5px solid var(--color-gold);
   box-shadow: 0 0 0 1px var(--color-gold);
@@ -1766,7 +1745,7 @@ function pitchHTML(ids, team, partido, posiciones = {}, capitanes = {}) {
     const esPortero = (posiciones[id]?.linea || posicion(id)) === "Arquero";
     return `
     <div class="pitch-player ${mvpsDe(partido).includes(id) ? "is-mvp" : ""} ${esCap ? "is-capitan" : ""}" data-id="${id}" onclick="abrirPerfil('${id}')">
-      ${esCap ? `<div class="cap-corona-wrap"><span class="cap-corona">♛</span><span class="cap-c">C</span></div>` : ""}
+      ${esCap ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="cap-corona-svg" aria-hidden="true"><path fill="#C9A84C" d="M384,167L256,51.1L128,167L0,98.6v274.5h512V98.6L384,167z"/><rect fill="#C9A84C" y="411.8" width="512" height="49.1"/><text x="184" y="331" font-family="Cinzel,serif" font-size="200" font-weight="700" fill="#1B3A4B">C</text></svg>` : ""}
       <div class="avatar ${esPortero ? "portero" : team}">${iniciales(nombre(id))}</div>
       <div class="pp-name">${nombreDosLineas(id)}</div>
       <div class="pp-pos-badge">${posEsp}</div>
