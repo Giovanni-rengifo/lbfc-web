@@ -530,6 +530,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
   cursor: pointer;
   width: 25%;
   max-width: 80px;
+  position: relative;
 }
 .pitch-player .avatar {
   width: 38px; height: 38px;
@@ -574,7 +575,15 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
   border-radius: 2px;
 }
 .pp-tag.dif { background: var(--color-parchment); }
-.cap-corona-svg { width: 26px; height: 26px; display: block; }
+.cap-corona-svg {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
+  pointer-events: none;
+}
 .pitch-player.is-capitan .avatar {
   border: 2.5px solid var(--color-gold);
   box-shadow: 0 0 0 1px var(--color-gold);
@@ -1745,7 +1754,7 @@ function pitchHTML(ids, team, partido, posiciones = {}, capitanes = {}) {
     const esPortero = (posiciones[id]?.linea || posicion(id)) === "Arquero";
     return `
     <div class="pitch-player ${mvpsDe(partido).includes(id) ? "is-mvp" : ""} ${esCap ? "is-capitan" : ""}" data-id="${id}" onclick="abrirPerfil('${id}')">
-      ${esCap ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="cap-corona-svg" aria-hidden="true"><path fill="#C9A84C" d="M384,167L256,51.1L128,167L0,98.6v274.5h512V98.6L384,167z"/><rect fill="#C9A84C" y="411.8" width="512" height="49.1"/><text x="184" y="331" font-family="Cinzel,serif" font-size="200" font-weight="700" fill="#1B3A4B">C</text></svg>` : ""}
+      ${esCap ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="cap-corona-svg" aria-hidden="true"><path fill="#C9A84C" d="M384,167L256,51.1L128,167L0,98.6v274.5h512V98.6L384,167z"/><rect fill="#C9A84C" y="411.8" width="512" height="49.1"/><text x="61" y="350" font-family="Cinzel,serif" font-size="180" font-weight="900" fill="#1B3A4B">CAP</text></svg>` : ""}
       <div class="avatar ${esPortero ? "portero" : team}">${iniciales(nombre(id))}</div>
       <div class="pp-name">${nombreDosLineas(id)}</div>
       <div class="pp-pos-badge">${posEsp}</div>
