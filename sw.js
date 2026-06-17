@@ -1,4 +1,4 @@
-const CACHE = 'lbfc-v2';
+const CACHE = 'lbfc-v3';
 
 // Precache al instalar
 const PRECACHE = ['./', 'index.html', 'icon-192.png', 'icon-512.png', 'manifest.json'];
