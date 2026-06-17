@@ -1002,7 +1002,7 @@ footer {
   <!-- Vista 1: Convocatoria -->
   <section class="view active" id="view-convocatoria">
     <div class="ali-header">
-      <p class="conv-desc">Jugadores convocados para el partido del:</p>
+      <p class="conv-desc" id="conv-desc">Jugadores convocados para el partido del:</p>
       <div class="ali-fecha" id="conv-fecha"></div>
       <p class="ali-note">Se juega de 6:00 a 8:00 am</p>
     </div>
@@ -1588,31 +1588,41 @@ function playerRowHTML(id, extras) {
     </div>`;
 }
 
+// Próximo domingo: si hoy ES domingo (partido en curso), devuelve el siguiente.
+// La convocatoria solo es vigente Mon–Sat de la semana del partido.
+function proximoDomingo() {
+  const hoy = new Date();
+  const dia = hoy.getDay(); // 0=dom, 1=lun ... 6=sab
+  const dias = dia === 0 ? 7 : 7 - dia;
+  const d = new Date(hoy);
+  d.setDate(hoy.getDate() + dias);
+  return fechaISO(d);
+}
+
 // ---- Vista 1: Convocatoria ----
 function renderConvocatoria() {
-  const pagos = MOCK_DATA.asignacionPagos;
-  if (pagos.length === 0) {
-    document.getElementById("lista-convocados").innerHTML = `<p class="empty-msg">Aún no hay convocatoria publicada.</p>`;
-    return;
-  }
-  // Solo cuentan los tipos del ciclo de partido — "Torneo" tiene sus
-  // propias fechas (incluso futuras lejanas) y no toca la convocatoria
-  const TIPOS_PARTIDO = ["Convocado", "Lista de espera", "Partido"];
-  const relevantes = pagos.filter(p => TIPOS_PARTIDO.includes(p.Tipo_Asignacion));
-  if (relevantes.length === 0) {
-    document.getElementById("lista-convocados").innerHTML = `<p class="empty-msg">Aún no hay convocatoria publicada.</p>`;
-    return;
-  }
-  // Fecha del partido más cercano: la próxima desde hoy; si no hay
-  // futuras, la última jugada (no la máxima — puede haber fechas lejanas)
-  const fechas = [...new Set(relevantes.map(p => p.Fecha_Asignacion))].sort();
-  const hoy = fechaISO(new Date());
-  const ultimaFecha = fechas.find(f => f >= hoy) || fechas.at(-1);
-  const fecha = fmtFecha(ultimaFecha);
-  document.getElementById("conv-fecha").textContent =
-    fecha.charAt(0).toUpperCase() + fecha.slice(1);
+  const domingo = proximoDomingo();
+  const fechaFmt = fmtFecha(domingo);
+  const fechaCap = fechaFmt.charAt(0).toUpperCase() + fechaFmt.slice(1);
+  document.getElementById("conv-fecha").textContent = fechaCap;
 
-  const deLaFecha = relevantes.filter(p => p.Fecha_Asignacion === ultimaFecha);
+  const TIPOS_PARTIDO = ["Convocado", "Lista de espera", "Partido"];
+  const relevantes = MOCK_DATA.asignacionPagos.filter(p => TIPOS_PARTIDO.includes(p.Tipo_Asignacion));
+  const deLaFecha = relevantes.filter(p => p.Fecha_Asignacion === domingo);
+
+  // Sin datos para el próximo domingo → estado de espera
+  if (deLaFecha.length === 0) {
+    document.getElementById("conv-desc").textContent = "A la espera de convocatoria para el partido del:";
+    document.getElementById("label-convocados").textContent = "";
+    document.getElementById("lista-convocados").innerHTML = `<p class="empty-msg">La convocatoria será publicada próximamente.</p>`;
+    document.getElementById("label-espera").innerHTML = "";
+    document.getElementById("lista-espera").innerHTML = "";
+    FUENTES_AC["conv-player"] = [];
+    return;
+  }
+
+  // Hay datos → convocatoria vigente
+  document.getElementById("conv-desc").textContent = "Jugadores convocados para el partido del:";
   // "Convocado" → en convocatoria; "Lista de espera" → reserva;
   // "Partido" → ya fue asignado a una alineación (sale de esta vista)
   const convocados = deLaFecha.filter(p => p.Tipo_Asignacion === "Convocado");
