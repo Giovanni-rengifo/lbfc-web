@@ -1,0 +1,17 @@
+{
+  "name": "Los Bigotes F.C.",
+  "short_name": "LBFC",
+  "description": "Dashboard deportivo de Los Bigotes F.C.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0E222E",
+  "theme_color": "#0E222E",
+  "icons": [
+    {
+      "src": "escudo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
