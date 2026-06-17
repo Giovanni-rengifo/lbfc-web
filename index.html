@@ -89,17 +89,27 @@ h1 {
   background: var(--color-primary);
   border-bottom: 1px solid var(--line);
 }
-.nav-outer::after {
+.nav-outer::before, .nav-outer::after {
   content: '';
   position: absolute;
-  right: 0;
   top: 0;
   bottom: 0;
   width: 3rem;
-  background: linear-gradient(90deg, transparent, var(--color-primary) 85%);
   pointer-events: none;
   transition: opacity .25s;
+  z-index: 1;
 }
+.nav-outer::before {
+  left: 0;
+  background: linear-gradient(270deg, transparent, var(--color-primary) 85%);
+  opacity: 0;
+}
+.nav-outer::after {
+  right: 0;
+  background: linear-gradient(90deg, transparent, var(--color-primary) 85%);
+}
+.nav-outer.nav-al-inicio::before { opacity: 0; }
+.nav-outer:not(.nav-al-inicio)::before { opacity: 1; }
 .nav-outer.nav-al-final::after { opacity: 0; }
 nav {
   display: flex;
@@ -2410,6 +2420,7 @@ function irAVista(v) {
 const navEl = document.getElementById("nav");
 const navOuter = navEl.parentElement;
 function actualizarGradiente() {
+  navOuter.classList.toggle("nav-al-inicio", navEl.scrollLeft <= 4);
   navOuter.classList.toggle("nav-al-final",
     navEl.scrollLeft + navEl.clientWidth >= navEl.scrollWidth - 52);
 }
@@ -2422,9 +2433,10 @@ navEl.addEventListener("click", e => {
   document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t === btn));
   document.querySelectorAll(".view").forEach(v =>
     v.classList.toggle("active", v.id === "view-" + btn.dataset.view));
-  btn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+  // Centrar el tab activo en el nav
+  const destino = btn.offsetLeft - navEl.clientWidth / 2 + btn.offsetWidth / 2;
+  navEl.scrollTo({ left: destino, behavior: "smooth" });
   window.scrollTo({ top: 0 });
-  actualizarGradiente();
 });
 
 function renderTodo() {
