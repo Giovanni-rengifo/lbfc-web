@@ -4,8 +4,8 @@
   "description": "Dashboard deportivo de Los Bigotes F.C.",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#0E222E",
-  "theme_color": "#0E222E",
+  "background_color": "#1B3A4B",
+  "theme_color": "#1B3A4B",
   "icons": [
     {
       "src": "icon-192.png",
