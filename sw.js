@@ -1,7 +1,7 @@
-const CACHE = 'lbfc-v1';
+const CACHE = 'lbfc-v2';
 
 // Precache al instalar
-const PRECACHE = ['./', 'index.html', 'escudo.png', 'manifest.json'];
+const PRECACHE = ['./', 'index.html', 'icon-192.png', 'icon-512.png', 'manifest.json'];
 
 // CDN externos: cache-first (URLs versionadas, nunca cambian)
 const CDN_HOSTS = ['cdn.sheetjs.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];
