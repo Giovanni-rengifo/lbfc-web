@@ -1,13 +1,12 @@
-const CACHE = 'lbfc-v3';
+const CACHE = 'lbfc-v4';
 
-// Precache al instalar
-const PRECACHE = ['./', 'index.html', 'icon-192.png', 'icon-512.png', 'manifest.json'];
-
-// CDN externos: cache-first (URLs versionadas, nunca cambian)
+// CDN externos versionados: cache-first (nunca cambian)
 const CDN_HOSTS = ['cdn.sheetjs.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];
 
-// datos.xlsx siempre se pide con ?v=timestamp — guardar sin el query
-// para que el fallback offline lo encuentre aunque el timestamp cambie
+// Solo recursos estáticos que no cambian entre deploys
+const PRECACHE = ['icon-192.png', 'icon-512.png', 'manifest.json'];
+
+// datos.xlsx se pide con ?v=timestamp; guardar sin query para fallback offline
 function normalizarClave(url) {
   const u = new URL(url);
   if (/\.xlsx$/i.test(u.pathname)) u.search = '';
@@ -24,11 +23,19 @@ self.addEventListener('install', e => {
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(
-        keys.filter(k => k !== CACHE).map(k => caches.delete(k))
-      ))
-      .then(() => self.clients.claim())
+    caches.keys().then(keys => {
+      // Detectar si había una versión anterior instalada (= esto es un update, no primer install)
+      const esActualizacion = keys.some(k => k.startsWith('lbfc-') && k !== CACHE);
+      return Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+        .then(() => self.clients.claim())
+        .then(() => {
+          if (!esActualizacion) return;
+          // Notificar a todos los tabs abiertos para que recarguen con la versión nueva
+          return self.clients.matchAll({ type: 'window' }).then(clientes => {
+            clientes.forEach(c => c.postMessage({ type: 'SW_ACTUALIZADO' }));
+          });
+        });
+    })
   );
 });
 
@@ -37,9 +44,11 @@ self.addEventListener('fetch', e => {
 
   const url = e.request.url;
   const esCdn = CDN_HOSTS.some(h => url.includes(h));
+  const pathname = new URL(url).pathname;
+  const esHTML = /\.html?$/i.test(pathname) || pathname.endsWith('/') || pathname === '';
 
   if (esCdn) {
-    // Cache-first: el CDN es versionado y no cambia
+    // Cache-first: CDN versionado, no cambia nunca
     e.respondWith(
       caches.match(e.request).then(hit => hit ||
         fetch(e.request).then(res => {
@@ -48,9 +57,12 @@ self.addEventListener('fetch', e => {
         })
       )
     );
+  } else if (esHTML) {
+    // HTML nunca se cachea: siempre se pide a la red, sin fallback a caché
+    // Garantiza que todos los usuarios siempre reciban la versión más reciente
+    e.respondWith(fetch(e.request));
   } else {
-    // Network-first: siempre intenta la red (versión más nueva),
-    // solo cae al caché si no hay conexión
+    // Otros assets propios (xlsx, png, etc.): network-first con fallback offline
     const clave = normalizarClave(url);
     e.respondWith(
       fetch(e.request)
