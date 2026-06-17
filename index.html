@@ -1183,136 +1183,10 @@ details[open] > .info-body > div { padding-bottom: .5rem; }
     <div id="lista-partidos"></div>
   </section>
 
-  <!-- Vista: Información -->
+  <!-- Vista: Información (contenido desde info.json) -->
   <section class="view" id="view-informacion">
     <p class="info-guia-titulo">Guía de la aplicación</p>
-
-    <details class="info-bloque">
-      <summary class="info-titulo">Alineación</summary>
-      <div class="info-body"><div>
-
-        <div class="info-item">
-          <div class="info-demo">
-            <div class="info-avatar rojo cap" style="position:relative">
-              CM
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="info-crown-mini" aria-hidden="true">
-                <path fill="#C9A84C" d="M384,167L256,51.1L128,167L0,98.6v274.5h512V98.6L384,167z"/>
-                <rect fill="#C9A84C" y="411.8" width="512" height="49.1"/>
-              </svg>
-            </div>
-          </div>
-          <div class="info-texto">
-            <strong>Capitán</strong>
-            <p>Lleva una corona dorada y borde dorado en su chip. Es el capitán del equipo para ese partido.</p>
-          </div>
-        </div>
-
-        <div class="info-item">
-          <div class="info-demo">
-            <div class="info-avatar gk">GK</div>
-          </div>
-          <div class="info-texto">
-            <strong>Portero</strong>
-            <p>Chip con fondo verde. Siempre aparece en la portería del equipo.</p>
-          </div>
-        </div>
-
-        <div class="info-item">
-          <div class="info-demo">
-            <div class="info-avatar rojo">R</div>
-            <div class="info-avatar azul">A</div>
-          </div>
-          <div class="info-texto">
-            <strong>Equipos Rojo y Azul</strong>
-            <p>Los colores rotan cada partido. No son equipos fijos — se asignan en la convocatoria.</p>
-          </div>
-        </div>
-
-        <div class="info-item" style="border-bottom:none">
-          <div class="info-demo">
-            <div class="info-avatar azul ghost">AU</div>
-          </div>
-          <div class="info-texto">
-            <strong>Jugador ausente</strong>
-            <p>Aparece en la cancha en escala de grises y con opacidad baja. Fue convocado pero no asistió al partido.</p>
-          </div>
-        </div>
-
-      </div></div>
-    </details>
-
-    <details class="info-bloque">
-      <summary class="info-titulo">Convocatoria</summary>
-      <div class="info-body"><div>
-
-        <div class="info-item">
-          <div class="info-demo">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="var(--color-gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-          </div>
-          <div class="info-texto">
-            <strong>Reinicio semanal</strong>
-            <p>La convocatoria muestra solo el próximo partido del domingo. El lunes se reinicia y queda en espera hasta la nueva publicación.</p>
-          </div>
-        </div>
-
-        <div class="info-item" style="border-bottom:none">
-          <div class="info-demo">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--text-dim)" stroke-width="1.8" stroke-linecap="round">
-              <path d="M5 22h14M5 2h14M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/>
-            </svg>
-          </div>
-          <div class="info-texto">
-            <strong>Lista de espera</strong>
-            <p>Jugadores en reserva por si algún convocado no puede asistir. Se activan según disponibilidad.</p>
-          </div>
-        </div>
-
-      </div></div>
-    </details>
-
-    <details class="info-bloque">
-      <summary class="info-titulo">Estadísticas</summary>
-      <div class="info-body"><div>
-
-        <div class="info-item">
-          <div class="info-demo">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="var(--color-gold)">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-          </div>
-          <div class="info-texto">
-            <strong>Poder Ofensivo</strong>
-            <p>Puntaje acumulado que combina goles, asistencias y actuaciones MVP. Crece partido a partido — no es un promedio.</p>
-          </div>
-        </div>
-
-        <div class="info-item" style="border-bottom:none">
-          <div class="info-demo">
-            <span style="font-family:var(--font-title);font-size:.82rem;font-weight:700;color:var(--color-gold);letter-spacing:.05em">MVP</span>
-          </div>
-          <div class="info-texto">
-            <strong>MVP del partido</strong>
-            <p>Jugador más valioso del partido según el registro de alineaciones. Suma puntos al Poder Ofensivo.</p>
-          </div>
-        </div>
-
-      </div></div>
-    </details>
-
-    <details class="info-bloque">
-      <summary class="info-titulo">El Club</summary>
-      <div class="info-body"><div>
-
-        <div class="info-item" style="border-bottom:none">
-          <div class="info-texto">
-            <p><strong style="color:var(--color-parchment);font-family:var(--font-title);letter-spacing:.04em">Los Bigotes F.C.</strong> — Club amateur fundado en 2009. Los partidos se juegan los domingos de <strong>6:00 a 8:00 am</strong>. Esta aplicación es de solo lectura: muestra estadísticas, convocatorias y alineaciones del club.</p>
-          </div>
-        </div>
-
-      </div></div>
-    </details>
+    <div id="info-content"></div>
   </section>
 </main>
 
@@ -2508,11 +2382,57 @@ navEl.addEventListener("click", e => {
   }, { passive: true });
 })();
 
+/* ============================================================
+   INFORMACIÓN — íconos y render desde info.json
+   ============================================================ */
+const ICONOS = {
+  corona:     `<div class="info-avatar rojo cap" style="position:relative">CM<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="info-crown-mini" aria-hidden="true"><path fill="#C9A84C" d="M384,167L256,51.1L128,167L0,98.6v274.5h512V98.6L384,167z"/><rect fill="#C9A84C" y="411.8" width="512" height="49.1"/></svg></div>`,
+  portero:    `<div class="info-avatar gk">GK</div>`,
+  equipos:    `<div class="info-avatar rojo">R</div><div class="info-avatar azul">A</div>`,
+  ausente:    `<div class="info-avatar azul ghost">AU</div>`,
+  calendario: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="var(--color-gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+  espera:     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--text-dim)" stroke-width="1.8" stroke-linecap="round"><path d="M5 22h14M5 2h14M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg>`,
+  estrella:   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="var(--color-gold)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
+  mvp:        `<span style="font-family:var(--font-title);font-size:.82rem;font-weight:700;color:var(--color-gold);letter-spacing:.05em">MVP</span>`,
+  balon:      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 929 929" width="28" height="28" fill="var(--color-parchment)"><path d="M361,579c4,12,15,21,29,21h149c13,0,24-8,29-21l56-142c4-12-1-26-11-33l-120-88c-11-8-25-8-35,0l-121,88c-10,8-15,21-11,33L361,579z"/><path d="M136,793c43,43,92,76,148,99c57,24,118,37,181,37s123-12,181-37c55-23,105-57,148-99c43-43,76-92,99-148c24-57,37-118,37-181s-12-124-37-181C869,228,836,179,793,136c-43-43-92-76-148-99C588,13,527,0,464,0S341,13,284,37C229,60,179,93,136,136c-43,43-76,92-100,148C13,341,0,402,0,464s13,124,37,181C60,700,93,750,136,793z"/></svg>`,
+  escudo:     `<img src="escudo.png" style="width:32px;height:32px;object-fit:contain" onerror="this.style.display='none'">`,
+};
+
+async function renderInformacion() {
+  const contenedor = document.getElementById("info-content");
+  if (!contenedor || contenedor.dataset.cargado) return;
+  try {
+    const res = await fetch("info.json?v=" + Date.now());
+    const secciones = await res.json();
+    contenedor.innerHTML = secciones.map(sec => {
+      const items = sec.items.map((item, j) => {
+        const ultimo = j === sec.items.length - 1;
+        const ico = item.icono ? ICONOS[item.icono] : "";
+        return `<div class="info-item"${ultimo ? ' style="border-bottom:none"' : ""}>
+          ${ico ? `<div class="info-demo">${ico}</div>` : ""}
+          <div class="info-texto"${!ico ? ' style="width:100%"' : ""}>
+            ${item.label ? `<strong>${item.label}</strong>` : ""}
+            <p>${item.texto}</p>
+          </div>
+        </div>`;
+      }).join("");
+      return `<details class="info-bloque">
+        <summary class="info-titulo">${sec.titulo}</summary>
+        <div class="info-body"><div>${items}</div></div>
+      </details>`;
+    }).join("");
+    contenedor.dataset.cargado = "1";
+  } catch(e) {
+    contenedor.innerHTML = `<p class="empty-msg">No se pudo cargar la guía.</p>`;
+  }
+}
+
 function renderTodo() {
   renderConvocatoria();
   renderAlineacion();
   renderEstadisticas();
   renderPartidos();
+  renderInformacion();
 }
 
 /* ============================================================

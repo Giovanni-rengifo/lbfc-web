@@ -1,0 +1,66 @@
+[
+  {
+    "titulo": "Alineación",
+    "items": [
+      {
+        "icono": "corona",
+        "label": "Capitán",
+        "texto": "Lleva una corona dorada y borde dorado en su chip. Es el capitán del equipo para ese partido."
+      },
+      {
+        "icono": "portero",
+        "label": "Portero",
+        "texto": "Chip con fondo verde. Siempre aparece en la portería del equipo."
+      },
+      {
+        "icono": "equipos",
+        "label": "Equipos Rojo y Azul",
+        "texto": "Los colores rotan cada partido. No son equipos fijos — se asignan en la convocatoria."
+      },
+      {
+        "icono": "ausente",
+        "label": "Jugador ausente",
+        "texto": "Aparece en la cancha en escala de grises y con opacidad baja. Fue convocado pero no asistió al partido."
+      }
+    ]
+  },
+  {
+    "titulo": "Convocatoria",
+    "items": [
+      {
+        "icono": "calendario",
+        "label": "Reinicio semanal",
+        "texto": "La convocatoria muestra solo el próximo partido del domingo. El lunes se reinicia y queda en espera hasta la nueva publicación."
+      },
+      {
+        "icono": "espera",
+        "label": "Lista de espera",
+        "texto": "Jugadores en reserva por si algún convocado no puede asistir. Se activan según disponibilidad."
+      }
+    ]
+  },
+  {
+    "titulo": "Estadísticas",
+    "items": [
+      {
+        "icono": "estrella",
+        "label": "Poder Ofensivo",
+        "texto": "Puntaje acumulado que combina goles, asistencias y actuaciones MVP. Crece partido a partido — no es un promedio."
+      },
+      {
+        "icono": "mvp",
+        "label": "MVP del partido",
+        "texto": "Jugador más valioso del partido según el registro de alineaciones. Suma puntos al Poder Ofensivo."
+      }
+    ]
+  },
+  {
+    "titulo": "El Club",
+    "items": [
+      {
+        "icono": "escudo",
+        "texto": "<strong>Los Bigotes F.C.</strong> — Club amateur fundado en 2009. Los partidos se juegan los domingos de <strong>6:00 a 8:00 am</strong>. Esta aplicación es de solo lectura: muestra estadísticas, convocatorias y alineaciones del club."
+      }
+    ]
+  }
+]

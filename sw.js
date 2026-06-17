@@ -4,7 +4,7 @@ const CACHE = 'lbfc-v5';
 const CDN_HOSTS = ['cdn.sheetjs.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];
 
 // Solo recursos estáticos que no cambian entre deploys
-const PRECACHE = ['icon-192.png', 'icon-512.png', 'manifest.json'];
+const PRECACHE = ['icon-192.png', 'icon-512.png', 'manifest.json', 'info.json'];
 
 // datos.xlsx se pide con ?v=timestamp; guardar sin query para fallback offline
 function normalizarClave(url) {
