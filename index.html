@@ -584,6 +584,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
 .pp-tag.dif { background: var(--color-parchment); }
 .pp-stats { display: flex; gap: 2px; justify-content: center; flex-wrap: wrap; margin-top: .1rem; }
 .stat-ico { width: 14px; height: 14px; display: inline-block; flex: 0 0 14px; vertical-align: middle; }
+.stat-ico.gol { width: 10px; height: 10px; flex: 0 0 10px; }
 .cap-corona-svg {
   position: absolute;
   top: -16px;
@@ -1755,7 +1756,7 @@ function nombreDosLineas(id) {
   return `<span class="n-nombre">${partes[0]}</span><span class="n-ape">${partes[partes.length - 1]}</span>`;
 }
 
-const SVG_GOL = '<img class="stat-ico" src="ball-white.svg" alt="Gol">';
+const SVG_GOL = '<img class="stat-ico gol" src="ball-black.svg" alt="Gol">';
 const SVG_ASI = '<img class="stat-ico" src="boot-gold.svg" alt="Asistencia">';
 
 function golesEnPartido(id, partidoId) {
