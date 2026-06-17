@@ -1,26 +1,16 @@
 [
   {
-    "titulo": "Alineación",
+    "titulo": "Cómo navegar",
     "items": [
       {
-        "icono": "corona",
-        "label": "Capitán",
-        "texto": "Lleva una corona dorada y borde dorado en su chip. Es el capitán del equipo para ese partido."
+        "icono": "swipe",
+        "label": "Deslizar entre secciones",
+        "texto": "Desliza horizontalmente en cualquier parte de la pantalla para moverte entre pestañas, como si pasaras páginas."
       },
       {
-        "icono": "portero",
-        "label": "Portero",
-        "texto": "Chip con fondo verde. Siempre aparece en la portería del equipo."
-      },
-      {
-        "icono": "equipos",
-        "label": "Equipos Rojo y Azul",
-        "texto": "Los colores rotan cada partido. No son equipos fijos — se asignan en la convocatoria."
-      },
-      {
-        "icono": "ausente",
-        "label": "Jugador ausente",
-        "texto": "Aparece en la cancha en escala de grises y con opacidad baja. Fue convocado pero no asistió al partido."
+        "icono": "pestanas",
+        "label": "Pestañas del menú",
+        "texto": "Toca cualquier pestaña del menú superior para ir directamente a esa sección. La activa se resalta en dorado. Desliza el menú si no ves todas las pestañas."
       }
     ]
   },
@@ -30,12 +20,47 @@
       {
         "icono": "calendario",
         "label": "Reinicio semanal",
-        "texto": "La convocatoria muestra solo el próximo partido del domingo. El lunes se reinicia y queda en espera hasta la nueva publicación."
+        "texto": "La convocatoria muestra solo el próximo partido del domingo. El lunes siguiente se reinicia automáticamente y queda en espera hasta la nueva publicación."
       },
       {
         "icono": "espera",
         "label": "Lista de espera",
-        "texto": "Jugadores en reserva por si algún convocado no puede asistir. Se activan según disponibilidad."
+        "texto": "Jugadores en reserva por si algún convocado no puede asistir. Se activan según disponibilidad el día del partido."
+      },
+      {
+        "icono": "cerrada",
+        "label": "Convocatoria cerrada",
+        "texto": "Cuando todos los convocados ya fueron asignados a equipo y alineación, la convocatoria se cierra. En ese caso, ve a la pestaña Alineación para ver los equipos."
+      }
+    ]
+  },
+  {
+    "titulo": "Alineación",
+    "items": [
+      {
+        "icono": "corona",
+        "label": "Capitán",
+        "texto": "Lleva una corona dorada y borde dorado en su chip. El capitán es designado para ese partido específico."
+      },
+      {
+        "icono": "portero",
+        "label": "Portero",
+        "texto": "Chip con fondo verde. Siempre aparece en la portería de su equipo en el esquema de la cancha."
+      },
+      {
+        "icono": "equipos",
+        "label": "Equipos Rojo y Azul",
+        "texto": "Los colores se asignan cada partido y rotan. No son equipos fijos — cambian con cada convocatoria."
+      },
+      {
+        "icono": "ausente",
+        "label": "Jugador ausente",
+        "texto": "Aparece en la cancha en escala de grises y con opacidad baja. Fue convocado para ese partido pero no asistió."
+      },
+      {
+        "icono": "marcador",
+        "label": "Marcador",
+        "texto": "El resultado siempre se muestra en orden Rojo — Azul, sin importar quién gane. Así es más fácil comparar entre partidos."
       }
     ]
   },
@@ -45,12 +70,42 @@
       {
         "icono": "estrella",
         "label": "Poder Ofensivo",
-        "texto": "Puntaje acumulado que combina goles, asistencias y actuaciones MVP. Crece partido a partido — no es un promedio."
+        "texto": "Puntaje acumulado durante la temporada. Combina goles, asistencias y actuaciones MVP ponderadas. Crece partido a partido — no es un promedio, así que la constancia manda."
       },
       {
         "icono": "mvp",
         "label": "MVP del partido",
-        "texto": "Jugador más valioso del partido según el registro de alineaciones. Suma puntos al Poder Ofensivo."
+        "texto": "Jugador más valioso de cada partido según el registro de alineaciones. Suma puntos adicionales al Poder Ofensivo."
+      },
+      {
+        "icono": "balon",
+        "label": "Goles",
+        "texto": "Total de goles anotados en la temporada. Los autogoles no cuentan para el marcador personal del jugador."
+      },
+      {
+        "icono": "asistencia",
+        "label": "Asistencias",
+        "texto": "Pases directos que generaron un gol. Se registran junto al goleador en el historial de cada partido."
+      },
+      {
+        "icono": "jugador",
+        "label": "Partidos jugados",
+        "texto": "Número de partidos en los que el jugador apareció en la alineación, haya asistido o no. La constancia también cuenta."
+      }
+    ]
+  },
+  {
+    "titulo": "Partidos",
+    "items": [
+      {
+        "icono": "historial",
+        "label": "Historial",
+        "texto": "Registro cronológico de todos los partidos de la temporada actual, con marcador, goles y asistencias de cada encuentro."
+      },
+      {
+        "icono": "autogol",
+        "label": "Autogol",
+        "texto": "Se muestra con la sigla (AG) junto al nombre del jugador. Suma al marcador del equipo contrario pero no cuenta como gol personal."
       }
     ]
   },

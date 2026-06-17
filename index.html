@@ -2386,6 +2386,7 @@ navEl.addEventListener("click", e => {
    INFORMACIÓN — íconos y render desde info.json
    ============================================================ */
 const ICONOS = {
+  /* ── íconos existentes ── */
   corona:     `<div class="info-avatar rojo cap" style="position:relative">CM<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="info-crown-mini" aria-hidden="true"><path fill="#C9A84C" d="M384,167L256,51.1L128,167L0,98.6v274.5h512V98.6L384,167z"/><rect fill="#C9A84C" y="411.8" width="512" height="49.1"/></svg></div>`,
   portero:    `<div class="info-avatar gk">GK</div>`,
   equipos:    `<div class="info-avatar rojo">R</div><div class="info-avatar azul">A</div>`,
@@ -2396,6 +2397,15 @@ const ICONOS = {
   mvp:        `<span style="font-family:var(--font-title);font-size:.82rem;font-weight:700;color:var(--color-gold);letter-spacing:.05em">MVP</span>`,
   balon:      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 929 929" width="28" height="28" fill="var(--color-parchment)"><path d="M361,579c4,12,15,21,29,21h149c13,0,24-8,29-21l56-142c4-12-1-26-11-33l-120-88c-11-8-25-8-35,0l-121,88c-10,8-15,21-11,33L361,579z"/><path d="M136,793c43,43,92,76,148,99c57,24,118,37,181,37s123-12,181-37c55-23,105-57,148-99c43-43,76-92,99-148c24-57,37-118,37-181s-12-124-37-181C869,228,836,179,793,136c-43-43-92-76-148-99C588,13,527,0,464,0S341,13,284,37C229,60,179,93,136,136c-43,43-76,92-100,148C13,341,0,402,0,464s13,124,37,181C60,700,93,750,136,793z"/></svg>`,
   escudo:     `<img src="escudo.png" style="width:32px;height:32px;object-fit:contain" onerror="this.style.display='none'">`,
+  /* ── íconos nuevos ── */
+  swipe:      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="var(--color-gold)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 3 12 9 18"/><polyline points="15 6 21 12 15 18"/></svg>`,
+  pestanas:   `<div style="display:flex;flex-direction:column;gap:5px"><div style="display:flex;gap:3px">${['var(--color-gold)','var(--text-dim)','var(--text-dim)'].map(c=>`<div style="width:16px;height:5px;border-radius:2px;background:${c};opacity:${c.includes('dim')?'.35':'1'}"></div>`).join('')}</div><div style="width:48px;height:2px;border-radius:1px;background:var(--text-dim);opacity:.2"></div></div>`,
+  marcador:   `<div style="display:flex;align-items:center;gap:3px"><span class="info-avatar rojo" style="width:22px;height:22px;font-size:.6rem;flex-shrink:0">R</span><span style="color:var(--text-dim);font-weight:700;font-size:.75rem">—</span><span class="info-avatar azul" style="width:22px;height:22px;font-size:.6rem;flex-shrink:0">A</span></div>`,
+  asistencia: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--color-parchment)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17c2-5 5-6 9-5h5"/><polyline points="13 8 17 12 13 16"/></svg>`,
+  jugador:    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--text-dim)" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21c0-3.59 2.91-6.5 6.5-6.5s6.5 2.91 6.5 6.5"/></svg>`,
+  historial:  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--text-dim)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/></svg>`,
+  autogol:    `<span style="font-family:var(--font-title);font-size:.68rem;font-weight:700;color:var(--text-dim);letter-spacing:.04em;padding:3px 6px;border:1.5px solid var(--text-dim);border-radius:4px;opacity:.7">AG</span>`,
+  cerrada:    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--text-dim)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="11" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`,
 };
 
 async function renderInformacion() {
