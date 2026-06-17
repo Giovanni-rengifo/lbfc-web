@@ -583,19 +583,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; }
 }
 .pp-tag.dif { background: var(--color-parchment); }
 .pp-stats { display: flex; gap: 2px; justify-content: center; flex-wrap: wrap; margin-top: .1rem; }
-.stat-ico {
-  font-family: var(--font-title);
-  font-size: .5rem;
-  font-weight: 700;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--color-primary);
-  padding: 0 .28rem;
-  border-radius: 2px;
-  line-height: 1.5;
-}
-.stat-ico.gol { background: var(--color-gold); }
-.stat-ico.asi { background: var(--color-parchment); }
+.stat-ico { width: 14px; height: 14px; display: inline-block; flex: 0 0 14px; vertical-align: middle; }
 .cap-corona-svg {
   position: absolute;
   top: -16px;
@@ -1767,8 +1755,9 @@ function nombreDosLineas(id) {
   return `<span class="n-nombre">${partes[0]}</span><span class="n-ape">${partes[partes.length - 1]}</span>`;
 }
 
-const SVG_GOL = '<span class="stat-ico gol">G</span>';
-const SVG_ASI = '<span class="stat-ico asi">A</span>';
+// pelota blanca con pentágono — bota dorada; ambos legibles sobre rojo y azul
+const SVG_GOL = `<svg class="stat-ico" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" aria-label="Gol"><circle cx="6" cy="6" r="5.8" fill="white"/><polygon points="6,2 8.8,4.5 7.7,7.8 4.3,7.8 3.2,4.5" fill="#1B3A4B"/></svg>`;
+const SVG_ASI = `<svg class="stat-ico" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" aria-label="Asistencia"><path d="M1.5,1 L1.5,7 L1,8.5 L3,9.5 L10,9.5 L11.5,7.5 L10.5,5.5 L3.5,5.5 L3.5,1 Z" fill="#C9A84C"/></svg>`;
 
 function golesEnPartido(id, partidoId) {
   return MOCK_DATA.eventos.filter(e => e.ID_Partido === partidoId && e.Goleador === id && !esAutogol(e)).length;
