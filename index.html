@@ -920,7 +920,13 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
 .pb-fill.pb-win   { background: var(--color-gold); }
 .pb-fill.pb-loss  { background: var(--color-secondary); opacity: .9; }
 .pb-val { font-size: .84rem; font-weight: 700; font-variant-numeric: tabular-nums; min-width: 1.6rem; text-align: right; color: var(--color-text-light); }
-.profile-note { text-align: center; margin-top: .9rem; font-style: italic; color: var(--text-dim); font-size: .86rem; }
+/* Gestos Técnicos — perfil y top 10 */
+.perfil-gestos { margin-top: 1rem; }
+.gesto-grupo { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; margin-top: .45rem; }
+.gesto-tipo-lbl { font-size: .72rem; font-weight: 700; color: var(--color-text-light); font-family: var(--font-title); min-width: 4.5rem; text-transform: uppercase; letter-spacing: .03em; }
+.gesto-tag { font-size: .74rem; background: rgba(180,140,60,.12); border: 1px solid rgba(180,140,60,.28); border-radius: 999px; padding: .13rem .52rem; color: var(--color-parchment); font-family: var(--font-body); }
+.pod-sub  { font-size: .68rem; color: var(--text-dim); font-style: italic; margin-top: .15rem; text-align: center; line-height: 1.3; }
+.sr-sub   { font-size: .7rem;  color: var(--text-dim); font-style: italic; margin-top: .05rem; line-height: 1.3; }
 
 /* Pilares del jugador (perfil) */
 .pilares { margin-top: 1.1rem; }
@@ -1674,6 +1680,8 @@ const PESOS_TIPO_PASE = {
   "tiro libre": 2, "esquina": 2, "tiro de esquina": 2,
   "porteria": 3
 };
+const LABEL_GOL  = { "jugada":"Jugada","gol":"Gol","penal":"Penal","cabeza":"Cabeza","tiro libre":"Tiro libre","fuera del area":"Fuera del área","olimpico":"Olímpico","chilena":"Chilena","autogol":"Autogol" };
+const LABEL_PASE = { "normal":"Normal","asistencia":"Normal","tiro libre":"Tiro libre","esquina":"Esquina","tiro de esquina":"Tiro de esquina","porteria":"Portería" };
 const COL = { victoria: 3, empate: 2, derrota: 1 };
 const BONUS = { gv: 2, pgv: 2, gvCol: 2, mvp: 2 };
 const FP_PESOS = { "Temprano": 100, "Tiempo": 85, "Tarde": 75, "No": 0, "Sancionado": 0 };
@@ -2156,9 +2164,14 @@ initAutocomplete("ali-player");
 
 // ---- Vista 3: Estadísticas (TOP 10 por categoría) ----
 const CATEGORIAS = {
-  gestos:      { titulo: "Gesto Técnico",   unidad: "pts",        acc: "#b87333",
-                 desc: "Calidad técnica de goles y asistencias · ponderado por tipo",
-                 inverso: false, calc: gestosScore, fmt: v => String(v) },
+  gestosGol:  { titulo: "Gesto Técnico · Gol",  unidad: "pts", acc: "#b87333",
+                desc: "Tipo de gol: Chilena ×3 · TL/Olímpico ×2 · Cabeza ×1.5 · Jugada ×1",
+                inverso: false, calc: gestosGolScore, fmt: v => String(v),
+                sub: id => gestosDetalle(id, "gol") },
+  gestosPase: { titulo: "Gesto Técnico · Pase", unidad: "pts", acc: "#7a6540",
+                desc: "Tipo de pase de gol: Portería ×3 · TL/Esquina ×2 · Normal ×1",
+                inverso: false, calc: gestosPaseScore, fmt: v => String(v),
+                sub: id => gestosDetalle(id, "pase") },
   goleadores:  { titulo: "Goleadores",      unidad: "goles",      acc: "var(--color-gold)",
                  desc: "Total de goles anotados en la temporada",
                  inverso: false, calc: id => statsJugador(id).goles,      fmt: v => String(v) },
@@ -2184,7 +2197,11 @@ function datosCategoria(key) {
     .filter(d => d.valor != null && d.valor > 0)
     .sort((a, b) => b.valor - a.valor)
     .slice(0, 10)
-    .map(d => ({ id: d.id, valor: d.valor, texto: c.fmt ? c.fmt(d.valor) : String(d.valor) }));
+    .map(d => ({
+      id: d.id, valor: d.valor,
+      texto: c.fmt ? c.fmt(d.valor) : String(d.valor),
+      sub: c.sub ? c.sub(d.id) : null
+    }));
 }
 
 // Largo de barra proporcional al desempeño (en inverso, el mejor llena más)
@@ -2255,6 +2272,7 @@ function renderEstadisticas() {
           ${avatarHTML(d.id)}
           <div class="pod-name">${nombreDosLineas(d.id)}</div>
           <div class="pod-val">${d.texto}</div>
+          ${d.sub ? `<div class="pod-sub">${d.sub}</div>` : ""}
           <div class="pod-base">${puesto}°</div>
         </div>`;
       }).join("")}
@@ -2265,6 +2283,7 @@ function renderEstadisticas() {
           <div class="rank-num">${i + 4}</div>
           <div class="sr-mid">
             <div class="sr-name">${nombre(d.id)}</div>
+            ${d.sub ? `<div class="sr-sub">${d.sub}</div>` : ""}
             <div class="sr-bar"><div class="sr-fill" style="width:${barraPct(d.valor, datos, c.inverso)}%"></div></div>
           </div>
           <div class="sr-val">${d.texto}</div>
@@ -2407,12 +2426,18 @@ function abrirPerfil(id) {
     </div>
     ${(() => {
       const { goles, asists } = gestosJugador(id);
-      const partes = [];
-      const entradasG = Object.entries(goles).filter(([,n]) => n > 0);
-      if (entradasG.length) partes.push("Goles: " + entradasG.map(([t,n]) => n > 1 ? `${t} ×${n}` : t).join(", "));
-      const entradasA = Object.entries(asists).filter(([,n]) => n > 0);
-      if (entradasA.length) partes.push("Asistencias: " + entradasA.map(([t,n]) => n > 1 ? `${t} ×${n}` : t).join(", "));
-      return partes.length ? `<p class="profile-note">${partes.join(" &nbsp;·&nbsp; ")}</p>` : "";
+      const entradasG = Object.entries(goles).filter(([, n]) => n > 0);
+      const entradasA = Object.entries(asists).filter(([, n]) => n > 0);
+      if (!entradasG.length && !entradasA.length) return "";
+      const tags = (entradas) => entradas
+        .map(([t, n]) => `<span class="gesto-tag">${t}${n > 1 ? ` ×${n}` : ""}</span>`)
+        .join("");
+      return `
+        <div class="perfil-gestos">
+          <div class="pilares-title">Gestos Técnicos</div>
+          ${entradasG.length ? `<div class="gesto-grupo"><span class="gesto-tipo-lbl">Goles</span>${tags(entradasG)}</div>` : ""}
+          ${entradasA.length ? `<div class="gesto-grupo"><span class="gesto-tipo-lbl">Pases</span>${tags(entradasA)}</div>` : ""}
+        </div>`;
     })()}
   `;
   document.getElementById("modalOverlay").classList.add("open");
@@ -2615,26 +2640,41 @@ function gestosJugador(id) {
   const goles = {}, asists = {};
   MOCK_DATA.eventos.forEach(e => {
     if (e.Goleador === id && !esAutogol(e)) {
-      const t = e.Tipo_Gol || "Gol";
-      goles[t] = (goles[t] || 0) + 1;
+      const key = normalizar(e.Tipo_Gol || "gol");
+      const lbl = LABEL_GOL[key] || (e.Tipo_Gol || "Gol");
+      goles[lbl] = (goles[lbl] || 0) + 1;
     }
     if (e.Asistente === id) {
-      const raw = e.Tipo_Pase || "Normal";
-      const t = normalizar(raw) === "asistencia" ? "Normal" : raw;
-      asists[t] = (asists[t] || 0) + 1;
+      const key = normalizar(e.Tipo_Pase || "normal");
+      const lbl = LABEL_PASE[key] || (e.Tipo_Pase || "Normal");
+      asists[lbl] = (asists[lbl] || 0) + 1;
     }
   });
   return { goles, asists };
 }
-function gestosScore(id) {
+function gestosGolScore(id) {
   let pts = 0;
   MOCK_DATA.eventos.forEach(e => {
     if (e.Goleador === id && !esAutogol(e))
       pts += PESOS_TIPO_GOL[normalizar(e.Tipo_Gol)] ?? 1;
+  });
+  return Math.round(pts * 10) / 10;
+}
+function gestosPaseScore(id) {
+  let pts = 0;
+  MOCK_DATA.eventos.forEach(e => {
     if (e.Asistente === id)
       pts += PESOS_TIPO_PASE[normalizar(e.Tipo_Pase || "normal")] ?? 1;
   });
   return Math.round(pts * 10) / 10;
+}
+function gestosDetalle(id, tipo) {
+  const { goles, asists } = gestosJugador(id);
+  const mapa = tipo === "gol" ? goles : asists;
+  return Object.entries(mapa)
+    .filter(([, n]) => n > 0)
+    .map(([t, n]) => n > 1 ? `${t} ×${n}` : t)
+    .join(" · ");
 }
 function tiempoHHMM(d) {
   return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
