@@ -2156,6 +2156,12 @@ initAutocomplete("ali-player");
 
 // ---- Vista 3: Estadísticas (TOP 10 por categoría) ----
 const CATEGORIAS = {
+  goleadores:  { titulo: "Goleadores",      unidad: "goles",      acc: "var(--color-gold)",
+                 desc: "Total de goles anotados en la temporada",
+                 inverso: false, calc: id => statsJugador(id).goles,      fmt: v => String(v) },
+  asistidores: { titulo: "Asistidores",     unidad: "asist. gol", acc: "var(--color-parchment)",
+                 desc: "Pases directos que generaron un gol en la temporada",
+                 inverso: false, calc: id => statsJugador(id).asistencias, fmt: v => String(v) },
   po: { titulo: "Poder Ofensivo",  unidad: "pts", acc: "var(--color-gold)",
         desc: "Goles, victorias y gestos técnicos · acumulado temporada",
         inverso: false, calc: poderOfensivo, fmt: v => String(v) },
