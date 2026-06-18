@@ -2603,6 +2603,20 @@ function fechaISO(d) {
   const dd = String(d.getDate()).padStart(2, "0");
   return `${d.getFullYear()}-${mm}-${dd}`;
 }
+function tiempoHHMM(d) {
+  return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+}
+function categorizarLlegada(asistencia, horaLlegada) {
+  const asNorm = normalizar(String(asistencia || ""));
+  if (asNorm.includes("no asisti")) return "No";
+  if (asNorm === "pendiente" || asNorm === "") return null;
+  const m = String(horaLlegada || "").match(/^(\d{1,2}):(\d{2})/);
+  if (!m) return "Tiempo";
+  const min = parseInt(m[1]) * 60 + parseInt(m[2]);
+  if (min <= 370) return "Temprano"; // ≤ 6:10
+  if (min <= 380) return "Tiempo";   // 6:11–6:20
+  return "Tarde";
+}
 
 // Lee datos.xlsx de la carpeta de la app y lo convierte al mismo
 // formato JSON que entregaría un Apps Script: {NombreHoja: [filas]}
@@ -2622,7 +2636,9 @@ async function leerDatosXlsx() {
       .map(fila => {
         const obj = {};
         for (const k in fila) {
-          obj[k] = fila[k] instanceof Date ? fechaISO(fila[k]) : fila[k];
+          obj[k] = fila[k] instanceof Date
+          ? (fila[k].getFullYear() <= 1900 ? tiempoHHMM(fila[k]) : fechaISO(fila[k]))
+          : fila[k];
         }
         return obj;
       });
@@ -2684,6 +2700,7 @@ function transformarDatosReales(json) {
   // Solo se aceptan IDs que existan en Jugadores (filtra filas corruptas).
   const idsValidos = new Set(MOCK_DATA.jugadores.map(j => j.ID_Jugador));
   const porFecha = {};
+  const asistenciaArr = [];
   (json.Alineaciones || []).forEach(a => {
     const f = aFechaISO(campo(a, "fecha_partido"));
     const id = String(campo(a, "id_jugador"));
@@ -2703,9 +2720,12 @@ function transformarDatosReales(json) {
     const capRaw = campo(a, "capitan");
     const esCapitan = capRaw === true || ["true", "verdadero"].includes(normalizar(String(capRaw)));
     if (esCapitan && (equipo === "Rojo" || equipo === "Azul")) porFecha[f].Capitanes[id] = true;
+    const ll = categorizarLlegada(campo(a, "asistencia"), campo(a, "hora_llegada"));
+    if (ll !== null) asistenciaArr.push({ ID_Jugador: id, ID_Partido: f, Llegada: ll });
   });
   MOCK_DATA.alineaciones = Object.entries(porFecha)
     .map(([f, d]) => ({ ID_Partido: f, Rojo: d.Rojo, Azul: d.Azul, Posiciones: d.Posiciones, Capitanes: d.Capitanes || {}, Ausentes: d.Ausentes || [] }));
+  MOCK_DATA.asistencia = asistenciaArr;
 
   // Partidos: fechas de la hoja Partidos + las vistas en Alineaciones.
   // Marcador derivado de Evento; sin resultado si la fecha es futura.
