@@ -2364,7 +2364,7 @@ function abrirPerfil(id) {
       <div class="stat-box"><div class="num">${s.goles}</div><div class="lbl">Goles</div></div>
       <div class="stat-box"><div class="num">${s.asistencias}</div><div class="lbl">Asistencias</div></div>
       <div class="stat-box"><div class="num">${s.mvps}</div><div class="lbl">MVPs</div></div>
-      <div class="stat-box"><div class="num">${s.pct}%</div><div class="lbl">Fair Play</div></div>
+      <div class="stat-box"><div class="num">${fairPlay(id)}%</div><div class="lbl">Fair Play</div></div>
     </div>
     <div class="partidos-card">
       <div class="partidos-card-title">Partidos</div>
@@ -2397,7 +2397,7 @@ function abrirPerfil(id) {
           <div class="pilar-val">${p.fmt ? p.fmt(v) : v}</div>
         </div>`;
       }).join("")}
-      <p class="pilares-note">Puntos acumulados de la temporada (máx. 10 por partido) — la constancia manda.</p>
+      <p class="pilares-note">PO · VJ · PD acumulan partido a partido. FairPlay es promedio de asistencia.</p>
     </div>
     ${s.goles > 0 ? `<p class="profile-note">Gol característico: ${s.tipoDestacado}</p>` : ""}
   `;

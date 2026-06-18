@@ -70,27 +70,37 @@
       {
         "icono": "estrella",
         "label": "Poder Ofensivo",
-        "texto": "Puntaje acumulado durante la temporada. Combina goles, asistencias y actuaciones MVP ponderadas. Crece partido a partido — no es un promedio, así que la constancia manda."
+        "texto": "Acumula puntos por goles, según el tipo (tiro libre = 2 pts, chilena = 3 pts) y un bono extra si anotaste el Gol Victoria. Todos los jugadores suman algo cada partido por el resultado colectivo (victoria +3, empate +2, derrota +1)."
+      },
+      {
+        "icono": "asistencia",
+        "label": "Visión de Juego",
+        "texto": "Acumula puntos por asistencias según el tipo de pase (portería = 3 pts, esquina o tiro libre = 2 pts, normal = 1 pt), con bono si fue el Pase Gol Victoria. Los mediocampistas del equipo ganador reciben un bono colectivo adicional."
+      },
+      {
+        "icono": "escudo",
+        "label": "Poder Defensivo",
+        "texto": "Defensas y porteros suman una calificación individual: cuántos goles concediste y en qué minuto cayó el Gol Derrota. Aguantar más tiempo antes de ceder la derrota sube tu nota. El resto de posiciones solo suma el colectivo."
+      },
+      {
+        "icono": "calendario",
+        "label": "Fair Play",
+        "texto": "Mide puntualidad y asistencia. Llegaste temprano: 100%, a tiempo: 85%, tarde: 75%, no asististe: 0%. La nota de temporada es el promedio de todos los partidos en que fuiste convocado."
       },
       {
         "icono": "mvp",
         "label": "MVP del partido",
-        "texto": "Jugador más valioso de cada partido según el registro de alineaciones. Suma puntos adicionales al Poder Ofensivo."
+        "texto": "El jugador más valioso de cada encuentro recibe +2 en los tres pilares competitivos simultáneamente: Poder Ofensivo, Visión de Juego y Poder Defensivo."
       },
       {
         "icono": "balon",
-        "label": "Goles",
-        "texto": "Total de goles anotados en la temporada. Los autogoles no cuentan para el marcador personal del jugador."
-      },
-      {
-        "icono": "asistencia",
-        "label": "Asistencias",
-        "texto": "Pases directos que generaron un gol. Se registran junto al goleador en el historial de cada partido."
+        "label": "Gol Victoria",
+        "texto": "El gol que realmente ganó el partido — no el último ni el de mayor diferencia, sino el que fijó una ventaja que el rival nunca pudo igualar. Anotarlo suma bono en PO; asistirlo suma bono en VJ."
       },
       {
         "icono": "jugador",
-        "label": "Partidos jugados",
-        "texto": "Número de partidos en los que el jugador apareció en la alineación, haya asistido o no. La constancia también cuenta."
+        "label": "Partido parcial",
+        "texto": "Si un jugador no estuvo el partido completo, sus puntos en todos los pilares quedan al 50% en ese encuentro."
       }
     ]
   },
