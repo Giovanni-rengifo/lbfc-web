@@ -1264,18 +1264,18 @@ const MOCK_DATA = {
   // SHEET 1 — Estadísticas :: tabla Alineaciones
   // Compacta: { ID_Partido, Rojo: [ids], Azul: [ids] }
   alineaciones: [
-    { ID_Partido: 1,  Rojo: [1,3,5,8,12,13,14,16,20,21,24,27],  Azul: [2,4,6,7,9,10,11,15,22,23,25,28] },
-    { ID_Partido: 2,  Rojo: [2,4,6,8,11,12,14,17,22,23,25,28],  Azul: [1,3,5,7,9,10,15,16,20,21,26,27] },
-    { ID_Partido: 3,  Rojo: [1,2,6,9,11,13,14,18,19,20,25,27],  Azul: [3,4,5,7,8,10,12,15,21,23,24,28] },
-    { ID_Partido: 4,  Rojo: [3,5,7,9,12,13,15,17,21,22,26,28],  Azul: [1,2,4,6,8,10,11,14,19,20,24,27] },
-    { ID_Partido: 5,  Rojo: [1,4,6,8,10,12,16,18,23,24,26,27],  Azul: [2,3,5,7,9,11,13,15,20,21,22,25] },
-    { ID_Partido: 6,  Rojo: [1,3,4,7,9,11,15,16,20,22,24,28],   Azul: [2,5,6,8,10,12,13,14,21,23,26,27] },
-    { ID_Partido: 7,  Rojo: [2,4,5,9,10,14,16,17,21,23,25,27],  Azul: [1,3,6,7,8,11,12,13,19,22,24,28] },
-    { ID_Partido: 8,  Rojo: [1,2,5,6,10,13,16,18,19,21,26,28],  Azul: [3,4,7,8,9,11,12,15,20,23,25,27] },
-    { ID_Partido: 9,  Rojo: [3,4,5,8,11,14,16,17,20,22,25,28],  Azul: [1,2,6,7,9,10,13,15,21,24,26,27] },
-    { ID_Partido: 10, Rojo: [1,4,6,7,9,12,15,18,19,23,24,27],   Azul: [2,3,5,8,10,11,13,14,20,22,26,28] },
-    { ID_Partido: 11, Rojo: [2,3,6,8,12,13,14,16,24,25,27,28],  Azul: [1,4,5,7,9,10,11,15,20,21,22,26] },
-    { ID_Partido: 12, Rojo: [1,2,3,4,8,9,12,14,20,24,26,27],    Azul: [5,6,7,10,11,13,15,16,21,22,25,28] }
+    { ID_Partido: 1,  Rojo: [1,3,5,8,12,13,14,16,20,21,24,27],  Azul: [2,4,6,7,9,10,11,15,22,23,25,28], Parciales: [] },
+    { ID_Partido: 2,  Rojo: [2,4,6,8,11,12,14,17,22,23,25,28],  Azul: [1,3,5,7,9,10,15,16,20,21,26,27], Parciales: [] },
+    { ID_Partido: 3,  Rojo: [1,2,6,9,11,13,14,18,19,20,25,27],  Azul: [3,4,5,7,8,10,12,15,21,23,24,28], Parciales: ["18","19"] },
+    { ID_Partido: 4,  Rojo: [3,5,7,9,12,13,15,17,21,22,26,28],  Azul: [1,2,4,6,8,10,11,14,19,20,24,27], Parciales: [] },
+    { ID_Partido: 5,  Rojo: [1,4,6,8,10,12,16,18,23,24,26,27],  Azul: [2,3,5,7,9,11,13,15,20,21,22,25], Parciales: [] },
+    { ID_Partido: 6,  Rojo: [1,3,4,7,9,11,15,16,20,22,24,28],   Azul: [2,5,6,8,10,12,13,14,21,23,26,27], Parciales: [] },
+    { ID_Partido: 7,  Rojo: [2,4,5,9,10,14,16,17,21,23,25,27],  Azul: [1,3,6,7,8,11,12,13,19,22,24,28], Parciales: [] },
+    { ID_Partido: 8,  Rojo: [1,2,5,6,10,13,16,18,19,21,26,28],  Azul: [3,4,7,8,9,11,12,15,20,23,25,27], Parciales: ["19"] },
+    { ID_Partido: 9,  Rojo: [3,4,5,8,11,14,16,17,20,22,25,28],  Azul: [1,2,6,7,9,10,13,15,21,24,26,27], Parciales: [] },
+    { ID_Partido: 10, Rojo: [1,4,6,7,9,12,15,18,19,23,24,27],   Azul: [2,3,5,8,10,11,13,14,20,22,26,28], Parciales: [] },
+    { ID_Partido: 11, Rojo: [2,3,6,8,12,13,14,16,24,25,27,28],  Azul: [1,4,5,7,9,10,11,15,20,21,22,26], Parciales: ["25"] },
+    { ID_Partido: 12, Rojo: [1,2,3,4,8,9,12,14,20,24,26,27],    Azul: [5,6,7,10,11,13,15,16,21,22,25,28], Parciales: [] }
   ],
 
   // SHEET 1 — Estadísticas :: tabla Evento (goles y asistencias)
@@ -1284,7 +1284,7 @@ const MOCK_DATA = {
   eventos: [
     // Partido 1 — Rojo 3 : 2 Azul
     { ID_Partido: 1, Goleador: 1,  Asistente: 5,    Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 12 },
-    { ID_Partido: 1, Goleador: 14, Asistente: 8,    Equipo: "Rojo", Tipo_Gol: "Cabeza",     Minuto: 38 },
+    { ID_Partido: 1, Goleador: 14, Asistente: 8,    Equipo: "Rojo", Tipo_Gol: "Cabeza",     Minuto: 38, Tipo_Pase: "Tiro libre" },
     { ID_Partido: 1, Goleador: 1,  Asistente: null, Equipo: "Rojo", Tipo_Gol: "Tiro libre", Minuto: 74 },
     { ID_Partido: 1, Goleador: 10, Asistente: 2,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 51 },
     { ID_Partido: 1, Goleador: 7,  Asistente: 11,   Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 96 },
@@ -1304,13 +1304,13 @@ const MOCK_DATA = {
     { ID_Partido: 4, Goleador: 7,  Asistente: 15,   Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 27 },
     { ID_Partido: 4, Goleador: 7,  Asistente: null, Equipo: "Rojo", Tipo_Gol: "Tiro libre", Minuto: 56 },
     { ID_Partido: 4, Goleador: 17, Asistente: 5,    Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 81 },
-    { ID_Partido: 4, Goleador: 15, Asistente: 3,    Equipo: "Rojo", Tipo_Gol: "Cabeza",     Minuto: 112 },
+    { ID_Partido: 4, Goleador: 15, Asistente: 3,    Equipo: "Rojo", Tipo_Gol: "Cabeza",     Minuto: 112, Tipo_Pase: "Esquina" },
     { ID_Partido: 4, Goleador: 1,  Asistente: 2,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 35 },
     { ID_Partido: 4, Goleador: 10, Asistente: 8,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 68 },
     { ID_Partido: 4, Goleador: 14, Asistente: 1,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 93 },
     // Partido 5 — Rojo 0 : 2 Azul
     { ID_Partido: 5, Goleador: 7,  Asistente: 5,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 49 },
-    { ID_Partido: 5, Goleador: 11, Asistente: 9,    Equipo: "Azul", Tipo_Gol: "Olímpico",   Minuto: 84 },
+    { ID_Partido: 5, Goleador: 11, Asistente: 9,    Equipo: "Azul", Tipo_Gol: "Olímpico",   Minuto: 84, Tipo_Pase: "Esquina" },
     // Partido 6 — Rojo 4 : 4 Azul
     { ID_Partido: 6, Goleador: 1,  Asistente: 11,   Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 6 },
     { ID_Partido: 6, Goleador: 1,  Asistente: 7,    Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 41 },
@@ -1336,7 +1336,7 @@ const MOCK_DATA = {
     { ID_Partido: 9, Goleador: 10, Asistente: 2,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 23 },
     { ID_Partido: 9, Goleador: 1,  Asistente: 7,    Equipo: "Azul", Tipo_Gol: "Jugada",     Minuto: 71 },
     // Partido 10 — Rojo 4 : 1 Azul
-    { ID_Partido: 10, Goleador: 7,  Asistente: 15,  Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 7 },
+    { ID_Partido: 10, Goleador: 7,  Asistente: 15,  Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 7, Tipo_Pase: "Portería" },
     { ID_Partido: 10, Goleador: 7,  Asistente: 1,   Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 39 },
     { ID_Partido: 10, Goleador: 1,  Asistente: 9,   Equipo: "Rojo", Tipo_Gol: "Jugada",     Minuto: 63 },
     { ID_Partido: 10, Goleador: 18, Asistente: null, Equipo: "Rojo", Tipo_Gol: "Penal",     Minuto: 92 },
@@ -1384,6 +1384,55 @@ const MOCK_DATA = {
     { ID_Jugador: 18, Nombre_Jugador: "Camilo Duarte",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Lista de espera" },
     { ID_Jugador: 19, Nombre_Jugador: "Julián Acosta",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Lista de espera" },
     { ID_Jugador: 23, Nombre_Jugador: "Hernán Quintero",   Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Lista de espera" }
+  ],
+
+  asistencia: [
+    // Partido 1
+    { ID_Jugador: "1",  ID_Partido: "1",  Llegada: "Temprano" },
+    { ID_Jugador: "5",  ID_Partido: "1",  Llegada: "Temprano" },
+    { ID_Jugador: "12", ID_Partido: "1",  Llegada: "Tarde" },
+    // Partido 2
+    { ID_Jugador: "3",  ID_Partido: "2",  Llegada: "Temprano" },
+    { ID_Jugador: "14", ID_Partido: "2",  Llegada: "Tarde" },
+    { ID_Jugador: "22", ID_Partido: "2",  Llegada: "No" },
+    // Partido 3
+    { ID_Jugador: "4",  ID_Partido: "3",  Llegada: "Temprano" },
+    { ID_Jugador: "11", ID_Partido: "3",  Llegada: "Tarde" },
+    { ID_Jugador: "19", ID_Partido: "3",  Llegada: "Tarde" },
+    // Partido 4
+    { ID_Jugador: "7",  ID_Partido: "4",  Llegada: "Temprano" },
+    { ID_Jugador: "15", ID_Partido: "4",  Llegada: "Temprano" },
+    { ID_Jugador: "20", ID_Partido: "4",  Llegada: "Tarde" },
+    // Partido 5
+    { ID_Jugador: "13", ID_Partido: "5",  Llegada: "Temprano" },
+    { ID_Jugador: "7",  ID_Partido: "5",  Llegada: "Temprano" },
+    { ID_Jugador: "26", ID_Partido: "5",  Llegada: "No" },
+    // Partido 6
+    { ID_Jugador: "1",  ID_Partido: "6",  Llegada: "Temprano" },
+    { ID_Jugador: "11", ID_Partido: "6",  Llegada: "Temprano" },
+    { ID_Jugador: "23", ID_Partido: "6",  Llegada: "Tarde" },
+    // Partido 7
+    { ID_Jugador: "14", ID_Partido: "7",  Llegada: "Temprano" },
+    { ID_Jugador: "17", ID_Partido: "7",  Llegada: "Tarde" },
+    { ID_Jugador: "19", ID_Partido: "7",  Llegada: "Tarde" },
+    // Partido 8
+    { ID_Jugador: "5",  ID_Partido: "8",  Llegada: "Temprano" },
+    { ID_Jugador: "10", ID_Partido: "8",  Llegada: "Temprano" },
+    { ID_Jugador: "9",  ID_Partido: "8",  Llegada: "Tarde" },
+    // Partido 9
+    { ID_Jugador: "3",  ID_Partido: "9",  Llegada: "Temprano" },
+    { ID_Jugador: "14", ID_Partido: "9",  Llegada: "Temprano" },
+    { ID_Jugador: "16", ID_Partido: "9",  Llegada: "No" },
+    // Partido 10
+    { ID_Jugador: "7",  ID_Partido: "10", Llegada: "Temprano" },
+    { ID_Jugador: "1",  ID_Partido: "10", Llegada: "Temprano" },
+    { ID_Jugador: "28", ID_Partido: "10", Llegada: "Tarde" },
+    // Partido 11
+    { ID_Jugador: "2",  ID_Partido: "11", Llegada: "Temprano" },
+    { ID_Jugador: "10", ID_Partido: "11", Llegada: "Temprano" },
+    { ID_Jugador: "7",  ID_Partido: "11", Llegada: "Temprano" },
+    { ID_Jugador: "16", ID_Partido: "11", Llegada: "No" },
+    { ID_Jugador: "28", ID_Partido: "11", Llegada: "Sancionado" }
   ]
 };
 
@@ -1410,6 +1459,7 @@ function normalizarIdsMock() {
     a.ID_Partido = String(a.ID_Partido);
     a.Rojo = a.Rojo.map(String);
     a.Azul = a.Azul.map(String);
+    a.Parciales = (a.Parciales || []).map(String);
   });
   MOCK_DATA.eventos.forEach(e => {
     e.ID_Partido = String(e.ID_Partido);
@@ -1417,6 +1467,10 @@ function normalizarIdsMock() {
     if (e.Asistente != null) e.Asistente = String(e.Asistente);
   });
   MOCK_DATA.asignacionPagos.forEach(p => { p.ID_Jugador = String(p.ID_Jugador); });
+  (MOCK_DATA.asistencia || []).forEach(a => {
+    a.ID_Jugador = String(a.ID_Jugador);
+    a.ID_Partido = String(a.ID_Partido);
+  });
 }
 
 function nombre(id) { return byId[id] ? byId[id].Nombre : "—"; }
@@ -1603,43 +1657,26 @@ function statsJugador(id) {
 }
 
 /* ============================================================
-   PILARES DEL JUGADOR
-   4 pilares: Poder Ofensivo, Visión de Juego, Poder Defensivo,
-   Fair Play. Las fórmulas reales viven en AppSheet; aquí cada
-   pilar se calcula desde los datos crudos con PESOS CONFIGURABLES
-   (provisionales hasta calibrar con la fórmula oficial del club).
+   PILARES — Sistema Acumulativo Aprobado (jun-2026)
+   PO · VJ · PD: acumulan partido a partido. Temporada = SUMA.
+   Fair Play: porcentaje por partido. Temporada = PROMEDIO.
    ============================================================ */
 
-// MODELO (decisión del club, ver Contexto Real): Sistema Acumulativo
-// Ponderado. NUNCA porcentajes ni promedios como métrica principal,
-// NUNCA normalizar a 100 (satura y aplana diferencias). Cada partido
-// el jugador puede sumar hasta 10 pts por pilar (Individual + Colectivo,
-// para que nadie quede invisible) y el valor de temporada es la SUMA:
-// la constancia manda — 8 goles en 8 partidos > 2 goles en 1.
-
-// --- PILAR 1: PODER OFENSIVO ---
-// ⚠ PESOS AJUSTABLES — calibrar con los pesos reales de AppSheet
-const OF_CONFIG = {
-  // Claves normalizadas (sin tildes/mayúsculas) — cubre el vocabulario
-  // real de la Sheet: Gol, Penal, Cabeza, Tiro libre, Fuera del Área…
-  pesosTipoGol: {
-    "gol": 1.0,
-    "jugada": 1.0,
-    "cabeza": 1.2,
-    "tiro libre": 1.3,
-    "penal": 0.8,
-    "fuera del area": 1.3,
-    "olimpico": 1.5
-    // Autogol nunca suma aquí: resta en el colectivo
-  },
-  bonusGolVictoria: 1.0,  // el gol que superó el total final del rival
-  bonusHatTrick: 1.0,     // 3+ goles en un partido
-  topeIndividual: 7,
-  porGolEquipo: 0.5,      // colectivo: cada gol del equipo suma a todos
-  topeColectivo: 3,
-  penalAutogol: -1.0,     // resta en el colectivo de quien lo anota
-  topePartido: 10
+const PESOS_TIPO_GOL = {
+  "jugada": 1, "gol": 1, "penal": 1,
+  "cabeza": 1.5,
+  "tiro libre": 2, "fuera del area": 2, "olimpico": 2,
+  "chilena": 3,
+  "autogol": -1
 };
+const PESOS_TIPO_PASE = {
+  "normal": 1,
+  "tiro libre": 2, "esquina": 2,
+  "porteria": 3
+};
+const COL = { victoria: 3, empate: 2, derrota: 1 };
+const BONUS = { gv: 2, pgv: 2, gvCol: 2, mvp: 2 };
+const FP_PESOS = { "Temprano": 100, "Tiempo": 85, "Tarde": 75, "No": 0, "Sancionado": 0 };
 
 function eventosDelPartido(idPartido) {
   return MOCK_DATA.eventos
@@ -1657,51 +1694,136 @@ function esGolVictoria(evento, p) {
   return golesGanador[golesRival] === evento;
 }
 
-// Puntos ofensivos de un jugador en un partido (0 a 10)
-function ofPartido(id, p, ali) {
-  const equipo = ali.Rojo.includes(id) ? "Rojo" : (ali.Azul.includes(id) ? "Azul" : null);
+function resultadoColectivo(equipo, p) {
+  if (p.Goles_Rojo === p.Goles_Azul) return COL.empate;
+  const ganador = p.Goles_Rojo > p.Goles_Azul ? "Rojo" : "Azul";
+  return equipo === ganador ? COL.victoria : COL.derrota;
+}
+
+function esParcial(id, ali) {
+  return (ali.Parciales || []).includes(id);
+}
+
+function esDefOArquero(id) {
+  const p = posicion(id);
+  return p === "Arquero" || p === "Defensa";
+}
+
+function esMedio(id) {
+  return posicion(id) === "Mediocampista";
+}
+
+function esPaseGolVictoria(e, p) {
+  return !!e.Asistente && esGolVictoria(e, p);
+}
+
+function ratingDefensivo(equipo, p) {
+  const concedidos = equipo === "Rojo" ? p.Goles_Azul : p.Goles_Rojo;
+  if (p.Goles_Rojo === p.Goles_Azul) return Math.max(0, 10 - concedidos);
+  const ganador = p.Goles_Rojo > p.Goles_Azul ? "Rojo" : "Azul";
+  if (equipo === ganador) return Math.max(0, 10 - concedidos);
+  // Perdedor: GDC + MGD
+  const golesPerdedor = equipo === "Rojo" ? p.Goles_Rojo : p.Goles_Azul;
+  const gdc = golesPerdedor + 1;
+  const golesGanador = eventosDelPartido(p.ID_Partido)
+    .filter(e => e.Equipo === ganador && !esAutogol(e));
+  const gv = golesGanador[golesPerdedor];
+  const mgd = gv ? (gv.Minuto || 90) : 90;
+  return Math.max(1, Math.min(9, Math.round((mgd * 0.1 - gdc * 0.5) * 10) / 10));
+}
+
+function pilPO(id, p, ali) {
+  const equipo = ali.Rojo.includes(id) ? "Rojo" : ali.Azul.includes(id) ? "Azul" : null;
   if (!equipo) return null;
-  const evs = eventosDelPartido(p.ID_Partido);
-
-  // Individual: goles propios ponderados por tipo + bonus
-  let individual = 0, golesPropios = 0;
-  evs.forEach(e => {
-    if (e.Goleador !== id || esAutogol(e) || e.Equipo !== equipo) return;
-    golesPropios++;
-    individual += OF_CONFIG.pesosTipoGol[normalizar(e.Tipo_Gol)] ?? 1;
-    if (esGolVictoria(e, p)) individual += OF_CONFIG.bonusGolVictoria;
+  let pts = resultadoColectivo(equipo, p);
+  eventosDelPartido(p.ID_Partido).forEach(e => {
+    if (e.Goleador !== id || e.Equipo !== equipo) return;
+    if (esAutogol(e)) { pts -= 1; return; }
+    pts += PESOS_TIPO_GOL[normalizar(e.Tipo_Gol)] ?? 1;
+    if (esGolVictoria(e, p)) pts += BONUS.gv;
   });
-  if (golesPropios >= 3) individual += OF_CONFIG.bonusHatTrick;
-  individual = Math.min(individual, OF_CONFIG.topeIndividual);
+  if (mvpsDe(p).includes(id)) pts += BONUS.mvp;
+  if (esParcial(id, ali)) pts *= 0.5;
+  return Math.round(pts * 10) / 10;
+}
 
-  // Colectivo: el ataque del equipo suma a todos los que jugaron
-  const golesEquipo = equipo === "Rojo" ? p.Goles_Rojo : p.Goles_Azul;
-  let colectivo = Math.min(golesEquipo * OF_CONFIG.porGolEquipo, OF_CONFIG.topeColectivo);
-  if (evs.some(e => e.Goleador === id && esAutogol(e))) {
-    colectivo += OF_CONFIG.penalAutogol;
+function pilVJ(id, p, ali) {
+  const equipo = ali.Rojo.includes(id) ? "Rojo" : ali.Azul.includes(id) ? "Azul" : null;
+  if (!equipo) return null;
+  let pts = resultadoColectivo(equipo, p);
+  eventosDelPartido(p.ID_Partido).forEach(e => {
+    if (e.Asistente !== id) return;
+    pts += PESOS_TIPO_PASE[normalizar(e.Tipo_Pase || "normal")] ?? 1;
+    if (esPaseGolVictoria(e, p)) pts += BONUS.pgv;
+  });
+  if (esMedio(id) && p.Goles_Rojo !== p.Goles_Azul) {
+    const ganador = p.Goles_Rojo > p.Goles_Azul ? "Rojo" : "Azul";
+    if (equipo === ganador) pts += BONUS.gvCol;
   }
-
-  return Math.max(0, Math.min(OF_CONFIG.topePartido, individual + colectivo));
+  if (mvpsDe(p).includes(id)) pts += BONUS.mvp;
+  if (esParcial(id, ali)) pts *= 0.5;
+  return Math.round(pts * 10) / 10;
 }
 
-// Temporada: suma de todos los partidos jugados (sin techo)
-function poderOfensivo(id) {
-  let total = 0;
-  MOCK_DATA.alineaciones.forEach(a => {
-    const p = MOCK_DATA.partidos.find(x => x.ID_Partido === a.ID_Partido);
-    if (!p || !esJugado(p)) return;
-    const v = ofPartido(id, p, a);
-    if (v != null) total += v;
-  });
-  return Math.round(total * 10) / 10;
+function pilPD(id, p, ali) {
+  const equipo = ali.Rojo.includes(id) ? "Rojo" : ali.Azul.includes(id) ? "Azul" : null;
+  if (!equipo) return null;
+  let pts = resultadoColectivo(equipo, p);
+  if (esDefOArquero(id)) {
+    pts += ratingDefensivo(equipo, p);
+    if (p.Goles_Rojo !== p.Goles_Azul) {
+      const ganador = p.Goles_Rojo > p.Goles_Azul ? "Rojo" : "Azul";
+      if (equipo === ganador) pts += BONUS.gvCol;
+    }
+  }
+  if (mvpsDe(p).includes(id)) pts += BONUS.mvp;
+  if (esParcial(id, ali)) pts *= 0.5;
+  return Math.round(pts * 10) / 10;
 }
 
-// Los otros 3 pilares se calibran después con sus fórmulas de AppSheet
+function pilFP(id, p, ali) {
+  const equipo = ali.Rojo.includes(id) ? "Rojo" : ali.Azul.includes(id) ? "Azul" : null;
+  if (!equipo) return null;
+  const reg = (MOCK_DATA.asistencia || []).find(a => a.ID_Jugador === id && a.ID_Partido === p.ID_Partido);
+  return FP_PESOS[reg ? reg.Llegada : "Tiempo"] ?? 85;
+}
+
+function calcAcumulado(fn) {
+  return function(id) {
+    let total = 0;
+    MOCK_DATA.alineaciones.forEach(a => {
+      const p = MOCK_DATA.partidos.find(x => x.ID_Partido === a.ID_Partido);
+      if (!p || !esJugado(p)) return;
+      const v = fn(id, p, a);
+      if (v !== null) total += v;
+    });
+    return Math.round(total * 10) / 10;
+  };
+}
+
+function calcPromedio(fn) {
+  return function(id) {
+    let total = 0, count = 0;
+    MOCK_DATA.alineaciones.forEach(a => {
+      const p = MOCK_DATA.partidos.find(x => x.ID_Partido === a.ID_Partido);
+      if (!p || !esJugado(p)) return;
+      const v = fn(id, p, a);
+      if (v !== null) { total += v; count++; }
+    });
+    return count > 0 ? Math.round(total / count) : 0;
+  };
+}
+
+const poderOfensivo  = calcAcumulado(pilPO);
+const visionDeJuego  = calcAcumulado(pilVJ);
+const poderDefensivo = calcAcumulado(pilPD);
+const fairPlay       = calcPromedio(pilFP);
+
 const PILARES = [
-  { nombre: "Poder Ofensivo",  calc: poderOfensivo, listo: true },
-  { nombre: "Visión de Juego", calc: null, listo: false },
-  { nombre: "Poder Defensivo", calc: null, listo: false },
-  { nombre: "Fair Play",       calc: null, listo: false }
+  { nombre: "Poder Ofensivo",  calc: poderOfensivo,  listo: true, fmt: v => v + " pts" },
+  { nombre: "Visión de Juego", calc: visionDeJuego,  listo: true, fmt: v => v + " pts" },
+  { nombre: "Poder Defensivo", calc: poderDefensivo, listo: true, fmt: v => v + " pts" },
+  { nombre: "Fair Play",       calc: fairPlay,       listo: true, fmt: v => v + "%" }
 ];
 
 /* ============================================================
@@ -2033,64 +2155,30 @@ initAutocomplete("conv-player");
 initAutocomplete("ali-player");
 
 // ---- Vista 3: Estadísticas (TOP 10 por categoría) ----
-// Métrica defensiva: goles en contra del equipo en que jugó cada partido.
-// Menor promedio = mejor. También cuenta vallas invictas (rival en 0).
-function statsDefensivas(id) {
-  let jugados = 0, contra = 0, vallas = 0;
-  const partidosById = Object.fromEntries(MOCK_DATA.partidos.map(p => [p.ID_Partido, p]));
-  MOCK_DATA.alineaciones.forEach(a => {
-    const p = partidosById[a.ID_Partido];
-    if (!p || !esJugado(p)) return;
-    let recibidos = null;
-    if (a.Rojo.includes(id)) recibidos = p.Goles_Azul;
-    else if (a.Azul.includes(id)) recibidos = p.Goles_Rojo;
-    if (recibidos === null) return;
-    jugados++;
-    contra += recibidos;
-    if (recibidos === 0) vallas++;
-  });
-  return { jugados, contra, vallas, promedio: jugados ? contra / jugados : null };
-}
-
-// Categorías del hub. "inverso" = menor es mejor (métricas defensivas).
 const CATEGORIAS = {
-  goleadores: {
-    titulo: "Goleadores", unidad: "goles", acc: "var(--color-gold)",
-    desc: "Goles anotados en la temporada", inverso: false
-  },
-  asistidores: {
-    titulo: "Asistidores", unidad: "asist. gol", acc: "var(--color-parchment)",
-    desc: "Pases gol en la temporada", inverso: false
-  },
-  defensas: {
-    titulo: "Mejores defensas", unidad: "GC/partido", acc: "var(--azul-chip)",
-    desc: "Goles en contra por partido · menor es mejor", inverso: true
-  },
-  arqueros: {
-    titulo: "Promedio arqueros", unidad: "GC/partido", acc: "var(--rojo-chip)",
-    desc: "Goles recibidos por partido · menor es mejor", inverso: true
-  }
+  po: { titulo: "Poder Ofensivo",  unidad: "pts", acc: "var(--color-gold)",
+        desc: "Goles, victorias y gestos técnicos · acumulado temporada",
+        inverso: false, calc: poderOfensivo, fmt: v => String(v) },
+  vj: { titulo: "Visión de Juego", unidad: "pts", acc: "var(--color-parchment)",
+        desc: "Pases gol, creatividad y colectivo · acumulado temporada",
+        inverso: false, calc: visionDeJuego, fmt: v => String(v) },
+  pd: { titulo: "Poder Defensivo", unidad: "pts", acc: "var(--azul-chip)",
+        desc: "Contención defensiva y resistencia · acumulado temporada",
+        inverso: false, calc: poderDefensivo, fmt: v => String(v) },
+  fp: { titulo: "Fair Play",       unidad: "%",   acc: "#7cb77c",
+        desc: "Puntualidad y asistencia · promedio temporada",
+        inverso: false, calc: fairPlay, fmt: v => v + "%" }
 };
 
 function datosCategoria(key) {
-  if (key === "goleadores" || key === "asistidores") {
-    const todos = MOCK_DATA.jugadores.map(j => ({ id: j.ID_Jugador, ...statsJugador(j.ID_Jugador) }));
-    if (key === "goleadores")
-      return todos.filter(s => s.goles > 0)
-        .sort((a, b) => b.goles - a.goles || b.asistencias - a.asistencias)
-        .slice(0, 10).map(s => ({ id: s.id, valor: s.goles, texto: String(s.goles) }));
-    return todos.filter(s => s.asistencias > 0)
-      .sort((a, b) => b.asistencias - a.asistencias || b.goles - a.goles)
-      .slice(0, 10).map(s => ({ id: s.id, valor: s.asistencias, texto: String(s.asistencias) }));
-  }
-  // Defensivas: mínimo 3 partidos para defensas, 1 para arqueros
-  const pos = key === "defensas" ? "Defensa" : "Arquero";
-  const minimo = key === "defensas" ? 3 : 1;
-  return MOCK_DATA.jugadores.filter(j => j.Posicion === pos)
-    .map(j => ({ id: j.ID_Jugador, ...statsDefensivas(j.ID_Jugador) }))
-    .filter(s => s.jugados >= minimo)
-    .sort((a, b) => a.promedio - b.promedio || b.vallas - a.vallas)
-    .slice(0, 10).map(s => ({ id: s.id, valor: s.promedio, texto: s.promedio.toFixed(1) }));
+  const c = CATEGORIAS[key];
+  if (!c || !c.calc) return [];
+  return MOCK_DATA.jugadores
+    .map(j => ({ id: j.ID_Jugador, valor: c.calc(j.ID_Jugador) }))
+    .filter(d => d.valor != null && d.valor > 0)
+    .sort((a, b) => b.valor - a.valor)
+    .slice(0, 10)
+    .map(d => ({ id: d.id, valor: d.valor, texto: c.fmt ? c.fmt(d.valor) : String(d.valor) }));
 }
 
 // Largo de barra proporcional al desempeño (en inverso, el mejor llena más)
@@ -2299,12 +2387,6 @@ function abrirPerfil(id) {
     <div class="pilares">
       <div class="pilares-title">Perfil Jugador</div>
       ${PILARES.map(p => {
-        if (!p.listo) return `
-        <div class="pilar-row pendiente">
-          <div class="pilar-nombre">${p.nombre}</div>
-          <div class="pilar-bar"></div>
-          <div class="pilar-val">pronto</div>
-        </div>`;
         const v = p.calc(id);
         const maximo = Math.max(...MOCK_DATA.jugadores.map(j => p.calc(j.ID_Jugador)), 0);
         const ancho = maximo > 0 ? Math.round((v / maximo) * 100) : 0;
@@ -2312,7 +2394,7 @@ function abrirPerfil(id) {
         <div class="pilar-row">
           <div class="pilar-nombre">${p.nombre}</div>
           <div class="pilar-bar"><div class="pilar-fill" style="width:${ancho}%"></div></div>
-          <div class="pilar-val">${v}</div>
+          <div class="pilar-val">${p.fmt ? p.fmt(v) : v}</div>
         </div>`;
       }).join("")}
       <p class="pilares-note">Puntos acumulados de la temporada (máx. 10 por partido) — la constancia manda.</p>
