@@ -1670,8 +1670,8 @@ const PESOS_TIPO_GOL = {
   "autogol": -1
 };
 const PESOS_TIPO_PASE = {
-  "normal": 1,
-  "tiro libre": 2, "esquina": 2,
+  "normal": 1, "asistencia": 1,
+  "tiro libre": 2, "esquina": 2, "tiro de esquina": 2,
   "porteria": 3
 };
 const COL = { victoria: 3, empate: 2, derrota: 1 };
@@ -2156,6 +2156,9 @@ initAutocomplete("ali-player");
 
 // ---- Vista 3: Estadísticas (TOP 10 por categoría) ----
 const CATEGORIAS = {
+  gestos:      { titulo: "Gesto Técnico",   unidad: "pts",        acc: "#b87333",
+                 desc: "Calidad técnica de goles y asistencias · ponderado por tipo",
+                 inverso: false, calc: gestosScore, fmt: v => String(v) },
   goleadores:  { titulo: "Goleadores",      unidad: "goles",      acc: "var(--color-gold)",
                  desc: "Total de goles anotados en la temporada",
                  inverso: false, calc: id => statsJugador(id).goles,      fmt: v => String(v) },
@@ -2402,7 +2405,15 @@ function abrirPerfil(id) {
       }).join("")}
       <p class="pilares-note">PO · VJ · PD acumulan partido a partido. FairPlay es promedio de asistencia.</p>
     </div>
-    ${s.goles > 0 ? `<p class="profile-note">Gol característico: ${s.tipoDestacado}</p>` : ""}
+    ${(() => {
+      const { goles, asists } = gestosJugador(id);
+      const partes = [];
+      const entradasG = Object.entries(goles).filter(([,n]) => n > 0);
+      if (entradasG.length) partes.push("Goles: " + entradasG.map(([t,n]) => n > 1 ? `${t} ×${n}` : t).join(", "));
+      const entradasA = Object.entries(asists).filter(([,n]) => n > 0);
+      if (entradasA.length) partes.push("Asistencias: " + entradasA.map(([t,n]) => n > 1 ? `${t} ×${n}` : t).join(", "));
+      return partes.length ? `<p class="profile-note">${partes.join(" &nbsp;·&nbsp; ")}</p>` : "";
+    })()}
   `;
   document.getElementById("modalOverlay").classList.add("open");
 }
@@ -2600,6 +2611,31 @@ function fechaISO(d) {
   const dd = String(d.getDate()).padStart(2, "0");
   return `${d.getFullYear()}-${mm}-${dd}`;
 }
+function gestosJugador(id) {
+  const goles = {}, asists = {};
+  MOCK_DATA.eventos.forEach(e => {
+    if (e.Goleador === id && !esAutogol(e)) {
+      const t = e.Tipo_Gol || "Gol";
+      goles[t] = (goles[t] || 0) + 1;
+    }
+    if (e.Asistente === id) {
+      const raw = e.Tipo_Pase || "Normal";
+      const t = normalizar(raw) === "asistencia" ? "Normal" : raw;
+      asists[t] = (asists[t] || 0) + 1;
+    }
+  });
+  return { goles, asists };
+}
+function gestosScore(id) {
+  let pts = 0;
+  MOCK_DATA.eventos.forEach(e => {
+    if (e.Goleador === id && !esAutogol(e))
+      pts += PESOS_TIPO_GOL[normalizar(e.Tipo_Gol)] ?? 1;
+    if (e.Asistente === id)
+      pts += PESOS_TIPO_PASE[normalizar(e.Tipo_Pase || "normal")] ?? 1;
+  });
+  return Math.round(pts * 10) / 10;
+}
 function tiempoHHMM(d) {
   return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
 }
@@ -2689,7 +2725,7 @@ function transformarDatosReales(json) {
       Asistente: campo(e, "id_asistidor") !== "" ? String(campo(e, "id_asistidor")) : null,
       Equipo: String(campo(e, "gol_equipo")),
       Tipo_Gol: String(campo(e, "tipo_gol")),
-      Tipo_Asistencia: String(campo(e, "tipo_asistencia")),
+      Tipo_Pase: String(campo(e, "tipo_asistencia")),
       Minuto: Number(campo(e, "minuto")) || null
     }));
 
