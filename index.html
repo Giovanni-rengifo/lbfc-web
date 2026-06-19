@@ -614,6 +614,42 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
 }
 .avatar.portero { background: #1e5228; }
 
+/* ---------- Estadísticas: Distinciones (medallas) ---------- */
+.distinciones-label, .categorias-label {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: .82rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--color-parchment);
+  margin: 1.3rem 0 .7rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.distinciones-label::after, .categorias-label::after {
+  content: ""; flex: 1; height: 1px; background: var(--line);
+}
+.med-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+.med-card {
+  background: rgba(201,168,76,.07);
+  border: 1px solid rgba(201,168,76,.34);
+  border-radius: 8px;
+  padding: .8rem .6rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, background .15s;
+}
+.med-card:hover { border-color: var(--color-gold); background: rgba(201,168,76,.13); }
+.med-ico { width: 34px; height: 34px; margin: 0 auto .4rem; color: var(--color-gold); }
+.med-ico svg { width: 100%; height: 100%; }
+.med-title { font-family: var(--font-title); font-weight: 700; font-size: .76rem; color: var(--color-parchment); letter-spacing: .02em; }
+.med-holder { font-size: .82rem; color: var(--color-text-light); font-weight: 600; margin-top: .3rem; }
+.med-meta { font-size: .65rem; color: var(--text-dim); margin-top: .1rem; }
+@media (min-width: 900px) {
+  .med-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
 /* ---------- Estadísticas: hub de categorías ---------- */
 .stats-hub { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
 .stat-card {
@@ -954,6 +990,18 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
   font-size: .7rem;
   font-style: italic;
   color: var(--text-dim);
+}
+.perfil-distinciones { display: flex; flex-wrap: wrap; gap: .4rem; justify-content: center; margin-top: .8rem; }
+.dist-chip {
+  font-family: var(--font-title);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  color: var(--color-gold);
+  background: rgba(201,168,76,.1);
+  border: 1px solid rgba(201,168,76,.4);
+  border-radius: 999px;
+  padding: .2rem .6rem;
 }
 .pilar-val {
   flex: 0 0 2.9rem;
@@ -1695,14 +1743,80 @@ function esDefOArquero(id) {
   return p === "Arquero" || p === "Defensa";
 }
 
-// Delta de nivel por resultado + margen de goles
+/* ============================================================
+   SALÓN DE LEYENDAS — Nivel de Leyenda (XP) + Distinciones
+   Todo automático desde los datos. El Nivel solo sube.
+   ============================================================ */
 
-// Pilares PO/VJ/PD: valor directo del Excel, sin fórmula
-function nivelExcel(campo) {
-  return id => {
-    const j = byId[id];
-    return j ? (parseFloat(j[campo]) || 5) : 5;
-  };
+// Valores de XP por acción en cada partido jugado
+const XP = {
+  jugar: 10,        // por presentarse y jugar
+  victoria: 5,      // si su equipo ganó
+  gol: 8,           // por cada gol (no autogol)
+  asistencia: 6,    // por cada pase gol
+  valla: 4,         // valla invicta: su equipo no recibió goles
+  mvp: 10,          // MVP del partido
+  diferenciador: 10,// Diferenciador del partido
+  temprano: 3,      // llegó temprano
+  tiempo: 2         // llegó a tiempo
+};
+const XP_POR_NIVEL = 20;
+
+function llegadaDe(id, idPartido) {
+  const reg = (MOCK_DATA.asistencia || []).find(a => a.ID_Jugador === id && a.ID_Partido === idPartido);
+  return reg ? reg.Llegada : null;
+}
+
+// XP total de la temporada (suma de todos los partidos jugados)
+function xpJugador(id) {
+  const idsJugados = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+  let xp = 0;
+  MOCK_DATA.alineaciones.forEach(a => {
+    if (!idsJugados.has(a.ID_Partido)) return;
+    const equipo = a.Rojo.includes(id) ? "Rojo" : a.Azul.includes(id) ? "Azul" : null;
+    if (!equipo) return;
+    const p = MOCK_DATA.partidos.find(x => x.ID_Partido === a.ID_Partido);
+    if (!p) return;
+    xp += XP.jugar;
+    const gA = equipo === "Rojo" ? p.Goles_Rojo : p.Goles_Azul;
+    const gC = equipo === "Rojo" ? p.Goles_Azul : p.Goles_Rojo;
+    if (gA > gC) xp += XP.victoria;
+    if (gC === 0) xp += XP.valla;
+    if (mvpsDe(p).includes(id)) xp += XP.mvp;
+    if (p.Diferenciador === id) xp += XP.diferenciador;
+    const ll = llegadaDe(id, a.ID_Partido);
+    if (ll === "Temprano") xp += XP.temprano;
+    else if (ll === "Tiempo") xp += XP.tiempo;
+  });
+  MOCK_DATA.eventos.forEach(e => {
+    if (!idsJugados.has(e.ID_Partido)) return;
+    if (e.Goleador === id && !esAutogol(e)) xp += XP.gol;
+    if (e.Asistente === id) xp += XP.asistencia;
+  });
+  return xp;
+}
+
+// Nivel y progreso dentro del nivel a partir del XP
+function nivelDe(xp) {
+  const nivel = Math.floor(xp / XP_POR_NIVEL) + 1;
+  const pct = Math.round(((xp % XP_POR_NIVEL) / XP_POR_NIVEL) * 100);
+  return { nivel, pct };
+}
+
+// Vallas invictas en las que participó el jugador (su equipo no recibió goles)
+function vallasInvictas(id) {
+  const idsJugados = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+  let n = 0;
+  MOCK_DATA.alineaciones.forEach(a => {
+    if (!idsJugados.has(a.ID_Partido)) return;
+    const equipo = a.Rojo.includes(id) ? "Rojo" : a.Azul.includes(id) ? "Azul" : null;
+    if (!equipo) return;
+    const p = MOCK_DATA.partidos.find(x => x.ID_Partido === a.ID_Partido);
+    if (!p) return;
+    const gC = equipo === "Rojo" ? p.Goles_Azul : p.Goles_Rojo;
+    if (gC === 0) n++;
+  });
+  return n;
 }
 
 // Puntos de temporada: Victoria=3, Empate=1, Derrota=0
@@ -1743,17 +1857,42 @@ function calcPromedio(fn) {
   };
 }
 
-const poderOfensivo  = nivelExcel("Nivel_PO");
-const visionDeJuego  = nivelExcel("Nivel_VJ");
-const poderDefensivo = nivelExcel("Nivel_PD");
-const fairPlay       = calcPromedio(pilFP);
+const fairPlay = calcPromedio(pilFP);
+
+// Distinciones: cada una premia un tipo de aporte distinto, para que el
+// reconocimiento rote y casi nadie quede invisible. Todas automáticas.
+const DISTINCIONES = [
+  { titulo: "El Inquebrantable", glifo: "castillo", metrica: id => statsJugador(id).jugados,      unidad: "partidos jugados" },
+  { titulo: "El Artillero",      glifo: "diana",    metrica: id => statsJugador(id).goles,        unidad: "goles" },
+  { titulo: "El Estratega",      glifo: "ojo",      metrica: id => statsJugador(id).asistencias,  unidad: "pases gol" },
+  { titulo: "El Muro",           glifo: "escudo",   metrica: vallasInvictas, filtro: esDefOArquero, unidad: "vallas invictas" },
+  { titulo: "El Puntual",        glifo: "reloj",    metrica: id => fairPlay(id),                   unidad: "% de puntualidad" },
+  { titulo: "El Líder",          glifo: "corona",   metrica: id => statsJugador(id).mvps,          unidad: "veces MVP" }
+];
+
+// Devuelve el jugador líder de una distinción (o null si nadie tiene > 0)
+function liderDistincion(d) {
+  let best = null, bestV = 0;
+  MOCK_DATA.jugadores.forEach(j => {
+    if (d.filtro && !d.filtro(j.ID_Jugador)) return;
+    const v = d.metrica(j.ID_Jugador);
+    if (v > bestV) { bestV = v; best = j.ID_Jugador; }
+  });
+  return best ? { id: best, valor: bestV } : null;
+}
+
+// Distinciones que ostenta un jugador (para mostrar en su perfil)
+function distincionesDe(id) {
+  return DISTINCIONES.filter(d => {
+    const l = liderDistincion(d);
+    return l && l.id === id;
+  }).map(d => d.titulo);
+}
 
 const PILARES = [
-  { nombre: "Poder Ofensivo",   calc: poderOfensivo,   listo: true, fmt: v => v + " pts" },
-  { nombre: "Visión de Juego",  calc: visionDeJuego,   listo: true, fmt: v => v + " pts" },
-  { nombre: "Poder Defensivo",  calc: poderDefensivo,  listo: true, fmt: v => v + " pts" },
-  { nombre: "Puntos Temporada", calc: puntosTemporada, listo: true, fmt: v => v + " pts" },
-  { nombre: "Fair Play",        calc: fairPlay,        listo: true, fmt: v => v + "%" }
+  { nombre: "Nivel de Leyenda", calc: xpJugador,       fmt: v => "Niv " + nivelDe(v).nivel + " · " + v + " XP" },
+  { nombre: "Puntos Temporada", calc: puntosTemporada, fmt: v => v + " pts" },
+  { nombre: "Fair Play",        calc: fairPlay,        fmt: v => v + "%" }
 ];
 
 /* ============================================================
@@ -2100,16 +2239,12 @@ const CATEGORIAS = {
   asistidores: { titulo: "Asistidores",     unidad: "asist. gol", acc: "var(--color-parchment)",
                  desc: "Pases directos que generaron un gol en la temporada",
                  inverso: false, calc: id => statsJugador(id).asistencias, fmt: v => String(v) },
-  po: { titulo: "Poder Ofensivo",  unidad: "pts", acc: "var(--color-gold)",
-        desc: "Calificación ofensiva del jugador · escala 0–10",
-        inverso: false, calc: poderOfensivo, fmt: v => String(v) },
-  vj: { titulo: "Visión de Juego", unidad: "pts", acc: "var(--color-parchment)",
-        desc: "Calificación de visión y juego asociativo · escala 0–10",
-        inverso: false, calc: visionDeJuego, fmt: v => String(v) },
-  pd: { titulo: "Poder Defensivo", unidad: "pts", acc: "var(--azul-chip)",
-        desc: "Calificación defensiva del jugador · escala 0–10",
-        inverso: false, calc: poderDefensivo, fmt: v => String(v) },
-  puntos: { titulo: "Puntos Temporada", unidad: "pts", acc: "var(--color-accent)",
+  nivel: { titulo: "Nivel de Leyenda", unidad: "nivel", acc: "var(--color-gold)",
+           desc: "XP por jugar, ganar, anotar, asistir, valla invicta, MVP y puntualidad · solo sube",
+           inverso: false, calc: xpJugador,
+           fmt: v => "Niv " + nivelDe(v).nivel,
+           sub: id => xpJugador(id) + " XP" },
+  puntos: { titulo: "Puntos Temporada", unidad: "pts", acc: "var(--azul-chip)",
             desc: "Victoria ×3 · Empate ×1 · Derrota ×0 · acumulado en la temporada",
             inverso: false, calc: puntosTemporada, fmt: v => String(v) },
 };
@@ -2151,13 +2286,47 @@ function cerrarCategoria() {
   renderEstadisticas();
 }
 
+// Glifos SVG para las distinciones (trazo dorado, estética medieval)
+const GLIFOS = {
+  castillo: '<path d="M3 9l3-2 0 2 3-2 0 2 3-2 0 2 3-2 0 2 3-2v12H3V9z"/>',
+  diana:    '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2"/><path d="M12 1v3M12 20v3M1 12h3M20 12h3"/>',
+  ojo:      '<path d="M12 5c-4.5 0-8 3.2-9.5 7 1.5 3.8 5 7 9.5 7s8-3.2 9.5-7C20 8.2 16.5 5 12 5z"/><circle cx="12" cy="12" r="2.6"/>',
+  escudo:   '<path d="M12 3l7 3v6c0 5-3 7.3-7 9-4-1.7-7-4-7-9V6l7-3z"/>',
+  reloj:    '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  corona:   '<path d="M3 8l4 3 5-6 5 6 4-3v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8z"/>'
+};
+function glifoSVG(nombre) {
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">${GLIFOS[nombre] || ""}</svg>`;
+}
+
+// Sección de Distinciones (medallas) para el hub de Estadísticas
+function distincionesHTML() {
+  const cards = DISTINCIONES.map(d => {
+    const l = liderDistincion(d);
+    if (!l) return "";
+    return `
+      <div class="med-card" onclick="abrirPerfil('${l.id}')">
+        <div class="med-ico">${glifoSVG(d.glifo)}</div>
+        <div class="med-title">${d.titulo}</div>
+        <div class="med-holder">${nombre(l.id)}</div>
+        <div class="med-meta">${l.valor} ${d.unidad}</div>
+      </div>`;
+  }).join("");
+  if (!cards.trim()) return "";
+  return `
+    <div class="distinciones-label">Distinciones</div>
+    <div class="med-grid">${cards}</div>`;
+}
+
 function renderEstadisticas() {
   const cont = document.getElementById("estadisticas-content");
 
-  // --- Hub: 4 cards, una por categoría ---
+  // --- Hub: Distinciones + cards por categoría ---
   if (!categoriaActiva) {
     cont.innerHTML = `
-      <p class="view-sub" style="margin-top:.4rem">Temporada 2026 · Elige una categoría</p>
+      <p class="view-sub" style="margin-top:.4rem">Temporada 2026 · Salón de Leyendas</p>
+      ${distincionesHTML()}
+      <div class="categorias-label">Rankings</div>
       <div class="stats-hub">` +
       Object.entries(CATEGORIAS).map(([key, c]) => {
         const datos = datosCategoria(key);
@@ -2347,7 +2516,12 @@ function abrirPerfil(id) {
           <div class="pilar-val">${p.fmt ? p.fmt(v) : v}</div>
         </div>`;
       }).join("")}
-      <p class="pilares-note">PO · VJ · PD: calificación del club. Puntos: acumulado de victorias en la temporada. FairPlay: promedio de asistencia.</p>
+      ${(() => {
+        const dist = distincionesDe(id);
+        if (!dist.length) return "";
+        return `<div class="perfil-distinciones">${dist.map(t => `<span class="dist-chip">${t}</span>`).join("")}</div>`;
+      })()}
+      <p class="pilares-note">Nivel de Leyenda: XP que solo sube, partido a partido. Puntos: victorias de la temporada. Fair Play: promedio de puntualidad.</p>
     </div>
     ${(() => {
       const { goles, asists } = gestosJugador(id);

@@ -1,4 +1,4 @@
-const CACHE = 'lbfc-v5';
+const CACHE = 'lbfc-v6';
 
 // CDN externos versionados: cache-first (nunca cambian)
 const CDN_HOSTS = ['cdn.sheetjs.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];
