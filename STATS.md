@@ -118,7 +118,7 @@ y casi nadie quede invisible. Todas se calculan solas: la ostenta quien lidera e
 | El Inquebrantable | Más partidos jugados | Todos |
 | El Artillero | Más goles | Todos |
 | El Estratega | Más pases gol | Todos |
-| El Muro | Más vallas invictas | Solo Arquero / Defensa |
+| El Muro | Score: vallas×10 + consistencia(0–10) + MVPs · mínimo 3 partidos · se muestra vallas invictas | Solo Arquero / Defensa |
 | El Puntual | Mejor % de puntualidad (Fair Play) | Todos |
 | El Líder | Más veces MVP | Todos |
 

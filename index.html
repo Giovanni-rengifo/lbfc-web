@@ -1854,6 +1854,16 @@ function nivelDe(xp) {
   return { nivel, pct };
 }
 
+// Score compuesto para El Muro: vallas×10 + consistencia(0-10) + MVPs.
+// Solo compiten Arq/Def con al menos 3 partidos. La pantalla muestra
+// vallas invictas; el score solo sirve para el ranking.
+function scoreElMuro(id) {
+  const s = statsJugador(id);
+  if (s.jugados < 3) return 0;
+  const vi = vallasInvictas(id);
+  return vi * 10 + Math.round((vi / s.jugados) * 10) + s.mvps;
+}
+
 // Vallas invictas en las que participó el jugador (su equipo no recibió goles)
 function vallasInvictas(id) {
   const idsJugados = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
@@ -1916,12 +1926,14 @@ const DISTINCIONES = [
   { titulo: "El Inquebrantable", glifo: "castillo", metrica: id => statsJugador(id).jugados,      unidad: "partidos jugados" },
   { titulo: "El Artillero",      glifo: "diana",    metrica: id => statsJugador(id).goles,        unidad: "goles" },
   { titulo: "El Estratega",      glifo: "ojo",      metrica: id => statsJugador(id).asistencias,  unidad: "pases gol" },
-  { titulo: "El Muro",           glifo: "escudo",   metrica: vallasInvictas, filtro: esDefOArquero, unidad: "vallas invictas" },
+  { titulo: "El Muro",           glifo: "escudo",   metrica: scoreElMuro, display: vallasInvictas, filtro: esDefOArquero, unidad: "vallas invictas" },
   { titulo: "El Puntual",        glifo: "reloj",    metrica: id => fairPlay(id),                   unidad: "% de puntualidad" },
   { titulo: "El Líder",          glifo: "corona",   metrica: id => statsJugador(id).mvps,          unidad: "veces MVP" }
 ];
 
-// Devuelve el jugador líder de una distinción (o null si nadie tiene > 0)
+// Devuelve el jugador líder de una distinción (o null si nadie tiene > 0).
+// Cuando la distinción tiene `display`, ese valor se usa para mostrar; el
+// ranking sigue usando `metrica`.
 function liderDistincion(d) {
   let best = null, bestV = 0;
   MOCK_DATA.jugadores.forEach(j => {
@@ -1929,7 +1941,9 @@ function liderDistincion(d) {
     const v = d.metrica(j.ID_Jugador);
     if (v > bestV) { bestV = v; best = j.ID_Jugador; }
   });
-  return best ? { id: best, valor: bestV } : null;
+  if (!best) return null;
+  const display = d.display ? d.display(best) : bestV;
+  return { id: best, valor: bestV, display };
 }
 
 // Distinciones que ostenta un jugador (para mostrar en su perfil)
@@ -2350,18 +2364,19 @@ function glifoSVG(nombre) {
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">${GLIFOS[nombre] || ""}</svg>`;
 }
 
-// Distancias de un jugador al líder en cada distinción (para el perfil)
+// Distancias de un jugador al líder en cada distinción (para el perfil).
+// Usa `display` cuando existe (muestra valores legibles, no el score interno).
 function distanciasHTML(id) {
   const rows = DISTINCIONES.map(d => {
     const l = liderDistincion(d);
     if (!l) return "";
-    const miValor = d.metrica(id);
+    const miValor = d.display ? d.display(id) : d.metrica(id);
     const esLider = l.id === id;
     let info;
     if (esLider) {
-      info = `<span class="dist-lider-yo">Eres el líder · ${l.valor} ${d.unidad}</span>`;
+      info = `<span class="dist-lider-yo">Eres el líder · ${l.display} ${d.unidad}</span>`;
     } else {
-      const diff = l.valor - miValor;
+      const diff = l.display - miValor;
       info = `<span class="dist-lider-val"><strong>${miValor}</strong> ${d.unidad} · ${diff > 0 ? `faltan <strong>${diff}</strong>` : "empatado"} para ${nombre(l.id)}</span>`;
     }
     return `<div class="dist-row"><span class="dist-row-titulo">${d.titulo}</span>${info}</div>`;
@@ -2379,7 +2394,7 @@ function distincionesHTML() {
         <div class="med-ico">${glifoSVG(d.glifo)}</div>
         <div class="med-title">${d.titulo}</div>
         <div class="med-holder">${nombre(l.id)}</div>
-        <div class="med-meta">${l.valor} ${d.unidad}</div>
+        <div class="med-meta">${l.display} ${d.unidad}</div>
       </div>`;
   }).join("");
   if (!cards.trim()) return "";
