@@ -122,7 +122,7 @@ y casi nadie quede invisible. Todas se calculan solas: la ostenta quien lidera e
 | El Muro | Más veces elegido Diferenciador · mínimo 3 partidos | Solo Arquero / Defensa |
 | El Maestro | Más veces elegido Diferenciador · mínimo 3 partidos | Solo Mediocampista |
 | El Cazador | Más veces elegido Diferenciador · mínimo 3 partidos | Solo Delantero |
-| El Puntual | Mejor % de puntualidad (Fair Play) | Todos |
+| El Puntual | Mejor % de puntualidad (Fair Play) · mínimo 40% de partidos jugados | Todos |
 | El Líder | Más veces MVP | Todos |
 
 > **Diferenciador**: por cada partido se elige 1 jugador por grupo de posición (Arq/Def, Med, Del)

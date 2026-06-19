@@ -1928,6 +1928,15 @@ function calcPromedio(fn) {
 
 const fairPlay = calcPromedio(pilFP);
 
+// Para la distinción El Puntual: requiere haber jugado al menos el 40% de los partidos
+// de la temporada (mínimo 3). Evita que jugadores con pocas apariciones dominen el ranking.
+function fairPlayClasif(id) {
+  const total = MOCK_DATA.partidos.filter(esJugado).length;
+  const min = Math.max(3, Math.round(total * 0.4));
+  if (statsJugador(id).jugados < min) return 0;
+  return fairPlay(id);
+}
+
 // Distinciones: cada una premia un tipo de aporte distinto, para que el
 // reconocimiento rote y casi nadie quede invisible. Todas automáticas.
 const DISTINCIONES = [
@@ -1937,7 +1946,7 @@ const DISTINCIONES = [
   { titulo: "El Muro",           glifo: "escudo",   metrica: difConMin3, filtro: esDefOArquero,   unidad: "veces diferenciador" },
   { titulo: "El Maestro",        glifo: "llave",    metrica: difConMin3, filtro: esMediocampista, unidad: "veces diferenciador" },
   { titulo: "El Cazador",        glifo: "flecha",   metrica: difConMin3, filtro: esDelantero,     unidad: "veces diferenciador" },
-  { titulo: "El Puntual",        glifo: "reloj",    metrica: id => fairPlay(id),                  unidad: "% de puntualidad"   },
+  { titulo: "El Puntual",        glifo: "reloj",    metrica: fairPlayClasif,                      unidad: "% de puntualidad"   },
   { titulo: "El Líder",          glifo: "corona",   metrica: id => statsJugador(id).mvps,         unidad: "veces MVP"          }
 ];
 
