@@ -912,10 +912,23 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
 .profile-pos { font-size: .86rem; color: var(--text-dim); }
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: .55rem;
   margin-top: .9rem;
 }
+.perfil-nivel {
+  background: rgba(201,168,76,.07);
+  border: 1px solid rgba(201,168,76,.3);
+  border-radius: 10px;
+  padding: .9rem 1rem;
+  margin-top: .8rem;
+}
+.perfil-nivel-top { display: flex; justify-content: space-between; align-items: baseline; }
+.perfil-nivel-num { font-family: var(--font-title); font-weight: 700; font-size: 1.5rem; color: var(--color-gold); line-height: 1; }
+.perfil-nivel-xp { font-size: .82rem; color: var(--text-dim); }
+.nivel-track { height: 7px; background: rgba(232,213,163,.12); border-radius: 4px; overflow: hidden; margin: .55rem 0 .3rem; }
+.nivel-fill { height: 100%; background: linear-gradient(90deg, var(--color-gold), #e0b84a); border-radius: 4px; }
+.nivel-next { font-size: .64rem; color: var(--text-dim); }
 .stat-box {
   text-align: center;
   border: 1px solid var(--line);
@@ -2472,6 +2485,10 @@ function abrirPerfil(id) {
   const j = byId[id];
   if (!j) return;
   const s = statsJugador(id);
+  const xp = xpJugador(id);
+  const { nivel, pct } = nivelDe(xp);
+  const xpFalta = XP_POR_NIVEL - (xp % XP_POR_NIVEL);
+  const dist = distincionesDe(id);
   document.getElementById("modalContent").innerHTML = `
     <button class="modal-close" onclick="cerrarPerfil()" aria-label="Cerrar">✕</button>
     <div class="profile-head">
@@ -2479,14 +2496,25 @@ function abrirPerfil(id) {
       <div class="profile-name">${j.Nombre}</div>
       <div class="profile-pos">${j.Posicion} · Equipo frecuente: ${s.equipoFrecuente}</div>
     </div>
+    <div class="perfil-nivel">
+      <div class="perfil-nivel-top">
+        <span class="perfil-nivel-num">Nivel ${nivel}</span>
+        <span class="perfil-nivel-xp">${xp} XP</span>
+      </div>
+      <div class="nivel-track"><div class="nivel-fill" style="width:${pct}%"></div></div>
+      <div class="nivel-next">${xpFalta} XP para el Nivel ${nivel + 1}</div>
+      ${dist.length ? `<div class="perfil-distinciones">${dist.map(t => `<span class="dist-chip">${t}</span>`).join("")}</div>` : ""}
+    </div>
     <div class="stat-grid">
       <div class="stat-box"><div class="num">${s.goles}</div><div class="lbl">Goles</div></div>
       <div class="stat-box"><div class="num">${s.asistencias}</div><div class="lbl">Asistencias</div></div>
       <div class="stat-box"><div class="num">${s.mvps}</div><div class="lbl">MVPs</div></div>
+      <div class="stat-box"><div class="num">${vallasInvictas(id)}</div><div class="lbl">Vallas</div></div>
+      <div class="stat-box"><div class="num">${s.difs}</div><div class="lbl">Diferenciador</div></div>
       <div class="stat-box"><div class="num">${fairPlay(id)}%</div><div class="lbl">Fair Play</div></div>
     </div>
     <div class="partidos-card">
-      <div class="partidos-card-title">Partidos</div>
+      <div class="partidos-card-title">Partidos · ${puntosTemporada(id)} pts temporada</div>
       <div class="pb-row">
         <span class="pb-lbl">Jugados</span>
         <div class="pb-track"><div class="pb-fill pb-total" style="width:100%"></div></div>
@@ -2503,33 +2531,13 @@ function abrirPerfil(id) {
         <span class="pb-val">${s.perdidos}</span>
       </div>
     </div>
-    <div class="pilares">
-      <div class="pilares-title">Perfil Jugador</div>
-      ${PILARES.map(p => {
-        const v = p.calc(id);
-        const maximo = Math.max(...MOCK_DATA.jugadores.map(j => p.calc(j.ID_Jugador)), 0);
-        const ancho = maximo > 0 ? Math.round((v / maximo) * 100) : 0;
-        return `
-        <div class="pilar-row">
-          <div class="pilar-nombre">${p.nombre}</div>
-          <div class="pilar-bar"><div class="pilar-fill" style="width:${ancho}%"></div></div>
-          <div class="pilar-val">${p.fmt ? p.fmt(v) : v}</div>
-        </div>`;
-      }).join("")}
-      ${(() => {
-        const dist = distincionesDe(id);
-        if (!dist.length) return "";
-        return `<div class="perfil-distinciones">${dist.map(t => `<span class="dist-chip">${t}</span>`).join("")}</div>`;
-      })()}
-      <p class="pilares-note">Nivel de Leyenda: XP que solo sube, partido a partido. Puntos: victorias de la temporada. Fair Play: promedio de puntualidad.</p>
-    </div>
     ${(() => {
       const { goles, asists } = gestosJugador(id);
       const entradasG = Object.entries(goles).filter(([, n]) => n > 0);
       const entradasA = Object.entries(asists).filter(([, n]) => n > 0);
       if (!entradasG.length && !entradasA.length) return "";
       const tags = (entradas) => entradas
-        .map(([t, n]) => `<span class="gesto-tag">${t}${n > 1 ? ` ×${n}` : ""}</span>`)
+        .map(([t, n]) => `<span class="gesto-tag">${t} (${n})</span>`)
         .join("");
       return `
         <div class="perfil-gestos">
