@@ -120,6 +120,10 @@ y casi nadie quede invisible. Todas se calculan solas: la ostenta quien lidera e
 | El Conquistador | Más victorias en la temporada | Todos |
 | El Artillero | Más goles | Todos |
 | El Estratega | Más pases gol | Todos |
+| El Decisivo | Más Goles Victoria (gol que asegura el triunfo) | Todos |
+| El Capitán | Más veces nombrado capitán | Todos |
+| El Completo | Más partidos con gol + asistencia en el mismo juego | Todos |
+| El Omnipresente | Racha más larga de partidos consecutivos sin faltar | Todos |
 | El Muro | Más veces elegido Diferenciador · mínimo 3 partidos | Solo Arquero / Defensa |
 | El Maestro | Más veces elegido Diferenciador · mínimo 3 partidos | Solo Mediocampista |
 | El Cazador | Más veces elegido Diferenciador · mínimo 3 partidos | Solo Delantero |
