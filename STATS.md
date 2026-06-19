@@ -100,7 +100,6 @@ Premia presentarse, ganar y aportar; los goles ayudan pero no lo son todo.
 | Asistencia (pase gol) | +6 c/u |
 | Valla invicta (su equipo no recibió goles) | +4 |
 | MVP del partido | +10 |
-| Diferenciador del partido | +10 |
 | Llegó temprano | +3 |
 | Llegó a tiempo | +2 |
 
@@ -159,7 +158,7 @@ Temporada = PROMEDIO. Aparece en el perfil y alimenta la distinción "El Puntual
 ```js
 // Nivel de Leyenda (XP por acción en cada partido)
 XP = { jugar: 10, victoria: 5, gol: 8, asistencia: 6,
-       valla: 4, mvp: 10, diferenciador: 10, temprano: 3, tiempo: 2 }
+       valla: 4, mvp: 10, temprano: 3, tiempo: 2 }
 XP_POR_NIVEL = 20
 
 // Puntos Temporada

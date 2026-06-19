@@ -912,10 +912,13 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
 .profile-pos { font-size: .86rem; color: var(--text-dim); }
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: .55rem;
   margin-top: .9rem;
 }
+.stat-box { grid-column: span 2; }
+.stat-grid .stat-box:nth-child(4),
+.stat-grid .stat-box:nth-child(5) { grid-column: span 3; }
 .perfil-nivel {
   background: rgba(201,168,76,.07);
   border: 1px solid rgba(201,168,76,.3);
@@ -1806,7 +1809,6 @@ const XP = {
   asistencia: 6,    // por cada pase gol
   valla: 4,         // valla invicta: su equipo no recibió goles
   mvp: 10,          // MVP del partido
-  diferenciador: 10,// Diferenciador del partido
   temprano: 3,      // llegó temprano
   tiempo: 2         // llegó a tiempo
 };
@@ -1833,7 +1835,6 @@ function xpJugador(id) {
     if (gA > gC) xp += XP.victoria;
     if (gC === 0) xp += XP.valla;
     if (mvpsDe(p).includes(id)) xp += XP.mvp;
-    if (p.Diferenciador === id) xp += XP.diferenciador;
     const ll = llegadaDe(id, a.ID_Partido);
     if (ll === "Temprano") xp += XP.temprano;
     else if (ll === "Tiempo") xp += XP.tiempo;
@@ -2566,7 +2567,6 @@ function abrirPerfil(id) {
       <div class="stat-box"><div class="num">${s.asistencias}</div><div class="lbl">Asistencias</div></div>
       <div class="stat-box"><div class="num">${s.mvps}</div><div class="lbl">MVPs</div></div>
       <div class="stat-box"><div class="num">${vallasInvictas(id)}</div><div class="lbl">V. Invictas</div></div>
-      <div class="stat-box"><div class="num">${s.difs}</div><div class="lbl">Diferenciador</div></div>
       <div class="stat-box"><div class="num">${fairPlay(id)}%</div><div class="lbl">Fair Play</div></div>
     </div>
     <div class="partidos-card">
