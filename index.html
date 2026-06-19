@@ -1701,8 +1701,8 @@ function deltaResultado(equipo, p) {
   const gC = equipo === "Rojo" ? p.Goles_Azul : p.Goles_Rojo;
   const diff = gA - gC;
   const m = Math.abs(diff);
-  if (diff > 0) return m === 1 ? 0.4 : m <= 3 ? 0.2 : 0.1;
-  if (diff < 0) return m === 1 ? -0.1 : m <= 3 ? -0.2 : -0.5;
+  if (diff > 0) return m === 1 ? 0.15 : m <= 3 ? 0.08 : 0.04;
+  if (diff < 0) return m === 1 ? -0.04 : m <= 3 ? -0.08 : -0.20;
   return 0;
 }
 
