@@ -929,6 +929,37 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
 .nivel-track { height: 7px; background: rgba(232,213,163,.12); border-radius: 4px; overflow: hidden; margin: .55rem 0 .3rem; }
 .nivel-fill { height: 100%; background: linear-gradient(90deg, var(--color-gold), #e0b84a); border-radius: 4px; }
 .nivel-next { font-size: .64rem; color: var(--text-dim); }
+
+/* ---------- Pestaña Jugadores ---------- */
+.jugadores-grid { display: grid; grid-template-columns: 1fr; gap: .6rem; padding: .6rem 0; }
+@media (min-width: 600px) { .jugadores-grid { grid-template-columns: 1fr 1fr; } }
+.jugador-card {
+  display: flex; align-items: flex-start; gap: .8rem;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 10px; padding: .75rem .8rem;
+  cursor: pointer; transition: border-color .15s, background .15s;
+}
+.jugador-card:hover { border-color: rgba(201,168,76,.4); background: var(--surface-2); }
+.jugador-card-av {
+  width: 42px; height: 42px; flex: 0 0 42px;
+  background: var(--color-primary); border: 1px solid rgba(201,168,76,.3);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-title); font-weight: 700; font-size: .78rem; color: var(--color-gold);
+}
+.jugador-card-body { flex: 1; min-width: 0; }
+.jugador-card-nombre { font-family: var(--font-title); font-weight: 700; font-size: .88rem; color: var(--color-parchment); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jugador-card-pos { font-size: .7rem; color: var(--text-dim); }
+.jugador-card-nivel { font-size: .76rem; color: var(--color-gold); font-family: var(--font-title); font-weight: 600; margin-top: .15rem; }
+.jugador-card-dist { display: flex; flex-wrap: wrap; gap: .2rem; margin-top: .35rem; }
+
+/* ---------- Distancias al líder (perfil) ---------- */
+.distancias-section { margin-top: 1rem; }
+.dist-row { display: flex; gap: .5rem; padding: .3rem 0; border-bottom: 1px solid var(--line); align-items: baseline; flex-wrap: wrap; }
+.dist-row:last-child { border-bottom: none; }
+.dist-row-titulo { flex: 0 0 8rem; font-size: .76rem; font-family: var(--font-title); color: var(--color-parchment); font-weight: 600; }
+.dist-lider-yo { font-size: .76rem; color: var(--color-gold); font-weight: 700; }
+.dist-lider-val { font-size: .74rem; color: var(--text-dim); line-height: 1.4; }
+.dist-lider-val strong { color: var(--color-parchment); font-weight: 600; }
 .stat-box {
   text-align: center;
   border: 1px solid var(--line);
@@ -1190,6 +1221,7 @@ details[open] > .info-body > div { padding-bottom: .5rem; }
   <button class="tab" data-view="estadisticas">Estadísticas</button>
   <button class="tab" data-view="partidos">Partidos</button>
   <button class="tab" data-view="informacion">Información</button>
+  <button class="tab" data-view="jugadores">Jugadores</button>
 </nav>
 </div>
 
@@ -1254,6 +1286,11 @@ details[open] > .info-body > div { padding-bottom: .5rem; }
   <section class="view" id="view-informacion">
     <p class="info-guia-titulo">Guía de la aplicación</p>
     <div id="info-content"></div>
+  </section>
+
+  <!-- Vista: Jugadores -->
+  <section class="view" id="view-jugadores">
+    <div id="jugadores-content"></div>
   </section>
 </main>
 
@@ -2312,6 +2349,25 @@ function glifoSVG(nombre) {
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">${GLIFOS[nombre] || ""}</svg>`;
 }
 
+// Distancias de un jugador al líder en cada distinción (para el perfil)
+function distanciasHTML(id) {
+  const rows = DISTINCIONES.map(d => {
+    const l = liderDistincion(d);
+    if (!l) return "";
+    const miValor = d.metrica(id);
+    const esLider = l.id === id;
+    let info;
+    if (esLider) {
+      info = `<span class="dist-lider-yo">Eres el líder · ${l.valor} ${d.unidad}</span>`;
+    } else {
+      const diff = l.valor - miValor;
+      info = `<span class="dist-lider-val"><strong>${miValor}</strong> ${d.unidad} · ${diff > 0 ? `faltan <strong>${diff}</strong>` : "empatado"} para ${nombre(l.id)}</span>`;
+    }
+    return `<div class="dist-row"><span class="dist-row-titulo">${d.titulo}</span>${info}</div>`;
+  }).join("");
+  return `<div class="distancias-section"><div class="pilares-title">Salón de Leyendas</div>${rows}</div>`;
+}
+
 // Sección de Distinciones (medallas) para el hub de Estadísticas
 function distincionesHTML() {
   const cards = DISTINCIONES.map(d => {
@@ -2509,7 +2565,7 @@ function abrirPerfil(id) {
       <div class="stat-box"><div class="num">${s.goles}</div><div class="lbl">Goles</div></div>
       <div class="stat-box"><div class="num">${s.asistencias}</div><div class="lbl">Asistencias</div></div>
       <div class="stat-box"><div class="num">${s.mvps}</div><div class="lbl">MVPs</div></div>
-      <div class="stat-box"><div class="num">${vallasInvictas(id)}</div><div class="lbl">Vallas</div></div>
+      <div class="stat-box"><div class="num">${vallasInvictas(id)}</div><div class="lbl">V. Invictas</div></div>
       <div class="stat-box"><div class="num">${s.difs}</div><div class="lbl">Diferenciador</div></div>
       <div class="stat-box"><div class="num">${fairPlay(id)}%</div><div class="lbl">Fair Play</div></div>
     </div>
@@ -2531,6 +2587,7 @@ function abrirPerfil(id) {
         <span class="pb-val">${s.perdidos}</span>
       </div>
     </div>
+    ${distanciasHTML(id)}
     ${(() => {
       const { goles, asists } = gestosJugador(id);
       const entradasG = Object.entries(goles).filter(([, n]) => n > 0);
@@ -2665,12 +2722,36 @@ async function renderInformacion() {
   }
 }
 
+function renderJugadores() {
+  const jugadores = [...MOCK_DATA.jugadores]
+    .sort((a, b) => xpJugador(b.ID_Jugador) - xpJugador(a.ID_Jugador));
+  const cards = jugadores.map(j => {
+    const xp = xpJugador(j.ID_Jugador);
+    const { nivel } = nivelDe(xp);
+    const dist = distincionesDe(j.ID_Jugador);
+    const chips = dist.map(t => `<span class="dist-chip">${t}</span>`).join("");
+    return `<div class="jugador-card" onclick="abrirPerfil('${j.ID_Jugador}')">
+      <div class="jugador-card-av">${iniciales(j.Nombre)}</div>
+      <div class="jugador-card-body">
+        <div class="jugador-card-nombre">${j.Nombre}</div>
+        <div class="jugador-card-pos">${j.Posicion}</div>
+        <div class="jugador-card-nivel">Nivel ${nivel} · ${xp} XP</div>
+        ${chips ? `<div class="jugador-card-dist">${chips}</div>` : ""}
+      </div>
+    </div>`;
+  }).join("");
+  document.getElementById("jugadores-content").innerHTML =
+    `<p class="view-sub" style="margin-top:.4rem">Jugadores · Temporada 2026</p>
+     <div class="jugadores-grid">${cards}</div>`;
+}
+
 function renderTodo() {
   renderConvocatoria();
   renderAlineacion();
   renderEstadisticas();
   renderPartidos();
   renderInformacion();
+  renderJugadores();
 }
 
 /* ============================================================
