@@ -200,4 +200,4 @@ FP_PESOS = { Temprano: 100, Tiempo: 85, Tarde: 75, No: 0, Sancionado: 0 }
 - **El Nivel solo sube:** perder un partido no resta XP; simplemente no suma victoria. Es por diseño — el objetivo es que nadie sienta retroceso.
 - **No jugó:** si el jugador no aparece en la alineación de un partido, no recibe XP ni stats de ese partido.
 - **Distinción sin datos:** si nadie tiene la métrica > 0, esa medalla no se muestra.
-- **Nombre del jugador:** los rankings muestran el nombre tal cual está en la hoja `Jugadores`. Si un jugador aparece con un código (ej. "GR7") es porque ese es su nombre en el Excel — se corrige ahí.
+- **Nombre del jugador:** los rankings muestran el nombre tal cual está en la hoja `Jugadores`. "GR7" es el alias de Giovanni Rengifo en el Excel (intencional).
