@@ -103,7 +103,7 @@
         "texto": "Promedio de puntualidad de la temporada. Temprano: 100% · A tiempo: 85% · Tarde: 75% · No asistió: 0%."
       },
       {
-        "icono": "balon",
+        "icono": "rayo",
         "label": "Gesto Técnico",
         "texto": "Ranking por calidad de goles y pases gol. No todos valen igual: una chilena cuenta más que un gol de jugada; un saque de portería más que un pase normal."
       }
