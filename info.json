@@ -85,7 +85,7 @@
       {
         "icono": "estrella",
         "label": "Nivel de Leyenda",
-        "texto": "XP que solo sube, partido a partido. Jugar +10 · Victoria +5 · Gol +8 · Asistencia +6 · Valla invicta +4 · MVP +10 · Diferenciador +6 · Llegar temprano +3. Nunca pierdes XP — el nivel solo avanza."
+        "texto": "XP que solo sube, partido a partido. Jugar +10 · Victoria +5 · Gol +8 · Asistencia +6 · Valla invicta +4 · MVP +10 · Diferenciador +6 (o +3 si tu equipo perdió) · Llegar temprano +3. Nunca pierdes XP — el nivel solo avanza."
       },
       {
         "icono": "medalla",

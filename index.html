@@ -1851,7 +1851,7 @@ function xpJugador(id) {
     if (gA > gC) xp += XP.victoria;
     if (gC === 0) xp += XP.valla;
     if (mvpsDe(p).includes(id)) xp += XP.mvp;
-    if ((a.Diferenciadores || []).includes(id)) xp += XP.diferenciador;
+    if ((a.Diferenciadores || []).includes(id)) xp += gA < gC ? Math.round(XP.diferenciador / 2) : XP.diferenciador;
     const ll = llegadaDe(id, a.ID_Partido);
     if (ll === "Temprano") xp += XP.temprano;
     else if (ll === "Tiempo") xp += XP.tiempo;

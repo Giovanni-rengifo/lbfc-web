@@ -100,7 +100,7 @@ Premia presentarse, ganar y aportar; los goles ayudan pero no lo son todo.
 | Asistencia (pase gol) | +6 c/u |
 | Valla invicta (su equipo no recibió goles) | +4 |
 | MVP del partido | +10 |
-| Diferenciador (mejor de su posición) | +6 |
+| Diferenciador (mejor de su posición) | +6 (victoria/empate) · +3 (derrota) |
 | Llegó temprano | +3 |
 | Llegó a tiempo | +2 |
 
