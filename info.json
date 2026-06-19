@@ -90,7 +90,12 @@
       {
         "icono": "medalla",
         "label": "Distinciones",
-        "texto": "Trece medallas automáticas. Las ostenta quien lidera cada categoría: El Inquebrantable (más partidos), El Conquistador (más victorias), El Artillero (más goles), El Estratega (más pases gol), El Decisivo (más goles victoria), El Capitán (más veces capitán), El Completo (más partidos con gol y asistencia), El Omnipresente (racha seguida más larga), El Muro (mejor Def/GK), El Maestro (mejor Mediocampista), El Cazador (mejor Delantero), El Puntual (mejor puntualidad) y El Líder (más MVPs)."
+        "texto": "Once medallas automáticas. Las ostenta quien lidera cada categoría: El Conquistador (más victorias), El Artillero (más goles), El Estratega (más pases gol), El Decisivo (más goles victoria), El Capitán (más veces capitán), El Completo (más partidos con gol y asistencia), El Muro (mejor Def/GK), El Maestro (mejor Mediocampista), El Cazador (mejor Delantero), El Puntual (mejor puntualidad) y El Líder (más MVPs). Chips dorados en el perfil."
+      },
+      {
+        "icono": "rayo",
+        "label": "Emblemas",
+        "texto": "Logros que se conquistan para siempre. Varios jugadores pueden tenerlos al mismo tiempo. Hat-trick (3+ goles en un partido), Doblete (2 goles en un partido), Asistidor Épico (2+ asistencias en un partido), Centella (gol más rápido de la temporada), Nocturno (gol más tardío) e Inmortal (jugó todos los partidos). Chips azules en el perfil."
       },
       {
         "icono": "trofeo",

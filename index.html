@@ -1050,6 +1050,11 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
   border-radius: 999px;
   padding: .2rem .6rem;
 }
+.emblema-chip {
+  color: #9fbcd4;
+  background: rgba(159,188,212,.08);
+  border-color: rgba(159,188,212,.35);
+}
 .pilar-val {
   flex: 0 0 2.9rem;
   text-align: right;
@@ -1995,7 +2000,6 @@ function fairPlayClasif(id) {
 // Distinciones: cada una premia un tipo de aporte distinto, para que el
 // reconocimiento rote y casi nadie quede invisible. Todas automáticas.
 const DISTINCIONES = [
-  { titulo: "El Inquebrantable", glifo: "castillo",  metrica: id => statsJugador(id).jugados,     unidad: "partidos jugados"   },
   { titulo: "El Conquistador",   glifo: "espada",   metrica: id => statsJugador(id).ganados,     unidad: "victorias"          },
   { titulo: "El Artillero",      glifo: "diana",    metrica: id => statsJugador(id).goles,       unidad: "goles"              },
   { titulo: "El Estratega",      glifo: "ojo",      metrica: id => statsJugador(id).asistencias, unidad: "pases gol"          },
@@ -2005,7 +2009,6 @@ const DISTINCIONES = [
   { titulo: "El Decisivo",       glifo: "llama",    metrica: golesVictoriaDe,                     unidad: "goles victoria"     },
   { titulo: "El Capitán",        glifo: "bandera",  metrica: vecesCpitan,                         unidad: "veces capitán"      },
   { titulo: "El Completo",       glifo: "diamante", metrica: partidosCompletos,                   unidad: "partidos gol+asist" },
-  { titulo: "El Omnipresente",   glifo: "cadena",   metrica: rachaConsecutiva,                    unidad: "partidos seguidos"  },
   { titulo: "El Puntual",        glifo: "reloj",    metrica: fairPlayClasif,                      unidad: "% de puntualidad"   },
   { titulo: "El Líder",          glifo: "corona",   metrica: id => statsJugador(id).mvps,         unidad: "veces MVP"          }
 ];
@@ -2031,6 +2034,84 @@ function distincionesDe(id) {
     const l = liderDistincion(d);
     return l && l.id === id;
   }).map(d => d.titulo);
+}
+
+// ---- Emblemas (logros permanentes, múltiples jugadores pueden tenerlos) ----
+const EMBLEMAS = [
+  {
+    titulo: "Hat-trick",
+    glifo:  "tres",
+    desc:   "3 o más goles en un mismo partido",
+    cond: id => {
+      const ids = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+      return [...ids].some(pid =>
+        MOCK_DATA.eventos.filter(e => e.ID_Partido === pid && e.Goleador === id && !esAutogol(e)).length >= 3
+      );
+    }
+  },
+  {
+    titulo: "Doblete",
+    glifo:  "dos",
+    desc:   "2 goles en un mismo partido",
+    cond: id => {
+      const ids = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+      return [...ids].some(pid =>
+        MOCK_DATA.eventos.filter(e => e.ID_Partido === pid && e.Goleador === id && !esAutogol(e)).length >= 2
+      );
+    }
+  },
+  {
+    titulo: "Asistidor Épico",
+    glifo:  "doble_fl",
+    desc:   "2 o más asistencias en un mismo partido",
+    cond: id => {
+      const ids = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+      return [...ids].some(pid =>
+        MOCK_DATA.eventos.filter(e => e.ID_Partido === pid && e.Asistente === id).length >= 2
+      );
+    }
+  },
+  {
+    titulo: "Centella",
+    glifo:  "rayo",
+    desc:   "Gol más rápido de la temporada",
+    cond: id => {
+      const goles = MOCK_DATA.eventos.filter(e =>
+        MOCK_DATA.partidos.filter(esJugado).some(p => p.ID_Partido === e.ID_Partido) &&
+        !esAutogol(e) && e.Minuto != null
+      );
+      if (!goles.length) return false;
+      const min = Math.min(...goles.map(e => e.Minuto));
+      return goles.some(e => e.Goleador === id && e.Minuto === min);
+    }
+  },
+  {
+    titulo: "Nocturno",
+    glifo:  "luna",
+    desc:   "Gol más tardío de la temporada",
+    cond: id => {
+      const goles = MOCK_DATA.eventos.filter(e =>
+        MOCK_DATA.partidos.filter(esJugado).some(p => p.ID_Partido === e.ID_Partido) &&
+        !esAutogol(e) && e.Minuto != null
+      );
+      if (!goles.length) return false;
+      const max = Math.max(...goles.map(e => e.Minuto));
+      return goles.some(e => e.Goleador === id && e.Minuto === max);
+    }
+  },
+  {
+    titulo: "Inmortal",
+    glifo:  "sol",
+    desc:   "Jugó todos los partidos de la temporada",
+    cond: id => {
+      const total = MOCK_DATA.partidos.filter(esJugado).length;
+      return total > 0 && statsJugador(id).jugados === total;
+    }
+  }
+];
+
+function emblemasDeJugador(id) {
+  return EMBLEMAS.filter(e => e.cond(id));
 }
 
 const PILARES = [
@@ -2444,7 +2525,13 @@ const GLIFOS = {
   diamante:  '<path d="M6 3h12l4 6-10 12L2 9z"/><line x1="2" y1="9" x2="22" y2="9"/>',
   cadena:    '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
   llave:     '<circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2L10.83 12.17M15 7l3 3"/>',
-  flecha:    '<line x1="3" y1="21" x2="21" y2="3"/><polyline points="10 3 21 3 21 14"/>'
+  flecha:    '<line x1="3" y1="21" x2="21" y2="3"/><polyline points="10 3 21 3 21 14"/>',
+  rayo:      '<polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  luna:      '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+  tres:      '<line x1="6" y1="5" x2="6" y2="19"/><line x1="12" y1="5" x2="12" y2="19"/><line x1="18" y1="5" x2="18" y2="19"/>',
+  dos:       '<line x1="9" y1="5" x2="9" y2="19"/><line x1="15" y1="5" x2="15" y2="19"/>',
+  doble_fl:  '<line x1="3" y1="8" x2="21" y2="8"/><polyline points="15 2 21 8 15 14"/><line x1="3" y1="16" x2="21" y2="16"/><polyline points="15 10 21 16 15 22"/>',
+  sol:       '<circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>'
 };
 function glifoSVG(nombre) {
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">${GLIFOS[nombre] || ""}</svg>`;
@@ -2647,6 +2734,7 @@ function abrirPerfil(id) {
   const { nivel, pct } = nivelDe(xp);
   const xpFalta = XP_POR_NIVEL - (xp % XP_POR_NIVEL);
   const dist = distincionesDe(id);
+  const embl = emblemasDeJugador(id);
   document.getElementById("modalContent").innerHTML = `
     <button class="modal-close" onclick="cerrarPerfil()" aria-label="Cerrar">✕</button>
     <div class="profile-head">
@@ -2662,6 +2750,7 @@ function abrirPerfil(id) {
       <div class="nivel-track"><div class="nivel-fill" style="width:${pct}%"></div></div>
       <div class="nivel-next">${xpFalta} XP para el Nivel ${nivel + 1}</div>
       ${dist.length ? `<div class="perfil-distinciones">${dist.map(t => `<span class="dist-chip">${t}</span>`).join("")}</div>` : ""}
+      ${embl.length ? `<div class="perfil-distinciones" style="margin-top:.3rem">${embl.map(e => `<span class="dist-chip emblema-chip">${e.titulo}</span>`).join("")}</div>` : ""}
     </div>
     <div class="stat-grid">
       <div class="stat-box"><div class="num">${s.goles}</div><div class="lbl">Goles</div></div>
@@ -2841,8 +2930,12 @@ function renderJugadores() {
   const cards = jugadores.map(j => {
     const xp = xpJugador(j.ID_Jugador);
     const { nivel } = nivelDe(xp);
-    const dist = distincionesDe(j.ID_Jugador);
-    const chips = dist.map(t => `<span class="dist-chip">${t}</span>`).join("");
+    const dist  = distincionesDe(j.ID_Jugador);
+    const embl  = emblemasDeJugador(j.ID_Jugador);
+    const chips = [
+      ...dist.map(t => `<span class="dist-chip">${t}</span>`),
+      ...embl.map(e => `<span class="dist-chip emblema-chip">${e.titulo}</span>`)
+    ].join("");
     return `<div class="jugador-card" onclick="abrirPerfil('${j.ID_Jugador}')">
       <div class="jugador-card-av">${iniciales(j.Nombre)}</div>
       <div class="jugador-card-body">

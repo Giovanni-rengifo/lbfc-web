@@ -111,32 +111,46 @@ La barra de progreso muestra el avance dentro del nivel actual.
 
 Constante en código: `DISTINCIONES`
 
-Cada distinción premia un **tipo de aporte distinto**, para que el reconocimiento rote
-y casi nadie quede invisible. Todas se calculan solas: la ostenta quien lidera esa métrica.
+Cada distinción premia un **tipo de aporte distinto**. Solo UN jugador la ostenta a la vez
+(quien lidera la métrica). Chips dorados en el perfil.
 
 | Distinción | Métrica | Quién compite |
 |---|---|---|
-| El Inquebrantable | Más partidos jugados | Todos |
 | El Conquistador | Más victorias en la temporada | Todos |
 | El Artillero | Más goles | Todos |
 | El Estratega | Más pases gol | Todos |
 | El Decisivo | Más Goles Victoria (gol que asegura el triunfo) | Todos |
 | El Capitán | Más veces nombrado capitán | Todos |
 | El Completo | Más partidos con gol + asistencia en el mismo juego | Todos |
-| El Omnipresente | Racha más larga de partidos consecutivos sin faltar | Todos |
 | El Muro | Más veces elegido Diferenciador · mínimo 3 partidos | Solo Arquero / Defensa |
 | El Maestro | Más veces elegido Diferenciador · mínimo 3 partidos | Solo Mediocampista |
 | El Cazador | Más veces elegido Diferenciador · mínimo 3 partidos | Solo Delantero |
 | El Puntual | Mejor % de puntualidad (Fair Play) · mínimo 40% de partidos jugados | Todos |
 | El Líder | Más veces MVP | Todos |
 
-> **Diferenciador**: por cada partido se elige 1 jugador por grupo de posición (Arq/Def, Med, Del)
-> que fue el mejor de su posición. Columna `Diferenciador` (VERDADERO/FALSO) en la hoja
-> `Alineaciones` del Excel. 3 registros TRUE por partido (uno por grupo).
+> **Eliminadas**: El Inquebrantable (partidos jugados) y El Omnipresente (racha consecutiva)
+> siempre serían de Giovanni como presidente — sin competencia real.
 
-En el perfil de cada jugador se muestran como chips dorados las distinciones que ostenta.
+> **Diferenciador**: por cada partido se elige 1 jugador por grupo de posición (Arq/Def, Med, Del).
+> Columna `Diferenciador` (VERDADERO/FALSO) en `Alineaciones`. 3 registros TRUE por partido.
 
-### 4c. Puntos Temporada
+### 4c. Emblemas (logros permanentes)
+
+Constante en código: `EMBLEMAS`
+
+Se **conquistan para siempre**. Múltiples jugadores pueden tenerlos simultáneamente.
+Chips azules-plata en el perfil, visibles también en la tarjeta de Jugadores.
+
+| Emblema | Condición | Notas |
+|---|---|---|
+| Hat-trick | 3 o más goles en un mismo partido | Permanente al lograrlo |
+| Doblete | 2 goles en un mismo partido | Hat-trick incluye Doblete automáticamente |
+| Asistidor Épico | 2 o más asistencias en un mismo partido | |
+| Centella | Gol más rápido de la temporada | Puede cambiar si alguien supera el minuto |
+| Nocturno | Gol más tardío de la temporada | Puede cambiar si alguien supera el minuto |
+| Inmortal | Jugó **todos** los partidos de la temporada sin faltar uno | |
+
+### 4d. Puntos Temporada
 
 Constante en código: `puntosTemporada()`
 
@@ -148,7 +162,7 @@ Constante en código: `puntosTemporada()`
 
 Temporada = SUMA. Ranking propio en Estadísticas y línea en el perfil.
 
-### 4d. Fair Play
+### 4e. Fair Play
 
 Constante en código: `FP_PESOS`
 
