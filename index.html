@@ -1680,8 +1680,8 @@ const PESOS_TIPO_PASE = {
   "tiro libre": 2, "esquina": 2, "tiro de esquina": 2,
   "porteria": 3
 };
-const LABEL_GOL  = { "jugada":"Jugada","gol":"Gol","penal":"Penal","cabeza":"Cabeza","tiro libre":"Tiro libre","fuera del area":"Fuera del área","olimpico":"Olímpico","chilena":"Chilena","autogol":"Autogol" };
-const LABEL_PASE = { "normal":"Normal","asistencia":"Normal","tiro libre":"Tiro libre","esquina":"Esquina","tiro de esquina":"Tiro de esquina","porteria":"Portería" };
+const LABEL_GOL  = { "jugada":"Goles","gol":"Goles","penal":"Penal","cabeza":"Cabeza","tiro libre":"Tiro libre","fuera del area":"Fuera del área","olimpico":"Olímpico","chilena":"Chilena","autogol":"Autogol" };
+const LABEL_PASE = { "normal":"Pases Gol","asistencia":"Pases Gol","tiro libre":"Tiro libre","esquina":"Esquina","tiro de esquina":"Tiro de esquina","porteria":"Portería" };
 const FP_PESOS = { "Temprano": 100, "Tiempo": 85, "Tarde": 75, "No": 0, "Sancionado": 0 };
 
 function eventosDelPartido(idPartido) {
@@ -2086,12 +2086,12 @@ initAutocomplete("ali-player");
 
 // ---- Vista 3: Estadísticas (TOP 10 por categoría) ----
 const CATEGORIAS = {
-  gestosGol:  { titulo: "Gesto Técnico · Gol",  unidad: "pts", acc: "#b87333",
-                desc: "Tipo de gol: Chilena ×3 · TL/Olímpico ×2 · Cabeza ×1.5 · Jugada ×1",
+  gestosGol:  { titulo: "Técnica Goleadora",  unidad: "pts", acc: "#b87333",
+                desc: "Chilena ×3 · TL/Olímpico ×2 · Cabeza ×1.5 · Goles ×1",
                 inverso: false, calc: gestosGolScore, fmt: v => String(v),
                 sub: id => gestosDetalle(id, "gol") },
-  gestosPase: { titulo: "Gesto Técnico · Pase", unidad: "pts", acc: "#7a6540",
-                desc: "Tipo de pase de gol: Portería ×3 · TL/Esquina ×2 · Normal ×1",
+  gestosPase: { titulo: "Técnica de Pase Gol", unidad: "pts", acc: "#7a6540",
+                desc: "Portería ×3 · TL/Esquina ×2 · Pases Gol ×1",
                 inverso: false, calc: gestosPaseScore, fmt: v => String(v),
                 sub: id => gestosDetalle(id, "pase") },
   goleadores:  { titulo: "Goleadores",      unidad: "goles",      acc: "var(--color-gold)",
@@ -2598,8 +2598,8 @@ function gestosDetalle(id, tipo) {
   const mapa = tipo === "gol" ? goles : asists;
   return Object.entries(mapa)
     .filter(([, n]) => n > 0)
-    .map(([t, n]) => n > 1 ? `${t} ×${n}` : t)
-    .join(" · ");
+    .map(([t, n]) => `${t} (${n})`)
+    .join(", ");
 }
 function tiempoHHMM(d) {
   return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
