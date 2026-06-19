@@ -100,6 +100,7 @@ Premia presentarse, ganar y aportar; los goles ayudan pero no lo son todo.
 | Asistencia (pase gol) | +6 c/u |
 | Valla invicta (su equipo no recibió goles) | +4 |
 | MVP del partido | +10 |
+| Diferenciador (mejor de su posición) | +6 |
 | Llegó temprano | +3 |
 | Llegó a tiempo | +2 |
 
@@ -118,9 +119,15 @@ y casi nadie quede invisible. Todas se calculan solas: la ostenta quien lidera e
 | El Inquebrantable | Más partidos jugados | Todos |
 | El Artillero | Más goles | Todos |
 | El Estratega | Más pases gol | Todos |
-| El Muro | Score: vallas×10 + consistencia(0–10) + MVPs · mínimo 3 partidos · se muestra vallas invictas | Solo Arquero / Defensa |
+| El Muro | Más veces elegido Diferenciador · mínimo 3 partidos | Solo Arquero / Defensa |
+| El Maestro | Más veces elegido Diferenciador · mínimo 3 partidos | Solo Mediocampista |
+| El Cazador | Más veces elegido Diferenciador · mínimo 3 partidos | Solo Delantero |
 | El Puntual | Mejor % de puntualidad (Fair Play) | Todos |
 | El Líder | Más veces MVP | Todos |
+
+> **Diferenciador**: por cada partido se elige 1 jugador por grupo de posición (Arq/Def, Med, Del)
+> que fue el mejor de su posición. Columna `Diferenciador` (VERDADERO/FALSO) en la hoja
+> `Alineaciones` del Excel. 3 registros TRUE por partido (uno por grupo).
 
 En el perfil de cada jugador se muestran como chips dorados las distinciones que ostenta.
 

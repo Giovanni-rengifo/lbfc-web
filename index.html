@@ -1353,36 +1353,36 @@ const MOCK_DATA = {
   // SHEET 1 — Estadísticas :: tabla Partidos
   // Marcador convención: Rojo - Azul
   partidos: [
-    { ID_Partido: 1,  Fecha: "2026-01-11", Goles_Rojo: 3, Goles_Azul: 2, MVP: 1,  Diferenciador: 5  },
-    { ID_Partido: 2,  Fecha: "2026-01-25", Goles_Rojo: 1, Goles_Azul: 4, MVP: 10, Diferenciador: 3  },
-    { ID_Partido: 3,  Fecha: "2026-02-08", Goles_Rojo: 2, Goles_Azul: 2, MVP: 4,  Diferenciador: 8  },
-    { ID_Partido: 4,  Fecha: "2026-02-22", Goles_Rojo: 5, Goles_Azul: 3, MVP: [7, 15], Diferenciador: 2 },
-    { ID_Partido: 5,  Fecha: "2026-03-08", Goles_Rojo: 0, Goles_Azul: 2, MVP: 13, Diferenciador: 6  },
-    { ID_Partido: 6,  Fecha: "2026-03-22", Goles_Rojo: 4, Goles_Azul: 4, MVP: 1,  Diferenciador: 11 },
-    { ID_Partido: 7,  Fecha: "2026-04-12", Goles_Rojo: 2, Goles_Azul: 1, MVP: 14, Diferenciador: 9  },
-    { ID_Partido: 8,  Fecha: "2026-04-26", Goles_Rojo: 3, Goles_Azul: 3, MVP: 5,  Diferenciador: 12 },
-    { ID_Partido: 9,  Fecha: "2026-05-10", Goles_Rojo: 1, Goles_Azul: 2, MVP: 10, Diferenciador: 15 },
-    { ID_Partido: 10, Fecha: "2026-05-24", Goles_Rojo: 4, Goles_Azul: 1, MVP: 7,  Diferenciador: 1  },
-    { ID_Partido: 11, Fecha: "2026-06-07", Goles_Rojo: 2, Goles_Azul: 3, MVP: 2,  Diferenciador: 10 },
+    { ID_Partido: 1,  Fecha: "2026-01-11", Goles_Rojo: 3, Goles_Azul: 2, MVP: 1        },
+    { ID_Partido: 2,  Fecha: "2026-01-25", Goles_Rojo: 1, Goles_Azul: 4, MVP: 10       },
+    { ID_Partido: 3,  Fecha: "2026-02-08", Goles_Rojo: 2, Goles_Azul: 2, MVP: 4        },
+    { ID_Partido: 4,  Fecha: "2026-02-22", Goles_Rojo: 5, Goles_Azul: 3, MVP: [7, 15]  },
+    { ID_Partido: 5,  Fecha: "2026-03-08", Goles_Rojo: 0, Goles_Azul: 2, MVP: 13       },
+    { ID_Partido: 6,  Fecha: "2026-03-22", Goles_Rojo: 4, Goles_Azul: 4, MVP: 1        },
+    { ID_Partido: 7,  Fecha: "2026-04-12", Goles_Rojo: 2, Goles_Azul: 1, MVP: 14       },
+    { ID_Partido: 8,  Fecha: "2026-04-26", Goles_Rojo: 3, Goles_Azul: 3, MVP: 5        },
+    { ID_Partido: 9,  Fecha: "2026-05-10", Goles_Rojo: 1, Goles_Azul: 2, MVP: 10       },
+    { ID_Partido: 10, Fecha: "2026-05-24", Goles_Rojo: 4, Goles_Azul: 1, MVP: 7        },
+    { ID_Partido: 11, Fecha: "2026-06-07", Goles_Rojo: 2, Goles_Azul: 3, MVP: 2        },
     // Próximo partido: sin resultado todavía (la alineación se publica el sábado)
-    { ID_Partido: 12, Fecha: "2026-06-14", Goles_Rojo: null, Goles_Azul: null, MVP: null, Diferenciador: null }
+    { ID_Partido: 12, Fecha: "2026-06-14", Goles_Rojo: null, Goles_Azul: null, MVP: null }
   ],
 
   // SHEET 1 — Estadísticas :: tabla Alineaciones
   // Compacta: { ID_Partido, Rojo: [ids], Azul: [ids] }
   alineaciones: [
-    { ID_Partido: 1,  Rojo: [1,3,5,8,12,13,14,16,20,21,24,27],  Azul: [2,4,6,7,9,10,11,15,22,23,25,28], Parciales: [] },
-    { ID_Partido: 2,  Rojo: [2,4,6,8,11,12,14,17,22,23,25,28],  Azul: [1,3,5,7,9,10,15,16,20,21,26,27], Parciales: [] },
-    { ID_Partido: 3,  Rojo: [1,2,6,9,11,13,14,18,19,20,25,27],  Azul: [3,4,5,7,8,10,12,15,21,23,24,28], Parciales: ["18","19"] },
-    { ID_Partido: 4,  Rojo: [3,5,7,9,12,13,15,17,21,22,26,28],  Azul: [1,2,4,6,8,10,11,14,19,20,24,27], Parciales: [] },
-    { ID_Partido: 5,  Rojo: [1,4,6,8,10,12,16,18,23,24,26,27],  Azul: [2,3,5,7,9,11,13,15,20,21,22,25], Parciales: [] },
-    { ID_Partido: 6,  Rojo: [1,3,4,7,9,11,15,16,20,22,24,28],   Azul: [2,5,6,8,10,12,13,14,21,23,26,27], Parciales: [] },
-    { ID_Partido: 7,  Rojo: [2,4,5,9,10,14,16,17,21,23,25,27],  Azul: [1,3,6,7,8,11,12,13,19,22,24,28], Parciales: [] },
-    { ID_Partido: 8,  Rojo: [1,2,5,6,10,13,16,18,19,21,26,28],  Azul: [3,4,7,8,9,11,12,15,20,23,25,27], Parciales: ["19"] },
-    { ID_Partido: 9,  Rojo: [3,4,5,8,11,14,16,17,20,22,25,28],  Azul: [1,2,6,7,9,10,13,15,21,24,26,27], Parciales: [] },
-    { ID_Partido: 10, Rojo: [1,4,6,7,9,12,15,18,19,23,24,27],   Azul: [2,3,5,8,10,11,13,14,20,22,26,28], Parciales: [] },
-    { ID_Partido: 11, Rojo: [2,3,6,8,12,13,14,16,24,25,27,28],  Azul: [1,4,5,7,9,10,11,15,20,21,22,26], Parciales: ["25"] },
-    { ID_Partido: 12, Rojo: [1,2,3,4,8,9,12,14,20,24,26,27],    Azul: [5,6,7,10,11,13,15,16,21,22,25,28], Parciales: [] }
+    { ID_Partido: 1,  Rojo: [1,3,5,8,12,13,14,16,20,21,24,27],  Azul: [2,4,6,7,9,10,11,15,22,23,25,28], Diferenciadores: [12,5,1],   Parciales: [] },
+    { ID_Partido: 2,  Rojo: [2,4,6,8,11,12,14,17,22,23,25,28],  Azul: [1,3,5,7,9,10,15,16,20,21,26,27], Diferenciadores: [3,17,10],  Parciales: [] },
+    { ID_Partido: 3,  Rojo: [1,2,6,9,11,13,14,18,19,20,25,27],  Azul: [3,4,5,7,8,10,12,15,21,23,24,28], Diferenciadores: [4,8,14],   Parciales: ["18","19"] },
+    { ID_Partido: 4,  Rojo: [3,5,7,9,12,13,15,17,21,22,26,28],  Azul: [1,2,4,6,8,10,11,14,19,20,24,27], Diferenciadores: [3,2,7],    Parciales: [] },
+    { ID_Partido: 5,  Rojo: [1,4,6,8,10,12,16,18,23,24,26,27],  Azul: [2,3,5,7,9,11,13,15,20,21,22,25], Diferenciadores: [6,11,7],   Parciales: [] },
+    { ID_Partido: 6,  Rojo: [1,3,4,7,9,11,15,16,20,22,24,28],   Azul: [2,5,6,8,10,12,13,14,21,23,26,27], Diferenciadores: [9,11,1],  Parciales: [] },
+    { ID_Partido: 7,  Rojo: [2,4,5,9,10,14,16,17,21,23,25,27],  Azul: [1,3,6,7,8,11,12,13,19,22,24,28], Diferenciadores: [9,5,14],   Parciales: [] },
+    { ID_Partido: 8,  Rojo: [1,2,5,6,10,13,16,18,19,21,26,28],  Azul: [3,4,7,8,9,11,12,15,20,23,25,27], Diferenciadores: [12,5,10],  Parciales: ["19"] },
+    { ID_Partido: 9,  Rojo: [3,4,5,8,11,14,16,17,20,22,25,28],  Azul: [1,2,6,7,9,10,13,15,21,24,26,27], Diferenciadores: [16,15,10], Parciales: [] },
+    { ID_Partido: 10, Rojo: [1,4,6,7,9,12,15,18,19,23,24,27],   Azul: [2,3,5,8,10,11,13,14,20,22,26,28], Diferenciadores: [4,24,7],  Parciales: [] },
+    { ID_Partido: 11, Rojo: [2,3,6,8,12,13,14,16,24,25,27,28],  Azul: [1,4,5,7,9,10,11,15,20,21,22,26], Diferenciadores: [3,2,10],   Parciales: ["25"] },
+    { ID_Partido: 12, Rojo: [1,2,3,4,8,9,12,14,20,24,26,27],    Azul: [5,6,7,10,11,13,15,16,21,22,25,28], Diferenciadores: [],       Parciales: [] }
   ],
 
   // SHEET 1 — Estadísticas :: tabla Evento (goles y asistencias)
@@ -1740,7 +1740,9 @@ function statsJugador(id) {
     if (a.Azul.includes(id)) { jugados++; vecesAzul++; }
   });
   const mvps = MOCK_DATA.partidos.filter(p => mvpsDe(p).includes(id)).length;
-  const difs = MOCK_DATA.partidos.filter(p => p.Diferenciador === id).length;
+  const difs = MOCK_DATA.alineaciones
+    .filter(a => idsJugados.has(a.ID_Partido) && (a.Diferenciadores || []).includes(id))
+    .length;
   const total = idsJugados.size;
   const pct = total > 0 ? Math.round((jugados / total) * 100) : 0;
   let ganados = 0, perdidos = 0;
@@ -1791,9 +1793,22 @@ function eventosDelPartido(idPartido) {
     .sort((a, b) => (a.Minuto || 0) - (b.Minuto || 0));
 }
 
-function esDefOArquero(id) {
-  const p = posicion(id);
-  return p === "Arquero" || p === "Defensa";
+function esDefOArquero(id)   { const p = posicion(id); return p === "Arquero"  || p === "Defensa"; }
+function esMediocampista(id) { return posicion(id) === "Mediocampista"; }
+function esDelantero(id)     { return posicion(id) === "Delantero"; }
+
+// Veces que un jugador fue diferenciador (mejor de su posición) en un partido jugado
+function difsDe(id) {
+  const idsJugados = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+  return MOCK_DATA.alineaciones
+    .filter(a => idsJugados.has(a.ID_Partido) && (a.Diferenciadores || []).includes(id))
+    .length;
+}
+
+// Diferenciadores con mínimo 3 partidos jugados (para las 3 distinciones de posición)
+function difConMin3(id) {
+  if (statsJugador(id).jugados < 3) return 0;
+  return difsDe(id);
 }
 
 /* ============================================================
@@ -1803,14 +1818,15 @@ function esDefOArquero(id) {
 
 // Valores de XP por acción en cada partido jugado
 const XP = {
-  jugar: 10,        // por presentarse y jugar
-  victoria: 5,      // si su equipo ganó
-  gol: 8,           // por cada gol (no autogol)
-  asistencia: 6,    // por cada pase gol
-  valla: 4,         // valla invicta: su equipo no recibió goles
-  mvp: 10,          // MVP del partido
-  temprano: 3,      // llegó temprano
-  tiempo: 2         // llegó a tiempo
+  jugar: 10,          // por presentarse y jugar
+  victoria: 5,        // si su equipo ganó
+  gol: 8,             // por cada gol (no autogol)
+  asistencia: 6,      // por cada pase gol
+  valla: 4,           // valla invicta: su equipo no recibió goles
+  mvp: 10,            // MVP del partido
+  diferenciador: 6,   // mejor de su posición (Arq/Def, Med o Del) en el partido
+  temprano: 3,        // llegó temprano
+  tiempo: 2           // llegó a tiempo
 };
 const XP_POR_NIVEL = 20;
 
@@ -1835,6 +1851,7 @@ function xpJugador(id) {
     if (gA > gC) xp += XP.victoria;
     if (gC === 0) xp += XP.valla;
     if (mvpsDe(p).includes(id)) xp += XP.mvp;
+    if ((a.Diferenciadores || []).includes(id)) xp += XP.diferenciador;
     const ll = llegadaDe(id, a.ID_Partido);
     if (ll === "Temprano") xp += XP.temprano;
     else if (ll === "Tiempo") xp += XP.tiempo;
@@ -1854,15 +1871,6 @@ function nivelDe(xp) {
   return { nivel, pct };
 }
 
-// Score compuesto para El Muro: vallas×10 + consistencia(0-10) + MVPs.
-// Solo compiten Arq/Def con al menos 3 partidos. La pantalla muestra
-// vallas invictas; el score solo sirve para el ranking.
-function scoreElMuro(id) {
-  const s = statsJugador(id);
-  if (s.jugados < 3) return 0;
-  const vi = vallasInvictas(id);
-  return vi * 10 + Math.round((vi / s.jugados) * 10) + s.mvps;
-}
 
 // Vallas invictas en las que participó el jugador (su equipo no recibió goles)
 function vallasInvictas(id) {
@@ -1923,12 +1931,14 @@ const fairPlay = calcPromedio(pilFP);
 // Distinciones: cada una premia un tipo de aporte distinto, para que el
 // reconocimiento rote y casi nadie quede invisible. Todas automáticas.
 const DISTINCIONES = [
-  { titulo: "El Inquebrantable", glifo: "castillo", metrica: id => statsJugador(id).jugados,      unidad: "partidos jugados" },
-  { titulo: "El Artillero",      glifo: "diana",    metrica: id => statsJugador(id).goles,        unidad: "goles" },
-  { titulo: "El Estratega",      glifo: "ojo",      metrica: id => statsJugador(id).asistencias,  unidad: "pases gol" },
-  { titulo: "El Muro",           glifo: "escudo",   metrica: scoreElMuro, display: vallasInvictas, filtro: esDefOArquero, unidad: "vallas invictas" },
-  { titulo: "El Puntual",        glifo: "reloj",    metrica: id => fairPlay(id),                   unidad: "% de puntualidad" },
-  { titulo: "El Líder",          glifo: "corona",   metrica: id => statsJugador(id).mvps,          unidad: "veces MVP" }
+  { titulo: "El Inquebrantable", glifo: "castillo", metrica: id => statsJugador(id).jugados,     unidad: "partidos jugados"   },
+  { titulo: "El Artillero",      glifo: "diana",    metrica: id => statsJugador(id).goles,       unidad: "goles"              },
+  { titulo: "El Estratega",      glifo: "ojo",      metrica: id => statsJugador(id).asistencias, unidad: "pases gol"          },
+  { titulo: "El Muro",           glifo: "escudo",   metrica: difConMin3, filtro: esDefOArquero,   unidad: "veces diferenciador" },
+  { titulo: "El Maestro",        glifo: "llave",    metrica: difConMin3, filtro: esMediocampista, unidad: "veces diferenciador" },
+  { titulo: "El Cazador",        glifo: "flecha",   metrica: difConMin3, filtro: esDelantero,     unidad: "veces diferenciador" },
+  { titulo: "El Puntual",        glifo: "reloj",    metrica: id => fairPlay(id),                  unidad: "% de puntualidad"   },
+  { titulo: "El Líder",          glifo: "corona",   metrica: id => statsJugador(id).mvps,         unidad: "veces MVP"          }
 ];
 
 // Devuelve el jugador líder de una distinción (o null si nadie tiene > 0).
@@ -2581,7 +2591,7 @@ function abrirPerfil(id) {
       <div class="stat-box"><div class="num">${s.goles}</div><div class="lbl">Goles</div></div>
       <div class="stat-box"><div class="num">${s.asistencias}</div><div class="lbl">Asistencias</div></div>
       <div class="stat-box"><div class="num">${s.mvps}</div><div class="lbl">MVPs</div></div>
-      <div class="stat-box"><div class="num">${vallasInvictas(id)}</div><div class="lbl">V. Invictas</div></div>
+      <div class="stat-box"><div class="num">${s.difs}</div><div class="lbl">Diferenciador</div></div>
       <div class="stat-box"><div class="num">${fairPlay(id)}%</div><div class="lbl">Fair Play</div></div>
     </div>
     <div class="partidos-card">
@@ -2711,6 +2721,8 @@ const ICONOS = {
   trofeo:     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--color-gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8m-4-4v4m0-4a5 5 0 0 1-5-5V4h10v8a5 5 0 0 1-5 5z"/><path d="M7 4H4v3a3 3 0 0 0 3 3"/><path d="M17 4h3v3a3 3 0 0 1-3 3"/></svg>`,
   dos_jugadores: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--text-dim)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
   rayo:          `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="var(--color-gold)"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+  llave:         `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--color-gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2L10.83 12.17M15 7l3 3"/></svg>`,
+  flecha:        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--color-gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="21" x2="21" y2="3"/><polyline points="10 3 21 3 21 14"/></svg>`,
 };
 
 async function renderInformacion() {
@@ -2997,7 +3009,9 @@ function transformarDatosReales(json) {
       if (noAsistio) porFecha[f].Ausentes.push(id);
     }
     if (String(campo(a, "mvp")).toUpperCase() === "SI") porFecha[f].MVP.push(id);
-    if (String(campo(a, "diferenciador")).trim() !== "") porFecha[f].Dif.push(id);
+    const difRaw = campo(a, "diferenciador");
+    const esDif = difRaw === true || ["si", "verdadero", "true", "1"].includes(normalizar(String(difRaw)));
+    if (esDif) porFecha[f].Dif.push(id);
     const posJRaw = String(campo(a, "posicion_jugador")).trim();
     const posJ = normalizar(posJRaw);
     if (posJ && POS_CANON[posJ]) porFecha[f].Posiciones[id] = { linea: POS_CANON[posJ], especifica: posJRaw };
@@ -3008,7 +3022,7 @@ function transformarDatosReales(json) {
     if (ll !== null) asistenciaArr.push({ ID_Jugador: id, ID_Partido: f, Llegada: ll });
   });
   MOCK_DATA.alineaciones = Object.entries(porFecha)
-    .map(([f, d]) => ({ ID_Partido: f, Rojo: d.Rojo, Azul: d.Azul, Posiciones: d.Posiciones, Capitanes: d.Capitanes || {}, Ausentes: d.Ausentes || [] }));
+    .map(([f, d]) => ({ ID_Partido: f, Rojo: d.Rojo, Azul: d.Azul, Diferenciadores: d.Dif || [], Posiciones: d.Posiciones, Capitanes: d.Capitanes || {}, Ausentes: d.Ausentes || [] }));
   MOCK_DATA.asistencia = asistenciaArr;
 
   // Partidos: fechas de la hoja Partidos + las vistas en Alineaciones.
@@ -3026,8 +3040,7 @@ function transformarDatosReales(json) {
       Fecha: f,
       Goles_Rojo: jugado ? MOCK_DATA.eventos.filter(e => e.ID_Partido === f && e.Equipo === "Rojo").length : null,
       Goles_Azul: jugado ? MOCK_DATA.eventos.filter(e => e.ID_Partido === f && e.Equipo === "Azul").length : null,
-      MVP: d.MVP,
-      Diferenciador: d.Dif.length ? d.Dif[0] : null
+      MVP: d.MVP
     };
   });
 }
