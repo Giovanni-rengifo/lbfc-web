@@ -73,7 +73,7 @@
         "texto": "Encuentra tu nombre en la lista y tócalo. Verás tu Nivel, XP, stats de la temporada, distinciones que tienes y cuánto te falta para alcanzar a cada líder."
       },
       {
-        "icono": "estrella",
+        "icono": "dos_jugadores",
         "label": "Comparar con un compañero",
         "texto": "Toca cualquier jugador para ver su perfil completo. La lista está ordenada de mayor a menor Nivel de Leyenda."
       }
@@ -88,17 +88,17 @@
         "texto": "XP que solo sube, partido a partido. Jugar +10 · Victoria +5 · Gol +8 · Asistencia +6 · Valla invicta +4 · MVP +10 · Llegar temprano +3. Nunca pierdes XP — el nivel solo avanza."
       },
       {
-        "icono": "corona",
+        "icono": "medalla",
         "label": "Distinciones",
         "texto": "Seis medallas automáticas. Las ostenta quien lidera cada categoría: El Inquebrantable (más partidos), El Artillero (más goles), El Estratega (más pases gol), El Muro (más vallas — solo Def/GK), El Puntual (mejor puntualidad) y El Líder (más MVPs)."
       },
       {
-        "icono": "marcador",
+        "icono": "trofeo",
         "label": "Puntos Temporada",
         "texto": "Victoria 3 pts · Empate 1 pt · Derrota 0 pts. Acumulado en toda la temporada."
       },
       {
-        "icono": "calendario",
+        "icono": "reloj",
         "label": "Fair Play",
         "texto": "Promedio de puntualidad de la temporada. Temprano: 100% · A tiempo: 85% · Tarde: 75% · No asistió: 0%."
       },
