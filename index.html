@@ -1696,55 +1696,31 @@ function esDefOArquero(id) {
 }
 
 // Delta de nivel por resultado + margen de goles
-function deltaResultado(equipo, p) {
-  const gA = equipo === "Rojo" ? p.Goles_Rojo : p.Goles_Azul;
-  const gC = equipo === "Rojo" ? p.Goles_Azul : p.Goles_Rojo;
-  const diff = gA - gC;
-  const m = Math.abs(diff);
-  if (diff > 0) return m === 1 ? 0.15 : m <= 3 ? 0.08 : 0.04;
-  if (diff < 0) return m === 1 ? -0.04 : m <= 3 ? -0.08 : -0.20;
-  return 0;
+
+// Pilares PO/VJ/PD: valor directo del Excel, sin fórmula
+function nivelExcel(campo) {
+  return id => {
+    const j = byId[id];
+    return j ? (parseFloat(j[campo]) || 5) : 5;
+  };
 }
 
-function pilPO(id, p, ali) {
-  const equipo = ali.Rojo.includes(id) ? "Rojo" : ali.Azul.includes(id) ? "Azul" : null;
-  if (!equipo) return null;
-  let d = deltaResultado(equipo, p);
-  eventosDelPartido(p.ID_Partido).forEach(e => {
-    if (e.Goleador !== id) return;
-    if (esAutogol(e)) { d -= 0.05; return; }
-    d += (PESOS_TIPO_GOL[normalizar(e.Tipo_Gol)] ?? 1) * 0.05;
+// Puntos de temporada: Victoria=3, Empate=1, Derrota=0
+function puntosTemporada(id) {
+  let pts = 0;
+  MOCK_DATA.alineaciones.forEach(a => {
+    const p = MOCK_DATA.partidos.find(x => x.ID_Partido === a.ID_Partido);
+    if (!p || !esJugado(p)) return;
+    const equipo = a.Rojo.includes(id) ? "Rojo" : a.Azul.includes(id) ? "Azul" : null;
+    if (!equipo) return;
+    const gA = equipo === "Rojo" ? p.Goles_Rojo : p.Goles_Azul;
+    const gC = equipo === "Rojo" ? p.Goles_Azul : p.Goles_Rojo;
+    if (gA > gC) pts += 3;
+    else if (gA === gC) pts += 1;
   });
-  if (mvpsDe(p).includes(id)) d += 0.10;
-  const golesEquipo = equipo === "Rojo" ? p.Goles_Rojo : p.Goles_Azul;
-  if (golesEquipo === 0 && posicion(id) === "Delantero") d -= 0.15;
-  return Math.round(d * 1000) / 1000;
+  return pts;
 }
 
-function pilVJ(id, p, ali) {
-  const equipo = ali.Rojo.includes(id) ? "Rojo" : ali.Azul.includes(id) ? "Azul" : null;
-  if (!equipo) return null;
-  let d = deltaResultado(equipo, p);
-  eventosDelPartido(p.ID_Partido).forEach(e => {
-    if (e.Asistente !== id) return;
-    d += (PESOS_TIPO_PASE[normalizar(e.Tipo_Pase || "normal")] ?? 1) * 0.05;
-  });
-  if (mvpsDe(p).includes(id)) d += 0.10;
-  const golesEquipo = equipo === "Rojo" ? p.Goles_Rojo : p.Goles_Azul;
-  if (golesEquipo === 0 && posicion(id) === "Mediocampista") d -= 0.10;
-  return Math.round(d * 1000) / 1000;
-}
-
-function pilPD(id, p, ali) {
-  const equipo = ali.Rojo.includes(id) ? "Rojo" : ali.Azul.includes(id) ? "Azul" : null;
-  if (!equipo) return null;
-  let d = deltaResultado(equipo, p);
-  if (p.Diferenciador === id) d += 0.15;
-  if (mvpsDe(p).includes(id)) d += 0.10;
-  const golesConcedidos = equipo === "Rojo" ? p.Goles_Azul : p.Goles_Rojo;
-  if (golesConcedidos === 0 && esDefOArquero(id)) d += 0.20;
-  return Math.round(d * 1000) / 1000;
-}
 
 function pilFP(id, p, ali) {
   const equipo = ali.Rojo.includes(id) ? "Rojo" : ali.Azul.includes(id) ? "Azul" : null;
@@ -1753,21 +1729,6 @@ function pilFP(id, p, ali) {
   return FP_PESOS[reg ? reg.Llegada : "Tiempo"] ?? 85;
 }
 
-// nivelBase + Σ deltas de partido, acotado a [0, 10]
-function calcNivel(pilFn, nivelKey) {
-  return function(id) {
-    const j = MOCK_DATA.jugadores.find(x => x.ID_Jugador === id);
-    const base = j ? (parseFloat(j[nivelKey]) || 5) : 5;
-    let total = base;
-    MOCK_DATA.alineaciones.forEach(a => {
-      const p = MOCK_DATA.partidos.find(x => x.ID_Partido === a.ID_Partido);
-      if (!p || !esJugado(p)) return;
-      const v = pilFn(id, p, a);
-      if (v !== null) total += v;
-    });
-    return Math.round(Math.min(10, Math.max(0, total)) * 10) / 10;
-  };
-}
 
 function calcPromedio(fn) {
   return function(id) {
@@ -1782,16 +1743,17 @@ function calcPromedio(fn) {
   };
 }
 
-const poderOfensivo  = calcNivel(pilPO, "Nivel_PO");
-const visionDeJuego  = calcNivel(pilVJ, "Nivel_VJ");
-const poderDefensivo = calcNivel(pilPD, "Nivel_PD");
+const poderOfensivo  = nivelExcel("Nivel_PO");
+const visionDeJuego  = nivelExcel("Nivel_VJ");
+const poderDefensivo = nivelExcel("Nivel_PD");
 const fairPlay       = calcPromedio(pilFP);
 
 const PILARES = [
-  { nombre: "Poder Ofensivo",  calc: poderOfensivo,  listo: true, fmt: v => v + " pts" },
-  { nombre: "Visión de Juego", calc: visionDeJuego,  listo: true, fmt: v => v + " pts" },
-  { nombre: "Poder Defensivo", calc: poderDefensivo, listo: true, fmt: v => v + " pts" },
-  { nombre: "Fair Play",       calc: fairPlay,       listo: true, fmt: v => v + "%" }
+  { nombre: "Poder Ofensivo",   calc: poderOfensivo,   listo: true, fmt: v => v + " pts" },
+  { nombre: "Visión de Juego",  calc: visionDeJuego,   listo: true, fmt: v => v + " pts" },
+  { nombre: "Poder Defensivo",  calc: poderDefensivo,  listo: true, fmt: v => v + " pts" },
+  { nombre: "Puntos Temporada", calc: puntosTemporada, listo: true, fmt: v => v + " pts" },
+  { nombre: "Fair Play",        calc: fairPlay,        listo: true, fmt: v => v + "%" }
 ];
 
 /* ============================================================
@@ -2139,14 +2101,17 @@ const CATEGORIAS = {
                  desc: "Pases directos que generaron un gol en la temporada",
                  inverso: false, calc: id => statsJugador(id).asistencias, fmt: v => String(v) },
   po: { titulo: "Poder Ofensivo",  unidad: "pts", acc: "var(--color-gold)",
-        desc: "Nivel base ajustado por victorias, goles y gestos técnicos",
+        desc: "Calificación ofensiva del jugador · escala 0–10",
         inverso: false, calc: poderOfensivo, fmt: v => String(v) },
   vj: { titulo: "Visión de Juego", unidad: "pts", acc: "var(--color-parchment)",
-        desc: "Nivel base ajustado por victorias, asistencias y creatividad",
+        desc: "Calificación de visión y juego asociativo · escala 0–10",
         inverso: false, calc: visionDeJuego, fmt: v => String(v) },
   pd: { titulo: "Poder Defensivo", unidad: "pts", acc: "var(--azul-chip)",
-        desc: "Nivel base ajustado por victorias, portería a cero y diferenciador",
+        desc: "Calificación defensiva del jugador · escala 0–10",
         inverso: false, calc: poderDefensivo, fmt: v => String(v) },
+  puntos: { titulo: "Puntos Temporada", unidad: "pts", acc: "var(--color-accent)",
+            desc: "Victoria ×3 · Empate ×1 · Derrota ×0 · acumulado en la temporada",
+            inverso: false, calc: puntosTemporada, fmt: v => String(v) },
 };
 
 function datosCategoria(key) {
@@ -2382,7 +2347,7 @@ function abrirPerfil(id) {
           <div class="pilar-val">${p.fmt ? p.fmt(v) : v}</div>
         </div>`;
       }).join("")}
-      <p class="pilares-note">PO · VJ · PD parten de un nivel base ajustado por resultados. FairPlay es promedio de asistencia.</p>
+      <p class="pilares-note">PO · VJ · PD: calificación del club. Puntos: acumulado de victorias en la temporada. FairPlay: promedio de asistencia.</p>
     </div>
     ${(() => {
       const { goles, asists } = gestosJugador(id);
