@@ -4,13 +4,13 @@
     "items": [
       {
         "icono": "swipe",
-        "label": "Deslizar entre secciones",
-        "texto": "Desliza horizontalmente en cualquier parte de la pantalla para moverte entre pestañas, como si pasaras páginas."
+        "label": "Deslizar entre pestañas",
+        "texto": "Desliza horizontalmente en la pantalla para pasar de una sección a otra."
       },
       {
         "icono": "pestanas",
-        "label": "Pestañas del menú",
-        "texto": "Toca cualquier pestaña del menú superior para ir directamente a esa sección. La activa se resalta en dorado. Desliza el menú si no ves todas las pestañas."
+        "label": "Menú superior",
+        "texto": "Toca cualquier pestaña para ir directo a esa sección. Si no las ves todas, desliza el menú hacia un lado."
       }
     ]
   },
@@ -19,18 +19,18 @@
     "items": [
       {
         "icono": "calendario",
-        "label": "Reinicio semanal",
-        "texto": "La convocatoria muestra solo el próximo partido del domingo. El lunes siguiente se reinicia automáticamente y queda en espera hasta la nueva publicación."
+        "label": "Próximo partido",
+        "texto": "Muestra quién está convocado para el siguiente domingo. Se actualiza cada semana."
       },
       {
         "icono": "espera",
         "label": "Lista de espera",
-        "texto": "Jugadores en reserva por si algún convocado no puede asistir. Se activan según disponibilidad el día del partido."
+        "texto": "Jugadores en reserva. Entran si algún convocado no puede asistir."
       },
       {
         "icono": "cerrada",
         "label": "Convocatoria cerrada",
-        "texto": "Cuando todos los convocados ya fueron asignados a equipo y alineación, la convocatoria se cierra. En ese caso, ve a la pestaña Alineación para ver los equipos."
+        "texto": "Cuando todos los convocados ya tienen equipo, la convocatoria se cierra. Ve a Alineación para ver los equipos."
       }
     ]
   },
@@ -40,27 +40,42 @@
       {
         "icono": "corona",
         "label": "Capitán",
-        "texto": "Lleva una corona dorada y borde dorado en su chip. El capitán es designado para ese partido específico."
+        "texto": "Chip con corona dorada. Designado partido a partido."
       },
       {
         "icono": "portero",
         "label": "Portero",
-        "texto": "Chip con fondo verde. Siempre aparece en la portería de su equipo en el esquema de la cancha."
+        "texto": "Chip con fondo verde. Aparece en la portería del esquema de la cancha."
       },
       {
         "icono": "equipos",
         "label": "Equipos Rojo y Azul",
-        "texto": "Los colores se asignan cada partido y rotan. No son equipos fijos — cambian con cada convocatoria."
+        "texto": "Los colores cambian cada partido. No son equipos fijos."
       },
       {
         "icono": "ausente",
-        "label": "Jugador ausente",
-        "texto": "Aparece en la cancha en escala de grises y con opacidad baja. Fue convocado para ese partido pero no asistió."
+        "label": "Ausente",
+        "texto": "Jugador convocado que no asistió. Aparece en gris en la cancha."
       },
       {
         "icono": "marcador",
         "label": "Marcador",
-        "texto": "El resultado siempre se muestra en orden Rojo — Azul, sin importar quién gane. Así es más fácil comparar entre partidos."
+        "texto": "Siempre en orden Rojo — Azul, sin importar quién ganó."
+      }
+    ]
+  },
+  {
+    "titulo": "Jugadores",
+    "items": [
+      {
+        "icono": "jugador",
+        "label": "Ver tu perfil",
+        "texto": "Encuentra tu nombre en la lista y tócalo. Verás tu Nivel, XP, stats de la temporada, distinciones que tienes y cuánto te falta para alcanzar a cada líder."
+      },
+      {
+        "icono": "estrella",
+        "label": "Comparar con un compañero",
+        "texto": "Toca cualquier jugador para ver su perfil completo. La lista está ordenada de mayor a menor Nivel de Leyenda."
       }
     ]
   },
@@ -69,38 +84,28 @@
     "items": [
       {
         "icono": "estrella",
-        "label": "Poder Ofensivo",
-        "texto": "Acumula puntos por goles, según el tipo (tiro libre = 2 pts, chilena = 3 pts) y un bono extra si anotaste el Gol Victoria. Todos los jugadores suman algo cada partido por el resultado colectivo (victoria +3, empate +2, derrota +1)."
+        "label": "Nivel de Leyenda",
+        "texto": "XP que solo sube, partido a partido. Jugar +10 · Victoria +5 · Gol +8 · Asistencia +6 · Valla invicta +4 · MVP +10 · Llegar temprano +3. Nunca pierdes XP — el nivel solo avanza."
       },
       {
-        "icono": "asistencia",
-        "label": "Visión de Juego",
-        "texto": "Acumula puntos por asistencias según el tipo de pase (portería = 3 pts, esquina o tiro libre = 2 pts, normal = 1 pt), con bono si fue el Pase Gol Victoria. Los mediocampistas del equipo ganador reciben un bono colectivo adicional."
+        "icono": "corona",
+        "label": "Distinciones",
+        "texto": "Seis medallas automáticas. Las ostenta quien lidera cada categoría: El Inquebrantable (más partidos), El Artillero (más goles), El Estratega (más pases gol), El Muro (más vallas — solo Def/GK), El Puntual (mejor puntualidad) y El Líder (más MVPs)."
       },
       {
-        "icono": "escudo",
-        "label": "Poder Defensivo",
-        "texto": "Defensas y porteros suman una calificación individual: cuántos goles concediste y en qué minuto cayó el Gol Derrota. Aguantar más tiempo antes de ceder la derrota sube tu nota. El resto de posiciones solo suma el colectivo."
+        "icono": "marcador",
+        "label": "Puntos Temporada",
+        "texto": "Victoria 3 pts · Empate 1 pt · Derrota 0 pts. Acumulado en toda la temporada."
       },
       {
         "icono": "calendario",
         "label": "Fair Play",
-        "texto": "Mide puntualidad y asistencia. Llegaste temprano: 100%, a tiempo: 85%, tarde: 75%, no asististe: 0%. La nota de temporada es el promedio de todos los partidos en que fuiste convocado."
-      },
-      {
-        "icono": "mvp",
-        "label": "MVP del partido",
-        "texto": "El jugador más valioso de cada encuentro recibe +2 en los tres pilares competitivos simultáneamente: Poder Ofensivo, Visión de Juego y Poder Defensivo."
+        "texto": "Promedio de puntualidad de la temporada. Temprano: 100% · A tiempo: 85% · Tarde: 75% · No asistió: 0%."
       },
       {
         "icono": "balon",
-        "label": "Gol Victoria",
-        "texto": "El gol que realmente ganó el partido — no el último ni el de mayor diferencia, sino el que fijó una ventaja que el rival nunca pudo igualar. Anotarlo suma bono en PO; asistirlo suma bono en VJ."
-      },
-      {
-        "icono": "jugador",
-        "label": "Partido parcial",
-        "texto": "Si un jugador no estuvo el partido completo, sus puntos en todos los pilares quedan al 50% en ese encuentro."
+        "label": "Gesto Técnico",
+        "texto": "Ranking por calidad de goles y pases gol. No todos valen igual: una chilena cuenta más que un gol de jugada; un saque de portería más que un pase normal."
       }
     ]
   },
@@ -110,12 +115,12 @@
       {
         "icono": "historial",
         "label": "Historial",
-        "texto": "Registro cronológico de todos los partidos de la temporada actual, con marcador, goles y asistencias de cada encuentro."
+        "texto": "Todos los partidos de la temporada con marcador, goles y asistencias."
       },
       {
         "icono": "autogol",
         "label": "Autogol",
-        "texto": "Se muestra con la sigla (AG) junto al nombre del jugador. Suma al marcador del equipo contrario pero no cuenta como gol personal."
+        "texto": "Se muestra con (AG) junto al nombre. Suma al equipo contrario pero no cuenta como gol personal."
       }
     ]
   },
@@ -124,7 +129,7 @@
     "items": [
       {
         "icono": "escudo",
-        "texto": "<strong>Los Bigotes F.C.</strong> — Club amateur fundado en 2009. Los partidos se juegan los domingos de <strong>6:00 a 8:00 am</strong>. Esta aplicación es de solo lectura: muestra estadísticas, convocatorias y alineaciones del club."
+        "texto": "<strong>Los Bigotes F.C.</strong> — Club amateur fundado en 2009. Partidos los domingos de <strong>6:00 a 8:00 am</strong>. Esta app es de solo lectura: muestra estadísticas, convocatorias y alineaciones."
       }
     ]
   }
