@@ -682,14 +682,30 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
   font-family: var(--font-body); font-size: .88rem;
   padding: .45rem .7rem; outline: none;
 }
-.jugador-buscar:focus, .jugador-filtro:focus { border-color: rgba(201,168,76,.5); }
-.jugador-buscar::placeholder, .jugador-filtro option:first-child { color: var(--text-dim); }
-.jugador-filtro {
-  width: 100%; box-sizing: border-box;
+.jugador-buscar:focus { border-color: rgba(201,168,76,.5); }
+.jugador-buscar::placeholder { color: var(--text-dim); }
+.buscar-grupo-label {
+  font-family: var(--font-title); font-size: .6rem; font-weight: 700;
+  letter-spacing: .09em; text-transform: uppercase; color: var(--text-dim);
+  margin-top: .2rem;
+}
+.buscar-chips-row { display: flex; flex-wrap: wrap; gap: .3rem; }
+.buscar-chip {
+  font-family: var(--font-title); font-size: .65rem; font-weight: 700;
+  letter-spacing: .02em; color: var(--text-dim);
   background: var(--surface); border: 1px solid var(--line);
-  border-radius: 6px; color: var(--color-text-light);
-  font-family: var(--font-body); font-size: .88rem;
-  padding: .45rem .65rem; outline: none;
+  border-radius: 999px; padding: .22rem .55rem;
+  cursor: pointer; user-select: none;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.buscar-chip:hover { color: var(--color-parchment); border-color: rgba(201,168,76,.4); }
+.buscar-chip.activo {
+  color: var(--color-gold); background: rgba(201,168,76,.12);
+  border-color: rgba(201,168,76,.6);
+}
+.buscar-chip[data-tipo="embl"].activo {
+  color: #9fbcd4; background: rgba(159,188,212,.12);
+  border-color: rgba(159,188,212,.6);
 }
 .buscar-limpiar {
   background: none; border: 1px solid var(--line); border-radius: 6px;
@@ -2175,10 +2191,20 @@ function toggleBuscarPanel() {
   toggle.classList.toggle("activo", !abierto);
 }
 
+function toggleChip(el) {
+  const tipo = el.dataset.tipo;
+  document.querySelectorAll(`#buscar-panel .buscar-chip[data-tipo="${tipo}"]`).forEach(c => c.classList.remove("activo"));
+  if (!el.classList.contains("activo")) el.classList.add("activo");
+  else el.classList.remove("activo");
+  aplicarFiltros();
+}
+
 function aplicarFiltros() {
-  const nombre = normalizar((document.getElementById("buscar-nombre")?.value || "").trim().toLowerCase());
-  const dist   = normalizar((document.getElementById("filtro-dist")?.value  || "").toLowerCase());
-  const embl   = normalizar((document.getElementById("filtro-embl")?.value  || "").toLowerCase());
+  const nombre  = normalizar((document.getElementById("buscar-nombre")?.value || "").trim().toLowerCase());
+  const distEl  = document.querySelector('#buscar-panel .buscar-chip[data-tipo="dist"].activo');
+  const emblEl  = document.querySelector('#buscar-panel .buscar-chip[data-tipo="embl"].activo');
+  const dist    = distEl ? distEl.dataset.val : "";
+  const embl    = emblEl ? emblEl.dataset.val : "";
   document.querySelectorAll("#jugadores-content .jugador-card").forEach(c => {
     const t = c.dataset.buscar || "";
     c.style.display = (!nombre || t.includes(nombre)) && (!dist || t.includes(dist)) && (!embl || t.includes(embl)) ? "" : "none";
@@ -2191,10 +2217,9 @@ function aplicarFiltros() {
 }
 
 function limpiarFiltros() {
-  ["buscar-nombre", "filtro-dist", "filtro-embl"].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = "";
-  });
+  const nombreEl = document.getElementById("buscar-nombre");
+  if (nombreEl) nombreEl.value = "";
+  document.querySelectorAll("#buscar-panel .buscar-chip.activo").forEach(c => c.classList.remove("activo"));
   aplicarFiltros();
 }
 
@@ -3067,14 +3092,14 @@ function renderJugadores() {
      </div>
      <div class="buscar-panel" id="buscar-panel" style="display:none">
        <input class="jugador-buscar" id="buscar-nombre" placeholder="Nombre del jugador…" oninput="aplicarFiltros()">
-       <select class="jugador-filtro" id="filtro-dist" onchange="aplicarFiltros()">
-         <option value="">Distinción — todas</option>
-         ${DISTINCIONES.map(d => `<option>${d.titulo}</option>`).join("")}
-       </select>
-       <select class="jugador-filtro" id="filtro-embl" onchange="aplicarFiltros()">
-         <option value="">Emblema — todos</option>
-         ${EMBLEMAS.map(e => `<option>${e.titulo}</option>`).join("")}
-       </select>
+       <div class="buscar-grupo-label">Distinción</div>
+       <div class="buscar-chips-row">
+         ${DISTINCIONES.map(d => `<span class="buscar-chip" data-tipo="dist" data-val="${normalizar(d.titulo.toLowerCase())}" onclick="toggleChip(this)">${d.titulo}</span>`).join("")}
+       </div>
+       <div class="buscar-grupo-label">Emblema</div>
+       <div class="buscar-chips-row">
+         ${EMBLEMAS.map(e => `<span class="buscar-chip" data-tipo="embl" data-val="${normalizar(e.titulo.toLowerCase())}" onclick="toggleChip(this)">${e.titulo}</span>`).join("")}
+       </div>
        <button class="buscar-limpiar" id="buscar-limpiar" onclick="limpiarFiltros()" style="display:none">✕ Limpiar filtros</button>
      </div>
      <div class="jugadores-grid">${cards}</div>`;
