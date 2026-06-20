@@ -649,6 +649,11 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
 .emblema-card:hover { border-color: rgba(159,188,212,.6); background: rgba(159,188,212,.12); }
 .emblema-card .med-ico { color: #9fbcd4; }
 .emblema-card .med-title { color: #b8cfdf; }
+.anti-card { background: rgba(160,40,40,.07); border-color: rgba(160,40,40,.3); cursor: default; }
+.anti-card:hover { border-color: rgba(200,60,60,.6); background: rgba(160,40,40,.13); }
+.anti-card .med-ico { color: #c84040; }
+.anti-card .med-title { color: #d46060; }
+.anti-chip { color: #c84040; background: rgba(160,40,40,.1); border-color: rgba(160,40,40,.4); }
 .buscar-toggle {
   display: flex; align-items: center; gap: .45rem;
   font-family: var(--font-title); font-size: .7rem; font-weight: 700;
@@ -2187,6 +2192,79 @@ function emblemasDeJugador(id) {
   return EMBLEMAS.filter(e => e.cond(id));
 }
 
+// ---- Maldiciones (anti-emblemas permanentes, rojo oscuro) ----
+let _antiCache = null;
+function _antiPrecompute() {
+  if (_antiCache) return _antiCache;
+  const aus = {}, tard = {}, perd = {}, jug = {};
+  MOCK_DATA.jugadores.forEach(j => {
+    const id = j.ID_Jugador;
+    aus[id]  = (MOCK_DATA.asistencia || []).filter(a => a.ID_Jugador === id && a.Llegada === "No").length;
+    tard[id] = (MOCK_DATA.asistencia || []).filter(a => a.ID_Jugador === id && a.Llegada === "Tarde").length;
+    const s  = statsJugador(id);
+    jug[id]  = s.jugados;
+    perd[id] = s.perdidos;
+  });
+  const maxAus  = Math.max(0, ...Object.values(aus));
+  const maxTard = Math.max(0, ...Object.values(tard));
+  const maxPerd = Math.max(0, ...MOCK_DATA.jugadores
+    .filter(j => jug[j.ID_Jugador] >= 3).map(j => perd[j.ID_Jugador]));
+  _antiCache = { aus, tard, perd, jug, maxAus, maxTard, maxPerd };
+  return _antiCache;
+}
+
+const ANTI_EMBLEMAS = [
+  {
+    titulo: "El Gafe",
+    glifo:  "calavera",
+    desc:   "Anotó al menos 1 autogol en la temporada",
+    cond: id => {
+      const ids = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+      return MOCK_DATA.eventos.some(e => e.Goleador === id && esAutogol(e) && ids.has(e.ID_Partido));
+    }
+  },
+  {
+    titulo: "El Fantasma",
+    glifo:  "fantasma",
+    desc:   "Más ausencias sin justificar del equipo",
+    cond: id => {
+      const c = _antiPrecompute();
+      const n = c.aus[id] || 0;
+      return n > 0 && n === c.maxAus;
+    }
+  },
+  {
+    titulo: "El Caracol",
+    glifo:  "ampolleta",
+    desc:   "Más llegadas tarde del equipo",
+    cond: id => {
+      const c = _antiPrecompute();
+      const n = c.tard[id] || 0;
+      return n > 0 && n === c.maxTard;
+    }
+  },
+  {
+    titulo: "El Villano",
+    glifo:  "cadena",
+    desc:   "Cumplió al menos 1 partido de sanción",
+    cond: id => (MOCK_DATA.asistencia || []).some(a => a.ID_Jugador === id && a.Llegada === "Sancionado")
+  },
+  {
+    titulo: "La Mala Suerte",
+    glifo:  "nube",
+    desc:   "Más derrotas en la temporada (mín. 3 partidos jugados)",
+    cond: id => {
+      const c = _antiPrecompute();
+      if ((c.jug[id] || 0) < 3 || !(c.perd[id] || 0)) return false;
+      return c.perd[id] === c.maxPerd;
+    }
+  }
+];
+
+function antiEmblemasDeJugador(id) {
+  return ANTI_EMBLEMAS.filter(e => e.cond(id));
+}
+
 function toggleBuscarPanel() {
   const panel = document.getElementById("buscar-panel");
   const toggle = document.getElementById("buscar-toggle");
@@ -2645,7 +2723,11 @@ const GLIFOS = {
   tres:      '<line x1="6" y1="5" x2="6" y2="19"/><line x1="12" y1="5" x2="12" y2="19"/><line x1="18" y1="5" x2="18" y2="19"/>',
   dos:       '<line x1="9" y1="5" x2="9" y2="19"/><line x1="15" y1="5" x2="15" y2="19"/>',
   doble_fl:  '<line x1="3" y1="8" x2="21" y2="8"/><polyline points="15 2 21 8 15 14"/><line x1="3" y1="16" x2="21" y2="16"/><polyline points="15 10 21 16 15 22"/>',
-  sol:       '<circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>'
+  sol:       '<circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>',
+  calavera:  '<path d="M12 4a6 6 0 0 0-6 6c0 2.5 1.4 4.6 3.5 5.5V18h5v-2.5C16.6 14.6 18 12.5 18 10A6 6 0 0 0 12 4z"/><line x1="9" y1="18" x2="15" y2="18"/><circle cx="10" cy="11" r="1.5"/><circle cx="14" cy="11" r="1.5"/>',
+  fantasma:  '<path d="M4 9.5a8 8 0 0 1 16 0v11l-2.7-2-2.6 2-2.7-2-2.6 2-2.7-2-2.7 2V9.5z"/><circle cx="9.5" cy="11" r="1.2"/><circle cx="14.5" cy="11" r="1.2"/>',
+  ampolleta: '<line x1="6" y1="3" x2="18" y2="3"/><line x1="6" y1="21" x2="18" y2="21"/><path d="M6 3l6 9 6-9M6 21l6-9 6 9"/>',
+  nube:      '<path d="M6 16a4 4 0 0 1 0-8 5 5 0 0 1 10 0 3 3 0 0 1 0 6z"/><line x1="8" y1="18" x2="7" y2="21"/><line x1="12" y1="18" x2="12" y2="21"/><line x1="16" y1="18" x2="17" y2="21"/>'
 };
 function glifoSVG(nombre) {
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">${GLIFOS[nombre] || ""}</svg>`;
@@ -2715,6 +2797,29 @@ function emblemasHTML() {
     <div class="med-grid">${cards}</div>`;
 }
 
+function antiEmblemasHTML() {
+  const cards = ANTI_EMBLEMAS.map(e => {
+    const holders = MOCK_DATA.jugadores
+      .filter(j => e.cond(j.ID_Jugador))
+      .map(j => nombre(j.ID_Jugador));
+    const texto = holders.length === 0
+      ? `<em style="color:var(--text-dim);font-style:italic">Nadie (por ahora)</em>`
+      : holders.length <= 3
+        ? holders.join(", ")
+        : `${holders.slice(0, 2).join(", ")} +${holders.length - 2}`;
+    return `
+      <div class="med-card anti-card">
+        <div class="med-ico">${glifoSVG(e.glifo)}</div>
+        <div class="med-title">${e.titulo}</div>
+        <div class="med-desc">${e.desc}</div>
+        <div class="med-holder">${texto}</div>
+      </div>`;
+  }).join("");
+  return `
+    <div class="distinciones-label" style="color:#c84040">Maldiciones</div>
+    <div class="med-grid">${cards}</div>`;
+}
+
 function renderEstadisticas() {
   const cont = document.getElementById("estadisticas-content");
 
@@ -2722,8 +2827,6 @@ function renderEstadisticas() {
   if (!categoriaActiva) {
     cont.innerHTML = `
       <p class="view-sub" style="margin-top:.4rem">Temporada 2026 · Salón de Leyendas</p>
-      ${distincionesHTML()}
-      ${emblemasHTML()}
       <div class="categorias-label">Rankings</div>
       <div class="stats-hub">` +
       Object.entries(CATEGORIAS).map(([key, c]) => {
@@ -2738,7 +2841,10 @@ function renderEstadisticas() {
             : `<div class="sc-value">—<small>sin datos</small></div>`}
           <div class="sc-cta">Ver top 10 →</div>
         </div>`;
-      }).join("") + `</div>`;
+      }).join("") + `</div>
+      ${distincionesHTML()}
+      ${emblemasHTML()}
+      ${antiEmblemasHTML()}`;
     return;
   }
 
@@ -2875,6 +2981,7 @@ function abrirPerfil(id) {
   const xpFalta = XP_POR_NIVEL - (xp % XP_POR_NIVEL);
   const dist = distincionesDe(id);
   const embl = emblemasDeJugador(id);
+  const anti = antiEmblemasDeJugador(id);
   document.getElementById("modalContent").innerHTML = `
     <button class="modal-close" onclick="cerrarPerfil()" aria-label="Cerrar">✕</button>
     <div class="profile-head">
@@ -2891,6 +2998,7 @@ function abrirPerfil(id) {
       <div class="nivel-next">${xpFalta} XP para el Nivel ${nivel + 1}</div>
       ${dist.length ? `<div class="perfil-distinciones">${dist.map(t => `<span class="dist-chip">${t}</span>`).join("")}</div>` : ""}
       ${embl.length ? `<div class="perfil-distinciones" style="margin-top:.3rem">${embl.map(e => `<span class="dist-chip emblema-chip">${e.titulo}</span>`).join("")}</div>` : ""}
+      ${anti.length ? `<div class="perfil-distinciones" style="margin-top:.3rem">${anti.map(e => `<span class="dist-chip anti-chip">${e.titulo}</span>`).join("")}</div>` : ""}
     </div>
     <div class="stat-grid">
       <div class="stat-box"><div class="num">${s.goles}</div><div class="lbl">Goles</div></div>
@@ -3076,11 +3184,13 @@ function renderJugadores() {
     const { nivel } = nivelDe(xp);
     const dist  = distincionesDe(j.ID_Jugador);
     const embl  = emblemasDeJugador(j.ID_Jugador);
+    const anti  = antiEmblemasDeJugador(j.ID_Jugador);
     const chips = [
       ...dist.map(t => `<span class="dist-chip">${t}</span>`),
-      ...embl.map(e => `<span class="dist-chip emblema-chip">${e.titulo}</span>`)
+      ...embl.map(e => `<span class="dist-chip emblema-chip">${e.titulo}</span>`),
+      ...anti.map(e => `<span class="dist-chip anti-chip">${e.titulo}</span>`)
     ].join("");
-    const buscar = normalizar([j.Nombre, ...dist, ...embl.map(e => e.titulo)].join(" ").toLowerCase());
+    const buscar = normalizar([j.Nombre, ...dist, ...embl.map(e => e.titulo), ...anti.map(e => e.titulo)].join(" ").toLowerCase());
     return `<div class="jugador-card" data-buscar="${buscar}" onclick="abrirPerfil('${j.ID_Jugador}')">
       <div class="jugador-card-av">${iniciales(j.Nombre)}</div>
       <div class="jugador-card-body">
@@ -3107,6 +3217,10 @@ function renderJugadores() {
        <div class="buscar-grupo-label">Emblema</div>
        <div class="buscar-chips-row">
          ${EMBLEMAS.map(e => `<span class="buscar-chip" data-tipo="embl" data-val="${normalizar(e.titulo.toLowerCase())}" onclick="toggleChip(this)">${e.titulo}</span>`).join("")}
+       </div>
+       <div class="buscar-grupo-label" style="color:#c84040">Maldición</div>
+       <div class="buscar-chips-row">
+         ${ANTI_EMBLEMAS.map(e => `<span class="buscar-chip" data-tipo="embl" data-val="${normalizar(e.titulo.toLowerCase())}" onclick="toggleChip(this)" style="border-color:rgba(160,40,40,.4);color:#c84040">${e.titulo}</span>`).join("")}
        </div>
        <button class="buscar-limpiar" id="buscar-limpiar" onclick="limpiarFiltros()" style="display:none">✕ Limpiar filtros</button>
      </div>
