@@ -2215,7 +2215,7 @@ function _antiPrecompute() {
 
 const ANTI_EMBLEMAS = [
   {
-    titulo: "El Gafe",
+    titulo: "El Generoso",
     glifo:  "calavera",
     desc:   "Anotó al menos 1 autogol en la temporada",
     cond: id => {
@@ -2242,12 +2242,6 @@ const ANTI_EMBLEMAS = [
       const n = c.tard[id] || 0;
       return n > 0 && n === c.maxTard;
     }
-  },
-  {
-    titulo: "El Villano",
-    glifo:  "cadena",
-    desc:   "Cumplió al menos 1 partido de sanción",
-    cond: id => (MOCK_DATA.asistencia || []).some(a => a.ID_Jugador === id && a.Llegada === "Sancionado")
   },
   {
     titulo: "La Mala Suerte",
@@ -2816,7 +2810,7 @@ function antiEmblemasHTML() {
       </div>`;
   }).join("");
   return `
-    <div class="distinciones-label" style="color:#c84040">Maldiciones</div>
+    <div class="distinciones-label" style="color:#c84040">Pergamino Negro</div>
     <div class="med-grid">${cards}</div>`;
 }
 
@@ -3218,7 +3212,7 @@ function renderJugadores() {
        <div class="buscar-chips-row">
          ${EMBLEMAS.map(e => `<span class="buscar-chip" data-tipo="embl" data-val="${normalizar(e.titulo.toLowerCase())}" onclick="toggleChip(this)">${e.titulo}</span>`).join("")}
        </div>
-       <div class="buscar-grupo-label" style="color:#c84040">Maldición</div>
+       <div class="buscar-grupo-label" style="color:#c84040">Pergamino Negro</div>
        <div class="buscar-chips-row">
          ${ANTI_EMBLEMAS.map(e => `<span class="buscar-chip" data-tipo="embl" data-val="${normalizar(e.titulo.toLowerCase())}" onclick="toggleChip(this)" style="border-color:rgba(160,40,40,.4);color:#c84040">${e.titulo}</span>`).join("")}
        </div>
