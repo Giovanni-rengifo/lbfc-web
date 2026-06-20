@@ -120,6 +120,44 @@
     ]
   },
   {
+    "titulo": "Distinciones",
+    "items": [
+      { "glifo": "espada",   "label": "El Conquistador",  "texto": "Chip dorado para quien más victorias acumule en la temporada. Cambia de manos si otro jugador lo supera." },
+      { "glifo": "diana",    "label": "El Artillero",     "texto": "Chip dorado para el máximo goleador de la temporada. No cuentan autogoles." },
+      { "glifo": "ojo",      "label": "El Estratega",     "texto": "Chip dorado para quien más pases gol (asistencias directas a gol) acumule en la temporada." },
+      { "glifo": "llama",    "label": "El Decisivo",      "texto": "Chip dorado para quien más veces haya anotado el gol que aseguró la victoria — el gol número (goles del rival + 1) del equipo ganador, por orden cronológico." },
+      { "glifo": "bandera",  "label": "El Capitán",       "texto": "Chip dorado para quien más veces haya sido designado capitán de equipo, partido a partido." },
+      { "glifo": "diamante", "label": "El Completo",      "texto": "Chip dorado para quien más partidos haya cerrado con gol Y asistencia en el mismo juego." },
+      { "glifo": "escudo",   "label": "El Muro",          "texto": "Chip dorado para el Arquero o Defensa que más veces haya sido elegido Diferenciador del partido. Mínimo 3 partidos jugados para clasificar. El Diferenciador es el jugador que más destacó en su grupo de posición." },
+      { "glifo": "llave",    "label": "El Maestro",       "texto": "Chip dorado para el Mediocampista que más veces haya sido elegido Diferenciador del partido. Mínimo 3 partidos jugados para clasificar." },
+      { "glifo": "flecha",   "label": "El Cazador",       "texto": "Chip dorado para el Delantero que más veces haya sido elegido Diferenciador del partido. Mínimo 3 partidos jugados para clasificar." },
+      { "glifo": "reloj",    "label": "El Puntual",       "texto": "Chip dorado para quien mejor promedio de puntualidad tenga. Solo clasifican quienes han jugado al menos el 40 % de los partidos de la temporada." },
+      { "glifo": "corona",   "label": "El Líder",         "texto": "Chip dorado para quien más veces haya sido elegido MVP del partido." }
+    ]
+  },
+  {
+    "titulo": "Emblemas",
+    "items": [
+      { "glifo": "tres",     "color": "#9fbcd4", "label": "Hat-trick",       "texto": "3 o más goles en un solo partido. Una vez conquistado es permanente — no se pierde si el jugador no vuelve a lograrlo." },
+      { "glifo": "dos",      "color": "#9fbcd4", "label": "Doblete",         "texto": "2 goles en un mismo partido. Si ya tenés el Hat-trick, el Doblete está incluido automáticamente." },
+      { "glifo": "doble_fl", "color": "#9fbcd4", "label": "Asistidor Épico", "texto": "2 o más pases gol en un mismo partido. Una vez conquistado es permanente." },
+      { "glifo": "rayo",     "color": "#9fbcd4", "label": "Centella",        "texto": "El gol más rápido de la temporada (menor minuto registrado). Puede cambiar si alguien anota en un minuto inferior." },
+      { "glifo": "luna",     "color": "#9fbcd4", "label": "Nocturno",        "texto": "El gol más tardío de la temporada (mayor minuto registrado). Puede cambiar si alguien anota en un minuto mayor." },
+      { "glifo": "sol",      "color": "#9fbcd4", "label": "Inmortal",        "texto": "Jugó absolutamente todos los partidos de la temporada sin faltar a ninguno. Si el jugador falta en un partido futuro, el emblema desaparece." }
+    ]
+  },
+  {
+    "titulo": "Rankings",
+    "items": [
+      { "icono": "estrella", "label": "Nivel de Leyenda",      "texto": "Clasificación principal por XP acumulado. Solo sube — jugar, ganar, anotar y asistir suman puntos; nada los resta." },
+      { "icono": "trofeo",   "label": "Puntos Temporada",      "texto": "Victoria 3 pts · Empate 1 pt · Derrota 0 pts. Refleja el éxito colectivo del jugador a lo largo de la temporada." },
+      { "glifo": "diana",    "label": "Goleadores",            "texto": "Total de goles en la temporada. No cuentan autogoles." },
+      { "glifo": "ojo",      "label": "Asistidores",           "texto": "Total de pases gol en la temporada. Se registra el jugador que dio el último pase directo al goleador." },
+      { "icono": "rayo",     "label": "Técnica Goleadora",     "texto": "Calidad de los goles, no cantidad. Chilena ×3 · fuera del área / tiro libre / olímpico ×2 · cabeza ×1.5 · gol de jugada ×1. Autogol −1." },
+      { "glifo": "doble_fl", "label": "Técnica de Pase Gol",  "texto": "Calidad de las asistencias, no cantidad. Saque de portería ×3 · esquina / tiro libre ×2 · pase normal ×1." }
+    ]
+  },
+  {
     "titulo": "Partidos",
     "items": [
       {

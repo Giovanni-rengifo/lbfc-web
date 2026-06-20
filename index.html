@@ -3040,7 +3040,10 @@ async function renderInformacion() {
     contenedor.innerHTML = secciones.map(sec => {
       const items = sec.items.map((item, j) => {
         const ultimo = j === sec.items.length - 1;
-        const ico = item.icono ? ICONOS[item.icono] : "";
+        const ico = item.icono ? ICONOS[item.icono]
+                  : item.glifo && GLIFOS[item.glifo]
+                    ? `<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="${item.color || 'var(--color-gold)'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${GLIFOS[item.glifo]}</svg>`
+                  : "";
         return `<div class="info-item"${ultimo ? ' style="border-bottom:none"' : ""}>
           ${ico ? `<div class="info-demo">${ico}</div>` : ""}
           <div class="info-texto"${!ico ? ' style="width:100%"' : ""}>
