@@ -1800,6 +1800,12 @@ function resaltarPorNombre(texto, celdas) {
   if (primero) primero.scrollIntoView({ behavior: "instant", block: "center" });
 }
 
+// "Rojo"|"Azul"|null. Devuelve null si el jugador no asistió — esos datos no cuentan.
+function equipoDe(id, a) {
+  if ((a.Ausentes || []).includes(id)) return null;
+  return a.Rojo.includes(id) ? "Rojo" : a.Azul.includes(id) ? "Azul" : null;
+}
+
 // Estadísticas agregadas por jugador (derivadas, nunca hardcodeadas).
 // Solo cuentan los partidos ya jugados — la alineación futura no suma.
 function statsJugador(id) {
@@ -1809,8 +1815,9 @@ function statsJugador(id) {
   let jugados = 0, vecesRojo = 0, vecesAzul = 0;
   MOCK_DATA.alineaciones.forEach(a => {
     if (!idsJugados.has(a.ID_Partido)) return;
-    if (a.Rojo.includes(id)) { jugados++; vecesRojo++; }
-    if (a.Azul.includes(id)) { jugados++; vecesAzul++; }
+    const eq = equipoDe(id, a);
+    if (eq === "Rojo") { jugados++; vecesRojo++; }
+    else if (eq === "Azul") { jugados++; vecesAzul++; }
   });
   const mvps = MOCK_DATA.partidos.filter(p => mvpsDe(p).includes(id)).length;
   const difs = MOCK_DATA.alineaciones
@@ -1823,7 +1830,7 @@ function statsJugador(id) {
     if (!idsJugados.has(a.ID_Partido)) return;
     const p = MOCK_DATA.partidos.find(p => p.ID_Partido === a.ID_Partido);
     if (!p || p.Goles_Rojo === p.Goles_Azul) return;
-    const equipo = a.Rojo.includes(id) ? "Rojo" : a.Azul.includes(id) ? "Azul" : null;
+    const equipo = equipoDe(id, a);
     if (!equipo) return;
     const gana = p.Goles_Rojo > p.Goles_Azul ? "Rojo" : "Azul";
     if (equipo === gana) ganados++; else perdidos++;
@@ -1914,7 +1921,7 @@ function xpJugador(id) {
   let xp = 0;
   MOCK_DATA.alineaciones.forEach(a => {
     if (!idsJugados.has(a.ID_Partido)) return;
-    const equipo = a.Rojo.includes(id) ? "Rojo" : a.Azul.includes(id) ? "Azul" : null;
+    const equipo = equipoDe(id, a);
     if (!equipo) return;
     const p = MOCK_DATA.partidos.find(x => x.ID_Partido === a.ID_Partido);
     if (!p) return;
@@ -1951,7 +1958,7 @@ function vallasInvictas(id) {
   let n = 0;
   MOCK_DATA.alineaciones.forEach(a => {
     if (!idsJugados.has(a.ID_Partido)) return;
-    const equipo = a.Rojo.includes(id) ? "Rojo" : a.Azul.includes(id) ? "Azul" : null;
+    const equipo = equipoDe(id, a);
     if (!equipo) return;
     const p = MOCK_DATA.partidos.find(x => x.ID_Partido === a.ID_Partido);
     if (!p) return;
@@ -1967,7 +1974,7 @@ function puntosTemporada(id) {
   MOCK_DATA.alineaciones.forEach(a => {
     const p = MOCK_DATA.partidos.find(x => x.ID_Partido === a.ID_Partido);
     if (!p || !esJugado(p)) return;
-    const equipo = a.Rojo.includes(id) ? "Rojo" : a.Azul.includes(id) ? "Azul" : null;
+    const equipo = equipoDe(id, a);
     if (!equipo) return;
     const gA = equipo === "Rojo" ? p.Goles_Rojo : p.Goles_Azul;
     const gC = equipo === "Rojo" ? p.Goles_Azul : p.Goles_Rojo;
@@ -1979,7 +1986,7 @@ function puntosTemporada(id) {
 
 
 function pilFP(id, p, ali) {
-  const equipo = ali.Rojo.includes(id) ? "Rojo" : ali.Azul.includes(id) ? "Azul" : null;
+  const equipo = equipoDe(id, ali);
   if (!equipo) return null;
   const reg = (MOCK_DATA.asistencia || []).find(a => a.ID_Jugador === id && a.ID_Partido === p.ID_Partido);
   return FP_PESOS[reg ? reg.Llegada : "Tiempo"] ?? 85;
@@ -2049,7 +2056,7 @@ function rachaConsecutiva(id) {
   let max = 0, racha = 0;
   jugados.forEach(p => {
     const a = MOCK_DATA.alineaciones.find(x => x.ID_Partido === p.ID_Partido);
-    if (a && (a.Rojo.includes(id) || a.Azul.includes(id))) {
+    if (a && equipoDe(id, a) !== null) {
       if (++racha > max) max = racha;
     } else { racha = 0; }
   });
