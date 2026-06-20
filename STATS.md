@@ -10,8 +10,8 @@
 | Tabla Excel | Qué aporta |
 |---|---|
 | `Jugadores` | ID, nombre, posición (Arquero / Defensa / Mediocampista / Delantero) |
-| `Partidos` | ID, fecha, Goles_Rojo, Goles_Azul, Diferenciador, MVP |
-| `Alineaciones` | Quién jugó en cada partido, en qué equipo (Rojo/Azul) |
+| `Partidos` | ID, fecha, Goles_Rojo, Goles_Azul, MVP |
+| `Alineaciones` | Quién jugó, en qué equipo (Rojo/Azul), columna `Diferenciador` (VERDADERO/FALSO por jugador), columna `Capitán` (VERDADERO/FALSO) |
 | `Eventos` | Cada gol: quién marcó, quién asistió, tipo de gol, tipo de pase, minuto, equipo |
 | `Asistencia` | Hora de llegada al partido (fuente de Fair Play y puntualidad) |
 
@@ -82,8 +82,7 @@ Ej: `Goles (14), Cabeza (3), Fuera del área (1)`.
 > En su lugar: un sistema **100% automático** que reconoce el aporte de **todos**, no solo
 > de goleadores y asistidores.
 
-El sistema tiene tres partes: **Nivel de Leyenda** (XP), **Distinciones** (medallas) y
-**Puntos Temporada**. Más el **Fair Play** que ya existía.
+El sistema tiene cuatro partes: **Nivel de Leyenda** (XP), **Distinciones** (medallas), **Emblemas** (logros permanentes) y **Puntos Temporada**. Más el **Fair Play** que ya existía.
 
 ### 4a. Nivel de Leyenda (XP)
 
@@ -220,3 +219,6 @@ FP_PESOS = { Temprano: 100, Tiempo: 85, Tarde: 75, No: 0, Sancionado: 0 }
 - **No jugó:** si el jugador no aparece en la alineación de un partido, no recibe XP ni stats de ese partido.
 - **Distinción sin datos:** si nadie tiene la métrica > 0, esa medalla no se muestra.
 - **Nombre del jugador:** los rankings muestran el nombre tal cual está en la hoja `Jugadores`. "GR7" es el alias de Giovanni Rengifo en el Excel (intencional).
+- **Emblemas permanentes:** Hat-trick, Doblete, Asistidor Épico se conquistan para siempre una vez logrados en la temporada.
+- **Emblemas que pueden cambiar:** Centella y Nocturno los ostenta quien tenga el menor/mayor minuto de gol registrado — cambian si alguien supera ese récord. Inmortal desaparece si el jugador falta a algún partido futuro.
+- **Diferenciador en Alineaciones:** 3 valores VERDADERO por partido (uno por grupo: Arq/Def, Med, Del). El jugador con VERDADERO recibe +6 XP si su equipo no perdió, +3 si perdió.
