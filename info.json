@@ -68,14 +68,19 @@
     "titulo": "Jugadores",
     "items": [
       {
+        "icono": "buscar",
+        "label": "Buscar y filtrar",
+        "texto": "Toca el botón 'Buscar y filtrar' para desplegar las opciones. Puedes filtrar por nombre, elegir una distinción (medalla dorada) o un emblema (logro azul) del menú desplegable. Los filtros se combinan entre sí. Un número dorado en el botón indica cuántos filtros están activos."
+      },
+      {
         "icono": "jugador",
         "label": "Ver tu perfil",
-        "texto": "Encuentra tu nombre en la lista y tócalo. Verás tu Nivel, XP, stats de la temporada, distinciones que tienes y cuánto te falta para alcanzar a cada líder."
+        "texto": "Toca tu nombre en la lista para ver tu perfil: Nivel de Leyenda, XP acumulado, stats de la temporada, distinciones que ostentás, emblemas conquistados y cuánto te falta para alcanzar a cada líder."
       },
       {
         "icono": "dos_jugadores",
         "label": "Comparar con un compañero",
-        "texto": "Toca cualquier jugador para ver su perfil completo. La lista está ordenada de mayor a menor Nivel de Leyenda."
+        "texto": "Toca cualquier jugador para ver su perfil completo. La lista va de mayor a menor Nivel de Leyenda."
       }
     ]
   },
@@ -85,32 +90,32 @@
       {
         "icono": "estrella",
         "label": "Nivel de Leyenda",
-        "texto": "XP que solo sube, partido a partido. Jugar +10 · Victoria +5 · Gol +8 · Asistencia +6 · Valla invicta +4 · MVP +10 · Diferenciador +6 (o +3 si tu equipo perdió) · Llegar temprano +3. Nunca pierdes XP — el nivel solo avanza."
+        "texto": "XP acumulado que nunca baja. Cada partido suma: Jugar +10 · Victoria +5 · Gol +8 · Asistencia +6 · Valla invicta +4 · MVP +10 · Diferenciador +6 (o +3 si el equipo perdió) · Llegar temprano +3. El nivel sube cada 20 XP y no retrocede."
       },
       {
         "icono": "medalla",
         "label": "Distinciones",
-        "texto": "Once medallas automáticas. Las ostenta quien lidera cada categoría: El Conquistador (más victorias), El Artillero (más goles), El Estratega (más pases gol), El Decisivo (más goles victoria), El Capitán (más veces capitán), El Completo (más partidos con gol y asistencia), El Muro (mejor Def/GK), El Maestro (mejor Mediocampista), El Cazador (mejor Delantero), El Puntual (mejor puntualidad) y El Líder (más MVPs). Chips dorados en el perfil."
+        "texto": "Once medallas automáticas — chips dorados en el perfil. Solo UN jugador ostenta cada una a la vez (el que lidera la métrica). Si otro lo supera, la medalla cambia de manos. Incluyen: El Conquistador, El Artillero, El Estratega, El Decisivo, El Capitán, El Completo, El Muro, El Maestro, El Cazador, El Puntual y El Líder. Toca cada tarjeta en la sección Distinciones para ver quién la tiene y por qué."
       },
       {
         "icono": "rayo",
         "label": "Emblemas",
-        "texto": "Logros que se conquistan para siempre. Varios jugadores pueden tenerlos al mismo tiempo. Hat-trick (3+ goles en un partido), Doblete (2 goles en un partido), Asistidor Épico (2+ asistencias en un partido), Centella (gol más rápido de la temporada), Nocturno (gol más tardío) e Inmortal (jugó todos los partidos). Chips azules en el perfil."
+        "texto": "Seis logros permanentes — chips azules en el perfil. Varios jugadores pueden tenerlos a la vez y no se pierden. Hat-trick (3+ goles en un partido), Doblete (2 goles en un partido), Asistidor Épico (2+ asistencias), Centella (gol más rápido de la temporada), Nocturno (gol más tardío) e Inmortal (jugó todos los partidos sin faltar uno)."
       },
       {
         "icono": "trofeo",
-        "label": "Puntos Temporada",
-        "texto": "Victoria 3 pts · Empate 1 pt · Derrota 0 pts. Acumulado en toda la temporada."
+        "label": "Rankings",
+        "texto": "Seis tablas de clasificación: Nivel de Leyenda, Puntos Temporada, Goleadores, Asistidores, Gesto Técnico Goleador y Gesto Técnico de Pase Gol. Toca cualquier tarjeta para ver el podio completo (top 3) y las posiciones 4–10."
       },
       {
         "icono": "reloj",
         "label": "Fair Play",
-        "texto": "Promedio de puntualidad de la temporada. Temprano: 100% · A tiempo: 85% · Tarde: 75% · No asistió: 0%."
+        "texto": "Promedio de puntualidad de la temporada, visible en el perfil de cada jugador. Temprano: 100 % · A tiempo: 85 % · Tarde: 75 % · No asistió: 0 %. Alimenta la distinción El Puntual (mínimo 40 % de partidos jugados para clasificar)."
       },
       {
         "icono": "rayo",
         "label": "Gesto Técnico",
-        "texto": "Ranking por calidad de goles y pases gol. No todos valen igual: una chilena cuenta más que un gol de jugada; un saque de portería más que un pase normal."
+        "texto": "Ranking de calidad de goles y pases gol. No todos valen igual: chilena ×3, fuera del área ×2, tiro libre ×2, cabeza ×1.5, gol de jugada ×1. En pases: saque de portería ×3, esquina ×2, tiro libre ×2, pase normal ×1."
       }
     ]
   },
