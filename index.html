@@ -2991,8 +2991,7 @@ function abrirPerfil(id) {
       <div class="nivel-track"><div class="nivel-fill" style="width:${pct}%"></div></div>
       <div class="nivel-next">${xpFalta} XP para el Nivel ${nivel + 1}</div>
       ${dist.length ? `<div class="perfil-distinciones">${dist.map(t => `<span class="dist-chip">${t}</span>`).join("")}</div>` : ""}
-      ${embl.length ? `<div class="perfil-distinciones" style="margin-top:.3rem">${embl.map(e => `<span class="dist-chip emblema-chip">${e.titulo}</span>`).join("")}</div>` : ""}
-      ${anti.length ? `<div class="perfil-distinciones" style="margin-top:.3rem">${anti.map(e => `<span class="dist-chip anti-chip">${e.titulo}</span>`).join("")}</div>` : ""}
+      ${(embl.length || anti.length) ? `<div class="perfil-distinciones" style="margin-top:.3rem">${[...embl.map(e => `<span class="dist-chip emblema-chip">${e.titulo}</span>`), ...anti.map(e => `<span class="dist-chip anti-chip">${e.titulo}</span>`)].join("")}</div>` : ""}
     </div>
     <div class="stat-grid">
       <div class="stat-box"><div class="num">${s.goles}</div><div class="lbl">Goles</div></div>
