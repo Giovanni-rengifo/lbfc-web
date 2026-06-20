@@ -12,8 +12,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-<!-- SheetJS: lee datos.xlsx en el navegador (modo archivo manual) -->
-<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <style>
 /* ============================================================
    LOS BIGOTES F.C. — Identidad visual
@@ -3251,14 +3249,29 @@ function categorizarLlegada(asistencia, horaLlegada) {
 
 // Lee datos.xlsx de la carpeta de la app y lo convierte al mismo
 // formato JSON que entregaría un Apps Script: {NombreHoja: [filas]}
+// SheetJS se carga solo si el archivo existe — evita bloquear la carga inicial.
 async function leerDatosXlsx() {
-  if (typeof XLSX === "undefined") return null; // CDN no disponible
-  let resp = null;
+  // 1. Detectar si existe algún archivo Excel (HEAD = sin descargar contenido)
+  let urlArchivo = null;
   for (const nombre of ["LBFC 2026.xlsx", "datos.xlsx"]) {
-    resp = await fetch(encodeURI(nombre) + "?v=" + Date.now()).catch(() => null);
-    if (resp && resp.ok) break;
+    const head = await fetch(encodeURI(nombre), { method: "HEAD" }).catch(() => null);
+    if (head && head.ok) { urlArchivo = encodeURI(nombre); break; }
   }
-  if (!resp || !resp.ok) return null; // sin archivo → mock
+  if (!urlArchivo) return null; // sin archivo → mock, sin cargar SheetJS
+
+  // 2. Cargar SheetJS solo ahora que sabemos que hay un archivo
+  if (typeof XLSX === "undefined") {
+    await new Promise((ok, err) => {
+      const s = document.createElement("script");
+      s.src = "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js";
+      s.onload = ok; s.onerror = err;
+      document.head.appendChild(s);
+    });
+  }
+
+  // 3. Descargar y parsear el archivo
+  const resp = await fetch(urlArchivo + "?v=" + Date.now()).catch(() => null);
+  if (!resp || !resp.ok) return null;
   const buffer = await resp.arrayBuffer();
   const libro = XLSX.read(buffer, { cellDates: true });
   const json = {};
