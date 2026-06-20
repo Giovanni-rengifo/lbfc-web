@@ -644,8 +644,22 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
 .med-ico { width: 34px; height: 34px; margin: 0 auto .4rem; color: var(--color-gold); }
 .med-ico svg { width: 100%; height: 100%; }
 .med-title { font-family: var(--font-title); font-weight: 700; font-size: .76rem; color: var(--color-parchment); letter-spacing: .02em; }
+.med-desc { font-size: .61rem; color: var(--text-dim); margin-top: .12rem; line-height: 1.35; }
 .med-holder { font-size: .82rem; color: var(--color-text-light); font-weight: 600; margin-top: .3rem; }
 .med-meta { font-size: .65rem; color: var(--text-dim); margin-top: .1rem; }
+.emblema-card { background: rgba(159,188,212,.07); border-color: rgba(159,188,212,.28); cursor: default; }
+.emblema-card:hover { border-color: rgba(159,188,212,.6); background: rgba(159,188,212,.12); }
+.emblema-card .med-ico { color: #9fbcd4; }
+.emblema-card .med-title { color: #b8cfdf; }
+.jugador-buscar {
+  width: 100%; box-sizing: border-box;
+  background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: 6px; color: var(--color-text-light);
+  font-family: var(--font-body); font-size: .9rem;
+  padding: .5rem .8rem; margin-bottom: .8rem; outline: none;
+}
+.jugador-buscar:focus { border-color: rgba(201,168,76,.5); }
+.jugador-buscar::placeholder { color: var(--text-dim); }
 @media (min-width: 900px) {
   .med-grid { grid-template-columns: repeat(3, 1fr); }
 }
@@ -2000,17 +2014,17 @@ function fairPlayClasif(id) {
 // Distinciones: cada una premia un tipo de aporte distinto, para que el
 // reconocimiento rote y casi nadie quede invisible. Todas automáticas.
 const DISTINCIONES = [
-  { titulo: "El Conquistador",   glifo: "espada",   metrica: id => statsJugador(id).ganados,     unidad: "victorias"          },
-  { titulo: "El Artillero",      glifo: "diana",    metrica: id => statsJugador(id).goles,       unidad: "goles"              },
-  { titulo: "El Estratega",      glifo: "ojo",      metrica: id => statsJugador(id).asistencias, unidad: "pases gol"          },
-  { titulo: "El Muro",           glifo: "escudo",   metrica: difConMin3, filtro: esDefOArquero,   unidad: "veces diferenciador" },
-  { titulo: "El Maestro",        glifo: "llave",    metrica: difConMin3, filtro: esMediocampista, unidad: "veces diferenciador" },
-  { titulo: "El Cazador",        glifo: "flecha",   metrica: difConMin3, filtro: esDelantero,     unidad: "veces diferenciador" },
-  { titulo: "El Decisivo",       glifo: "llama",    metrica: golesVictoriaDe,                     unidad: "goles victoria"     },
-  { titulo: "El Capitán",        glifo: "bandera",  metrica: vecesCpitan,                         unidad: "veces capitán"      },
-  { titulo: "El Completo",       glifo: "diamante", metrica: partidosCompletos,                   unidad: "partidos gol+asist" },
-  { titulo: "El Puntual",        glifo: "reloj",    metrica: fairPlayClasif,                      unidad: "% de puntualidad"   },
-  { titulo: "El Líder",          glifo: "corona",   metrica: id => statsJugador(id).mvps,         unidad: "veces MVP"          }
+  { titulo: "El Conquistador",   glifo: "espada",   desc: "Más victorias en la temporada",               metrica: id => statsJugador(id).ganados,     unidad: "victorias"           },
+  { titulo: "El Artillero",      glifo: "diana",    desc: "Más goles anotados",                          metrica: id => statsJugador(id).goles,       unidad: "goles"               },
+  { titulo: "El Estratega",      glifo: "ojo",      desc: "Más pases gol (asistencias)",                 metrica: id => statsJugador(id).asistencias, unidad: "pases gol"           },
+  { titulo: "El Muro",           glifo: "escudo",   desc: "Mejor Arq/Defensa · votación por partido",   metrica: difConMin3, filtro: esDefOArquero,   unidad: "veces diferenciador" },
+  { titulo: "El Maestro",        glifo: "llave",    desc: "Mejor Mediocampista · votación por partido",  metrica: difConMin3, filtro: esMediocampista, unidad: "veces diferenciador" },
+  { titulo: "El Cazador",        glifo: "flecha",   desc: "Mejor Delantero · votación por partido",      metrica: difConMin3, filtro: esDelantero,     unidad: "veces diferenciador" },
+  { titulo: "El Decisivo",       glifo: "llama",    desc: "El gol que asegura la victoria",              metrica: golesVictoriaDe,                     unidad: "goles victoria"      },
+  { titulo: "El Capitán",        glifo: "bandera",  desc: "Más veces nombrado capitán de equipo",        metrica: vecesCpitan,                         unidad: "veces capitán"       },
+  { titulo: "El Completo",       glifo: "diamante", desc: "Partido con gol Y asistencia en el mismo juego", metrica: partidosCompletos,                unidad: "partidos gol+asist"  },
+  { titulo: "El Puntual",        glifo: "reloj",    desc: "Mejor puntualidad · mín. 40 % de partidos",  metrica: fairPlayClasif,                      unidad: "% de puntualidad"    },
+  { titulo: "El Líder",          glifo: "corona",   desc: "Más veces elegido MVP del partido",           metrica: id => statsJugador(id).mvps,         unidad: "veces MVP"           }
 ];
 
 // Devuelve el jugador líder de una distinción (o null si nadie tiene > 0).
@@ -2112,6 +2126,13 @@ const EMBLEMAS = [
 
 function emblemasDeJugador(id) {
   return EMBLEMAS.filter(e => e.cond(id));
+}
+
+function filtrarJugadores(q) {
+  const term = normalizar(q.trim().toLowerCase());
+  document.querySelectorAll("#jugadores-content .jugador-card").forEach(c => {
+    c.style.display = term && !c.dataset.buscar.includes(term) ? "none" : "";
+  });
 }
 
 const PILARES = [
@@ -2566,6 +2587,7 @@ function distincionesHTML() {
       <div class="med-card" onclick="abrirPerfil('${l.id}')">
         <div class="med-ico">${glifoSVG(d.glifo)}</div>
         <div class="med-title">${d.titulo}</div>
+        <div class="med-desc">${d.desc}</div>
         <div class="med-holder">${nombre(l.id)}</div>
         <div class="med-meta">${l.display} ${d.unidad}</div>
       </div>`;
@@ -2573,6 +2595,30 @@ function distincionesHTML() {
   if (!cards.trim()) return "";
   return `
     <div class="distinciones-label">Distinciones</div>
+    <div class="med-grid">${cards}</div>`;
+}
+
+// Sección de Emblemas para el hub de Estadísticas
+function emblemasHTML() {
+  const cards = EMBLEMAS.map(e => {
+    const holders = MOCK_DATA.jugadores
+      .filter(j => e.cond(j.ID_Jugador))
+      .map(j => nombre(j.ID_Jugador));
+    const texto = holders.length === 0
+      ? `<em style="color:var(--text-dim);font-style:italic">Nadie aún</em>`
+      : holders.length <= 3
+        ? holders.join(", ")
+        : `${holders.slice(0, 2).join(", ")} +${holders.length - 2}`;
+    return `
+      <div class="med-card emblema-card">
+        <div class="med-ico">${glifoSVG(e.glifo)}</div>
+        <div class="med-title">${e.titulo}</div>
+        <div class="med-desc">${e.desc}</div>
+        <div class="med-holder">${texto}</div>
+      </div>`;
+  }).join("");
+  return `
+    <div class="distinciones-label" style="color:#9fbcd4">Emblemas</div>
     <div class="med-grid">${cards}</div>`;
 }
 
@@ -2584,6 +2630,7 @@ function renderEstadisticas() {
     cont.innerHTML = `
       <p class="view-sub" style="margin-top:.4rem">Temporada 2026 · Salón de Leyendas</p>
       ${distincionesHTML()}
+      ${emblemasHTML()}
       <div class="categorias-label">Rankings</div>
       <div class="stats-hub">` +
       Object.entries(CATEGORIAS).map(([key, c]) => {
@@ -2936,7 +2983,8 @@ function renderJugadores() {
       ...dist.map(t => `<span class="dist-chip">${t}</span>`),
       ...embl.map(e => `<span class="dist-chip emblema-chip">${e.titulo}</span>`)
     ].join("");
-    return `<div class="jugador-card" onclick="abrirPerfil('${j.ID_Jugador}')">
+    const buscar = normalizar([j.Nombre, ...dist, ...embl.map(e => e.titulo)].join(" ").toLowerCase());
+    return `<div class="jugador-card" data-buscar="${buscar}" onclick="abrirPerfil('${j.ID_Jugador}')">
       <div class="jugador-card-av">${iniciales(j.Nombre)}</div>
       <div class="jugador-card-body">
         <div class="jugador-card-nombre">${j.Nombre}</div>
@@ -2948,6 +2996,7 @@ function renderJugadores() {
   }).join("");
   document.getElementById("jugadores-content").innerHTML =
     `<p class="view-sub" style="margin-top:.4rem">Jugadores · Temporada 2026</p>
+     <input class="jugador-buscar" id="jugador-buscar" placeholder="Buscar por nombre, distinción o emblema…" oninput="filtrarJugadores(this.value)">
      <div class="jugadores-grid">${cards}</div>`;
 }
 
