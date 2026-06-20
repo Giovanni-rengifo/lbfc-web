@@ -3247,31 +3247,50 @@ function categorizarLlegada(asistencia, horaLlegada) {
   return "Tarde";
 }
 
+const _XLSX_CDN = "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js";
+const _LS_XLSX  = "lbfc_xlsx_cache_v1";
+
+function _cargarSheetJS() {
+  return new Promise((ok, err) => {
+    const s = document.createElement("script");
+    s.src = _XLSX_CDN; s.onload = ok; s.onerror = err;
+    document.head.appendChild(s);
+  });
+}
+
 // Lee datos.xlsx de la carpeta de la app y lo convierte al mismo
 // formato JSON que entregaría un Apps Script: {NombreHoja: [filas]}
-// SheetJS se carga solo si el archivo existe — evita bloquear la carga inicial.
+// — SheetJS solo se carga si el archivo existe.
+// — Si el archivo no cambió (Last-Modified igual), se usa el JSON en localStorage.
 async function leerDatosXlsx() {
-  // 1. Detectar si existe algún archivo Excel (HEAD = sin descargar contenido)
-  let urlArchivo = null;
+  // 1. HEAD: detectar archivo y obtener Last-Modified (no descarga cuerpo)
+  let urlArchivo = null, lastMod = null;
   for (const nombre of ["LBFC 2026.xlsx", "datos.xlsx"]) {
     const head = await fetch(encodeURI(nombre), { method: "HEAD" }).catch(() => null);
-    if (head && head.ok) { urlArchivo = encodeURI(nombre); break; }
+    if (head?.ok) {
+      urlArchivo = encodeURI(nombre);
+      lastMod = head.headers.get("last-modified");
+      break;
+    }
   }
-  if (!urlArchivo) return null; // sin archivo → mock, sin cargar SheetJS
+  if (!urlArchivo) return null; // sin archivo → mock
 
-  // 2. Cargar SheetJS solo ahora que sabemos que hay un archivo
-  if (typeof XLSX === "undefined") {
-    await new Promise((ok, err) => {
-      const s = document.createElement("script");
-      s.src = "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js";
-      s.onload = ok; s.onerror = err;
-      document.head.appendChild(s);
-    });
+  // 2. Caché local: si el archivo no cambió, evitar descarga y parseo
+  if (lastMod) {
+    try {
+      const c = JSON.parse(localStorage.getItem(_LS_XLSX) || "null");
+      if (c?.lastMod === lastMod && c?.url === urlArchivo) return c.json;
+    } catch {}
   }
 
-  // 3. Descargar y parsear el archivo
-  const resp = await fetch(urlArchivo + "?v=" + Date.now()).catch(() => null);
-  if (!resp || !resp.ok) return null;
+  // 3. Descargar xlsx y cargar SheetJS en PARALELO
+  const [resp] = await Promise.all([
+    fetch(urlArchivo + "?v=" + Date.now()).catch(() => null),
+    typeof XLSX === "undefined" ? _cargarSheetJS() : Promise.resolve()
+  ]);
+  if (!resp?.ok) return null;
+
+  // 4. Parsear
   const buffer = await resp.arrayBuffer();
   const libro = XLSX.read(buffer, { cellDates: true });
   const json = {};
@@ -3287,6 +3306,13 @@ async function leerDatosXlsx() {
         return obj;
       });
   });
+
+  // 5. Guardar en caché local para la próxima visita
+  if (lastMod) {
+    try { localStorage.setItem(_LS_XLSX, JSON.stringify({ lastMod, url: urlArchivo, json })); }
+    catch {}
+  }
+
   return json;
 }
 
