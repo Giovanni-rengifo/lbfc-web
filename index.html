@@ -641,6 +641,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
 .med-card:hover { border-color: var(--color-gold); background: rgba(201,168,76,.13); }
 .med-ico { width: 34px; height: 34px; margin: 0 auto .4rem; color: var(--color-gold); }
 .med-ico svg { width: 100%; height: 100%; }
+.glifo-ext { display:block; width:100%; height:100%; background-color:currentColor; mask-size:contain; mask-repeat:no-repeat; mask-position:center; }
 .med-title { font-family: var(--font-title); font-weight: 700; font-size: .76rem; color: var(--color-parchment); letter-spacing: .02em; }
 .med-desc { font-size: .61rem; color: var(--text-dim); margin-top: .12rem; line-height: 1.35; }
 .med-holder { font-size: .82rem; color: var(--color-text-light); font-weight: 600; margin-top: .3rem; }
@@ -2255,7 +2256,7 @@ const ANTI_EMBLEMAS = [
   },
   {
     titulo: "El Caracol",
-    glifo:  "ampolleta",
+    glifo:  "caracol",
     desc:   "Más llegadas tarde del equipo",
     cond: id => {
       const c = _antiPrecompute();
@@ -2265,7 +2266,7 @@ const ANTI_EMBLEMAS = [
   },
   {
     titulo: "El Filántropo",
-    glifo:  "mano",
+    glifo:  "cuenco",
     desc:   "Más victorias donadas al rival en la temporada (mín. 3 partidos)",
     cond: id => {
       const c = _antiPrecompute();
@@ -2776,7 +2777,15 @@ const GLIFOS = {
   ampolleta: '<line x1="6" y1="3" x2="18" y2="3"/><line x1="6" y1="21" x2="18" y2="21"/><path d="M6 3l6 9 6-9M6 21l6-9 6 9"/>',
   nube:      '<path d="M6 16a4 4 0 0 1 0-8 5 5 0 0 1 10 0 3 3 0 0 1 0 6z"/><line x1="8" y1="18" x2="7" y2="21"/><line x1="12" y1="18" x2="12" y2="21"/><line x1="16" y1="18" x2="17" y2="21"/>'
 };
+const GLIFOS_EXT = {
+  caracol: 'SVG Icons/snail-svgrepo-com.svg',
+  cuenco:  'SVG Icons/hands-holding-gift-svgrepo-com.svg',
+};
 function glifoSVG(nombre) {
+  if (GLIFOS_EXT[nombre]) {
+    const url = GLIFOS_EXT[nombre];
+    return `<span class="glifo-ext" style="-webkit-mask-image:url('${url}');mask-image:url('${url}')"></span>`;
+  }
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">${GLIFOS[nombre] || ""}</svg>`;
 }
 
