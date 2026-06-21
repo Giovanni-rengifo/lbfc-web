@@ -1282,9 +1282,26 @@ details[open] > .info-body > div { padding-bottom: .5rem; }
   .modal { border-radius: 12px; }
   .match-card { grid-template-columns: 6.5rem 1fr 14rem; }
 }
+/* ── Splash de carga ── */
+#splash {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 1.2rem;
+  transition: opacity .5s ease;
+}
+#splash.splash-out { opacity: 0; pointer-events: none; }
+#splash img { width: 92px; height: 92px; animation: spl-pulse 1.8s ease-in-out infinite; }
+#splash p { font-family: var(--font-title); color: var(--color-gold); letter-spacing: .15em; font-size: .78rem; opacity: .75; }
+@keyframes spl-pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(.9);opacity:.45} }
 </style>
 </head>
 <body>
+
+<div id="splash">
+  <img src="escudo.png" onerror="this.src='icon-192.png'" alt="Los Bigotes F.C.">
+  <p>Cargando…</p>
+</div>
 
 <header>
   <!-- Escudo heráldico: partido per pale rojo/azul, bigote de pergamino -->
@@ -3620,7 +3637,10 @@ async function cargarDatos() {
 // Carga automática al abrir
 normalizarIdsMock();
 indexarJugadores();
-cargarDatos();
+cargarDatos().then(() => {
+  const s = document.getElementById('splash');
+  if (s) { s.classList.add('splash-out'); setTimeout(() => s.remove(), 500); }
+});
 </script>
 <script>
 if ('serviceWorker' in navigator) {
