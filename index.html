@@ -2498,7 +2498,7 @@ function nombreDosLineas(id) {
 function pitchHTML(ids, team, partido, posiciones = {}, capitanes = {}, ausentes = new Set()) {
   const l = lineasEquipo(ids, posiciones);
   const chip = id => {
-    const posEsp = posiciones[id]?.especifica || posicion(id);
+    const posEsp = posiciones[id]?.sigla || posiciones[id]?.especifica || posicion(id);
     const esCap = !!capitanes[id];
     const esPortero = (posiciones[id]?.linea || posicion(id)) === "Arquero";
     const esAusente = ausentes.has(id);
@@ -3501,7 +3501,8 @@ function transformarDatosReales(json) {
     if (esDif) porFecha[f].Dif.push(id);
     const posJRaw = String(campo(a, "posicion_jugador")).trim();
     const posJ = normalizar(posJRaw);
-    if (posJ && POS_CANON[posJ]) porFecha[f].Posiciones[id] = { linea: POS_CANON[posJ], especifica: posJRaw };
+    const tipoPos = String(campo(a, "tipo_posicion") || "").trim().toUpperCase();
+    if (posJ && POS_CANON[posJ]) porFecha[f].Posiciones[id] = { linea: POS_CANON[posJ], especifica: posJRaw, sigla: tipoPos || null };
     const capRaw = campo(a, "capitan");
     const esCapitan = capRaw === true || ["true", "verdadero"].includes(normalizar(String(capRaw)));
     if (esCapitan && (equipo === "Rojo" || equipo === "Azul")) porFecha[f].Capitanes[id] = true;
