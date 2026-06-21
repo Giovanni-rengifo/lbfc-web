@@ -2219,7 +2219,7 @@ function _antiPrecompute() {
 const ANTI_EMBLEMAS = [
   {
     titulo: "El Generoso",
-    glifo:  "calavera",
+    glifo:  "regalo",
     desc:   "Anotó al menos 1 autogol en la temporada",
     cond: id => {
       const ids = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
@@ -2247,9 +2247,9 @@ const ANTI_EMBLEMAS = [
     }
   },
   {
-    titulo: "La Mala Suerte",
+    titulo: "El Filántropo",
     glifo:  "nube",
-    desc:   "Más derrotas en la temporada (mín. 3 partidos jugados)",
+    desc:   "Más victorias donadas al rival en la temporada (mín. 3 partidos)",
     cond: id => {
       const c = _antiPrecompute();
       if ((c.jug[id] || 0) < 3 || !(c.perd[id] || 0)) return false;
@@ -2753,6 +2753,7 @@ const GLIFOS = {
   doble_fl:  '<line x1="3" y1="8" x2="21" y2="8"/><polyline points="15 2 21 8 15 14"/><line x1="3" y1="16" x2="21" y2="16"/><polyline points="15 10 21 16 15 22"/>',
   sol:       '<circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>',
   calavera:  '<path d="M12 4a6 6 0 0 0-6 6c0 2.5 1.4 4.6 3.5 5.5V18h5v-2.5C16.6 14.6 18 12.5 18 10A6 6 0 0 0 12 4z"/><line x1="9" y1="18" x2="15" y2="18"/><circle cx="10" cy="11" r="1.5"/><circle cx="14" cy="11" r="1.5"/>',
+  regalo:    '<polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>',
   fantasma:  '<path d="M4 9.5a8 8 0 0 1 16 0v11l-2.7-2-2.6 2-2.7-2-2.6 2-2.7-2-2.7 2V9.5z"/><circle cx="9.5" cy="11" r="1.2"/><circle cx="14.5" cy="11" r="1.2"/>',
   ampolleta: '<line x1="6" y1="3" x2="18" y2="3"/><line x1="6" y1="21" x2="18" y2="21"/><path d="M6 3l6 9 6-9M6 21l6-9 6 9"/>',
   nube:      '<path d="M6 16a4 4 0 0 1 0-8 5 5 0 0 1 10 0 3 3 0 0 1 0 6z"/><line x1="8" y1="18" x2="7" y2="21"/><line x1="12" y1="18" x2="12" y2="21"/><line x1="16" y1="18" x2="17" y2="21"/>'
