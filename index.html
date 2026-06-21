@@ -3380,11 +3380,17 @@ function categorizarLlegada(asistencia, horaLlegada) {
   const asNorm = normalizar(String(asistencia || ""));
   if (asNorm.includes("no asisti")) return "No";
   if (asNorm === "pendiente" || asNorm === "") return null;
+  // Valor directo (Enum): Temprano / A Tiempo / Tarde
+  const hrNorm = normalizar(String(horaLlegada || ""));
+  if (hrNorm === "temprano")  return "Temprano";
+  if (hrNorm === "a tiempo")  return "Tiempo";
+  if (hrNorm === "tarde")     return "Tarde";
+  // Fallback: parseo de hora (HH:MM)
   const m = String(horaLlegada || "").match(/^(\d{1,2}):(\d{2})/);
-  if (!m) return "Tiempo";
+  if (!m) return null;
   const min = parseInt(m[1]) * 60 + parseInt(m[2]);
-  if (min <= 370) return "Temprano"; // ≤ 6:10
-  if (min <= 380) return "Tiempo";   // 6:11–6:20
+  if (min <= 370) return "Temprano";
+  if (min <= 380) return "Tiempo";
   return "Tarde";
 }
 
