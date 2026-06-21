@@ -2452,10 +2452,16 @@ const FORMACION = [
 
 // Orden dentro de cada línea (izquierda → derecha). Menor número = más a la izquierda.
 const POS_ORDER = {
+  // Texto genérico (fallback)
   "Portero": 2, "Arquero": 2,
   "Lateral Izquierdo": 0, "Central": 2, "Defensa": 2, "Lateral Derecho": 4,
   "Mediocampista Izquierdo": 0, "Mediocampista": 2, "Mediocampista Derecho": 4,
-  "Extremo Izquierdo": 0, "Delantero": 2, "Extremo Derecho": 4
+  "Extremo Izquierdo": 0, "Delantero": 2, "Extremo Derecho": 4,
+  // Siglas Tipo_Posicion
+  "POR": 2,
+  "LTI": 0, "CAI": 1, "DFC": 2, "CAD": 3, "LTD": 4,
+  "MI":  0, "MCD": 1, "MC":  2, "MCO": 2, "MD":  4,
+  "EI":  0, "SD":  1, "DC":  2, "MP":  3, "ED":  4
 };
 
 function lineasEquipo(ids, posiciones = {}) {
@@ -2476,8 +2482,8 @@ function lineasEquipo(ids, posiciones = {}) {
   // Ordenar cada línea por posición específica (izquierda → derecha)
   Object.keys(lineas).forEach(linea => {
     lineas[linea].sort((a, b) => {
-      const pA = POS_ORDER[posiciones[a]?.especifica] ?? POS_ORDER[posicion(a)] ?? 2;
-      const pB = POS_ORDER[posiciones[b]?.especifica] ?? POS_ORDER[posicion(b)] ?? 2;
+      const pA = POS_ORDER[posiciones[a]?.sigla] ?? POS_ORDER[posiciones[a]?.especifica] ?? POS_ORDER[posicion(a)] ?? 2;
+      const pB = POS_ORDER[posiciones[b]?.sigla] ?? POS_ORDER[posiciones[b]?.especifica] ?? POS_ORDER[posicion(b)] ?? 2;
       return pA - pB;
     });
   });
