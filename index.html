@@ -2479,13 +2479,38 @@ function lineasEquipo(ids, posiciones = {}) {
   // Más de 12: las líneas se amplían de abajo hacia arriba (desde defensa)
   let i = 1;
   while (sobrantes.length) { lineas[FORMACION[Math.min(i, 3)].pos].push(sobrantes.shift()); i++; }
-  // Ordenar cada línea por posición específica (izquierda → derecha)
+  // Ordenar cada línea: jugadores CON sigla se ubican por POS_ORDER;
+  // los SIN sigla se distribuyen a los lados para centrar a los que sí tienen sigla.
   Object.keys(lineas).forEach(linea => {
-    lineas[linea].sort((a, b) => {
-      const pA = POS_ORDER[posiciones[a]?.sigla] ?? POS_ORDER[posiciones[a]?.especifica] ?? POS_ORDER[posicion(a)] ?? 2;
-      const pB = POS_ORDER[posiciones[b]?.sigla] ?? POS_ORDER[posiciones[b]?.especifica] ?? POS_ORDER[posicion(b)] ?? 2;
-      return pA - pB;
-    });
+    const arr = lineas[linea];
+    if (arr.length <= 1) return;
+
+    const conSigla = arr.filter(id => posiciones[id]?.sigla)
+      .sort((a, b) => POS_ORDER[posiciones[a].sigla] - POS_ORDER[posiciones[b].sigla]);
+    const sinSigla = arr.filter(id => !posiciones[id]?.sigla);
+
+    if (!conSigla.length) {
+      arr.sort((a, b) => {
+        const pA = POS_ORDER[posiciones[a]?.especifica] ?? POS_ORDER[posicion(a)] ?? 2;
+        const pB = POS_ORDER[posiciones[b]?.especifica] ?? POS_ORDER[posicion(b)] ?? 2;
+        return pA - pB;
+      });
+      return;
+    }
+    if (!sinSigla.length) { lineas[linea] = conSigla; return; }
+
+    const hasLeft  = conSigla.some(id => POS_ORDER[posiciones[id].sigla] <= 1);
+    const hasRight = conSigla.some(id => POS_ORDER[posiciones[id].sigla] >= 3);
+    let leftFill, rightFill;
+    if (!hasLeft && !hasRight) {
+      const mid = Math.floor(sinSigla.length / 2);
+      leftFill = sinSigla.slice(0, mid); rightFill = sinSigla.slice(mid);
+    } else if (!hasLeft) {
+      leftFill = sinSigla; rightFill = [];
+    } else {
+      leftFill = []; rightFill = sinSigla;
+    }
+    lineas[linea] = [...leftFill, ...conSigla, ...rightFill];
   });
   return lineas;
 }
