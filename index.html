@@ -575,7 +575,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
   border-color: var(--color-gold);
   box-shadow: 0 0 0 1.5px var(--color-gold);
 }
-.badge.dif { background:#2cc4b4; color:#0a2a2a; }
+.dif-bolt { color:var(--color-gold); font-size:.75em; vertical-align:middle; margin-left:2px; }
 .pp-name {
   font-size: .62rem;
   color: var(--color-text-light);
@@ -2953,24 +2953,26 @@ function golesPartidoHTML(p) {
   const evs = MOCK_DATA.eventos
     .filter(e => e.ID_Partido === p.ID_Partido)
     .sort((a, b) => (a.Minuto || 0) - (b.Minuto || 0));
+  const ali = MOCK_DATA.alineaciones.find(a => a.ID_Partido === p.ID_Partido);
+  const difsSet = new Set(ali?.Diferenciadores || []);
+  const bolt = id => difsSet.has(id) ? '<span class="dif-bolt">⚡</span>' : "";
   const golesDe = equipo => {
     const esRojo = equipo === "Rojo";
     const goles = evs.filter(e => e.Equipo === equipo);
     return goles.length
       ? goles.map(e => {
-          const nm = `<span class="gl-name">${nombreCorto(e.Goleador)}${esAutogol(e) ? " (AG)" : ""}</span>`;
+          const ag = esAutogol(e);
+          const nm = `<span class="gl-name">${nombreCorto(e.Goleador)}${ag ? " (AG)" : ""}${ag ? "" : bolt(e.Goleador)}</span>`;
           const min = `<span class="min">${e.Minuto != null ? e.Minuto + "'" : ""}</span>`;
           const scorer = esRojo ? nm + min : min + nm;
           const assist = e.Asistente
-            ? `<div class="gl-assist" onclick="abrirPerfil('${e.Asistente}');event.stopPropagation()">${esRojo ? nombreCorto(e.Asistente) + " ↲" : "↳ " + nombreCorto(e.Asistente)}</div>`
+            ? `<div class="gl-assist" onclick="abrirPerfil('${e.Asistente}');event.stopPropagation()">${esRojo ? nombreCorto(e.Asistente) + bolt(e.Asistente) + " ↲" : "↳ " + nombreCorto(e.Asistente) + bolt(e.Asistente)}</div>`
             : "";
           return `<div class="goal-line"><div class="gl-scorer" onclick="abrirPerfil('${e.Goleador}')">${scorer}</div>${assist}</div>`;
         }).join("")
       : `<div class="goal-line vacio">—</div>`;
   };
   const mvps = mvpsDe(p);
-  const ali = MOCK_DATA.alineaciones.find(a => a.ID_Partido === p.ID_Partido);
-  const difs = ali?.Diferenciadores || [];
   return `
     <div class="mc-result">${resultado}</div>
     <div class="mc-goals">
@@ -2980,10 +2982,6 @@ function golesPartidoHTML(p) {
     ${mvps.length ? `<div class="mc-mvp">
       <span class="badge mvp">MVP</span>
       ${mvps.map(id => `<span class="mvp-name" onclick="abrirPerfil('${id}')">${nombre(id)}</span>`).join(" · ")}
-    </div>` : ""}
-    ${difs.length ? `<div class="mc-mvp">
-      <span class="badge dif">⚡</span>
-      ${difs.map(id => `<span class="mvp-name" onclick="abrirPerfil('${id}')">${nombre(id)}</span>`).join(" · ")}
     </div>` : ""}`;
 }
 
