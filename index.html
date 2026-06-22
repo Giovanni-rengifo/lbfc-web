@@ -582,7 +582,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
   font-size:.52rem; font-weight:700; line-height:1; pointer-events:none;
 }
 .pp-tag-mvp { background:var(--color-gold); color:var(--color-primary); }
-.pp-tag-dif { background:#2cc4b4; -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 15 15'%3E%3Ccircle cx='7.5' cy='7.5' r='7.5' fill='white'/%3E%3Cpath d='M9 1.5L3 8.5H7.5L6 13.5L12 6.5H7.5L9 1.5Z' fill='black'/%3E%3C/svg%3E"); mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 15 15'%3E%3Ccircle cx='7.5' cy='7.5' r='7.5' fill='white'/%3E%3Cpath d='M9 1.5L3 8.5H7.5L6 13.5L12 6.5H7.5L9 1.5Z' fill='black'/%3E%3C/svg%3E"); mask-size:100% 100%; }
+.pp-tag-dif { background:transparent; color:#2cc4b4; }
 .pp-name {
   font-size: .62rem;
   color: var(--color-text-light);
@@ -2563,7 +2563,7 @@ function pitchHTML(ids, team, partido, posiciones = {}, capitanes = {}, ausentes
     const esDif = difs.has(id);
     const tags = [
       esMVP ? `<span class="pp-tag pp-tag-mvp" title="MVP del partido">★</span>` : "",
-      esDif ? `<span class="pp-tag pp-tag-dif" title="Diferenciador"></span>` : ""
+      esDif ? `<span class="pp-tag pp-tag-dif" title="Diferenciador">⚡</span>` : ""
     ].filter(Boolean).join("");
     return `
     <div class="pitch-player ${esCap ? "is-capitan" : ""} ${esAusente ? "ausente" : ""} ${esMVP ? "is-mvp" : ""}" data-id="${id}" onclick="abrirPerfil('${id}')">
