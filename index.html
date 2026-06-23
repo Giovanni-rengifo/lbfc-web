@@ -1950,6 +1950,7 @@ const XP = {
   valla: 4,           // valla invicta: su equipo no recibió goles
   mvp: 10,            // MVP del partido
   diferenciador: 6,   // mejor de su posición (Arq/Def, Med o Del) en el partido
+  capitan: 5,         // capitán del equipo: 5 gana, 2 empata, 1 pierde
   temprano: 3,        // llegó temprano
   tiempo: 2           // llegó a tiempo
 };
@@ -1977,6 +1978,7 @@ function xpJugador(id) {
     if (gC === 0) xp += XP.valla;
     if (mvpsDe(p).includes(id)) xp += XP.mvp;
     if ((a.Diferenciadores || []).includes(id)) xp += gA < gC ? Math.round(XP.diferenciador / 2) : XP.diferenciador;
+    if ((a.Capitanes || {})[id]) xp += gA > gC ? XP.capitan : gA === gC ? Math.round(XP.capitan / 2) : 1;
     const ll = llegadaDe(id, a.ID_Partido);
     if (ll === "Temprano") xp += XP.temprano;
     else if (ll === "Tiempo") xp += XP.tiempo;
