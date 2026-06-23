@@ -3296,7 +3296,10 @@ function renderJugadores() {
        <span class="buscar-badge" id="buscar-badge" style="display:none">0</span>
      </div>
      <div class="buscar-panel" id="buscar-panel" style="display:none">
-       <input class="jugador-buscar" id="buscar-nombre" placeholder="Nombre del jugador…" oninput="aplicarFiltros()">
+       <div class="autocomplete" style="flex:none;width:100%">
+         <input class="jugador-buscar" id="buscar-nombre" placeholder="Nombre del jugador…" oninput="aplicarFiltros()" autocomplete="off">
+         <div class="ac-list" id="buscar-nombre-ac"></div>
+       </div>
        <div class="buscar-grupo-label">Distinción</div>
        <div class="buscar-chips-row">
          ${DISTINCIONES.map(d => `<span class="buscar-chip" data-tipo="dist" data-val="${normalizar(d.titulo.toLowerCase())}" onclick="toggleChip(this)">${d.titulo}</span>`).join("")}
@@ -3312,6 +3315,8 @@ function renderJugadores() {
        <button class="buscar-limpiar" id="buscar-limpiar" onclick="limpiarFiltros()" style="display:none">✕ Limpiar filtros</button>
      </div>
      <div class="jugadores-grid">${cards}</div>`;
+  FUENTES_AC["buscar-nombre"] = jugadores.map(j => j.Nombre).sort((a, b) => a.localeCompare(b, "es"));
+  initAutocomplete("buscar-nombre");
 }
 
 function renderTodo() {
