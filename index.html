@@ -311,6 +311,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
   text-transform: uppercase;
 }
 .badge.mvp { background: var(--color-gold); color: var(--color-primary); }
+.badge.dif { background: #2cc4b4; color: #0a2a28; }
 
 .rank-num {
   font-weight: 700;
@@ -2954,7 +2955,8 @@ function golesPartidoHTML(p) {
     .filter(e => e.ID_Partido === p.ID_Partido)
     .sort((a, b) => (a.Minuto || 0) - (b.Minuto || 0));
   const ali = MOCK_DATA.alineaciones.find(a => a.ID_Partido === p.ID_Partido);
-  const difsSet = new Set(ali?.Diferenciadores || []);
+  const difs = ali?.Diferenciadores || [];
+  const difsSet = new Set(difs);
   const bolt = id => difsSet.has(id) ? '<span class="dif-bolt">⚡</span>' : "";
   const golesDe = equipo => {
     const esRojo = equipo === "Rojo";
@@ -2979,6 +2981,10 @@ function golesPartidoHTML(p) {
       <div class="gcol rojo">${golesDe("Rojo")}</div>
       <div class="gcol azul">${golesDe("Azul")}</div>
     </div>
+    ${difs.length ? `<div class="mc-mvp">
+      <span class="badge dif"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="vertical-align:-1px;display:inline-block"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+      ${difs.map(id => `<span class="mvp-name" onclick="abrirPerfil('${id}')">${nombre(id)}</span>`).join(" · ")}
+    </div>` : ""}
     ${mvps.length ? `<div class="mc-mvp">
       <span class="badge mvp">MVP</span>
       ${mvps.map(id => `<span class="mvp-name" onclick="abrirPerfil('${id}')">${nombre(id)}</span>`).join(" · ")}
