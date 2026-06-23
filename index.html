@@ -3015,29 +3015,7 @@ function golesPartidoHTML(p) {
 // ---- Vista: Historial de partidos (estilo Premier League) ----
 function renderPartidos() {
   const orden = MOCK_DATA.partidos.filter(esJugado).sort((a, b) => b.Fecha.localeCompare(a.Fecha));
-  document.getElementById("lista-partidos").innerHTML = orden.map(p => {
-    const resultado = p.Goles_Rojo === p.Goles_Azul ? "Empate"
-      : (p.Goles_Rojo > p.Goles_Azul ? "Victoria Roja" : "Victoria Azul");
-    const evs = MOCK_DATA.eventos
-      .filter(e => e.ID_Partido === p.ID_Partido)
-      .sort((a, b) => (a.Minuto || 0) - (b.Minuto || 0));
-    const golesDe = equipo => {
-      const esRojo = equipo === "Rojo";
-      const goles = evs.filter(e => e.Equipo === equipo);
-      return goles.length
-        ? goles.map(e => {
-            const nombre = `<span class="gl-name">${nombreCorto(e.Goleador)}${esAutogol(e) ? " (AG)" : ""}</span>`;
-            const min = `<span class="min">${e.Minuto != null ? e.Minuto + "’" : ""}</span>`;
-            const scorer = esRojo ? nombre + min : min + nombre;
-            const assist = e.Asistente
-              ? `<div class="gl-assist" onclick="abrirPerfil(‘${e.Asistente}’);event.stopPropagation()">${esRojo ? nombreCorto(e.Asistente) + " ↲" : "↳ " + nombreCorto(e.Asistente)}</div>`
-              : "";
-            return `<div class="goal-line"><div class="gl-scorer" onclick="abrirPerfil(‘${e.Goleador}’)">${scorer}</div>${assist}</div>`;
-          }).join("")
-        : `<div class="goal-line vacio">—</div>`;
-    };
-    const mvps = mvpsDe(p);
-    return `
+  document.getElementById("lista-partidos").innerHTML = orden.map(p => `
     <div class="match-card">
       <div class="mc-date">${fmtFecha(p.Fecha)}</div>
       <div class="mc-score">
@@ -3045,18 +3023,8 @@ function renderPartidos() {
         <span class="score-nums">${p.Goles_Rojo} — ${p.Goles_Azul}</span>
         <span class="score-team azul">Azul</span>
       </div>
-      <div class="mc-result">${resultado}</div>
-      <div class="mc-goals">
-        <div class="gcol rojo">${golesDe("Rojo")}</div>
-        <div class="gcol azul">${golesDe("Azul")}</div>
-      </div>
-      ${mvps.length ? `
-      <div class="mc-mvp">
-        <span class="badge mvp">MVP</span>
-        ${mvps.map(id => `<span class="mvp-name" onclick="abrirPerfil('${id}')">${nombre(id)}</span>`).join(" · ")}
-      </div>` : ""}
-    </div>`;
-  }).join("");
+      ${golesPartidoHTML(p)}
+    </div>`).join("");
 }
 
 // ---- Vista 5: Perfil (modal) ----
