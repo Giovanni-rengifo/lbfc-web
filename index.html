@@ -1642,6 +1642,11 @@ const MOCK_DATA = {
 let byId = {};
 function indexarJugadores() {
   byId = Object.fromEntries(MOCK_DATA.jugadores.map(j => [j.ID_Jugador, j]));
+  MOCK_DATA.alineaciones.forEach(a => {
+    (a.Diferenciadores || []).forEach(id => {
+      if (!byId[id]) console.warn(`[LBFC] Diferenciador desconocido: ID "${id}" en partido ${a.ID_Partido}`);
+    });
+  });
 }
 
 // Los IDs del mock son numéricos: se convierten a string una sola vez
@@ -2293,13 +2298,15 @@ function aplicarFiltros() {
   const nombre  = normalizar((document.getElementById("buscar-nombre")?.value || "").trim());
   const distEl  = document.querySelector('#buscar-panel .buscar-chip[data-tipo="dist"].activo');
   const emblEl  = document.querySelector('#buscar-panel .buscar-chip[data-tipo="embl"].activo');
+  const antiEl  = document.querySelector('#buscar-panel .buscar-chip[data-tipo="anti"].activo');
   const dist    = distEl ? distEl.dataset.val : "";
   const embl    = emblEl ? emblEl.dataset.val : "";
+  const anti    = antiEl ? antiEl.dataset.val : "";
   document.querySelectorAll("#jugadores-content .jugador-card").forEach(c => {
     const t = c.dataset.buscar || "";
-    c.style.display = (!nombre || t.includes(nombre)) && (!dist || t.includes(dist)) && (!embl || t.includes(embl)) ? "" : "none";
+    c.style.display = (!nombre || t.includes(nombre)) && (!dist || t.includes(dist)) && (!embl || t.includes(embl)) && (!anti || t.includes(anti)) ? "" : "none";
   });
-  const activos = [nombre, dist, embl].filter(Boolean).length;
+  const activos = [nombre, dist, embl, anti].filter(Boolean).length;
   const badge   = document.getElementById("buscar-badge");
   const limpiar = document.getElementById("buscar-limpiar");
   if (badge)   { badge.style.display   = activos ? "inline-flex" : "none"; badge.textContent = activos; }
@@ -3243,7 +3250,7 @@ function renderJugadores() {
        </div>
        <div class="buscar-grupo-label" style="color:#c84040">Pergamino Negro</div>
        <div class="buscar-chips-row">
-         ${ANTI_EMBLEMAS.map(e => `<span class="buscar-chip" data-tipo="embl" data-anti="1" data-val="${normalizar(e.titulo)}" onclick="toggleChip(this)">${e.titulo}</span>`).join("")}
+         ${ANTI_EMBLEMAS.map(e => `<span class="buscar-chip" data-tipo="anti" data-val="${normalizar(e.titulo)}" onclick="toggleChip(this)">${e.titulo}</span>`).join("")}
        </div>
        <button class="buscar-limpiar" id="buscar-limpiar" onclick="limpiarFiltros()" style="display:none">✕ Limpiar filtros</button>
      </div>
