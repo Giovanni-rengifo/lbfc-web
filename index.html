@@ -1640,13 +1640,33 @@ const MOCK_DATA = {
 // Índice de jugadores; se reconstruye cuando llegan datos reales.
 // Todos los IDs internos son STRINGS (los reales son tipo "J01").
 let byId = {};
+let _idsJugadosCache = null;
+let _partidosPorIdCache = null;
+let _lideresDistincionCache = null;
+
 function indexarJugadores() {
   byId = Object.fromEntries(MOCK_DATA.jugadores.map(j => [j.ID_Jugador, j]));
+  _idsJugadosCache = null;
+  _partidosPorIdCache = null;
+  _lideresDistincionCache = null;
   MOCK_DATA.alineaciones.forEach(a => {
     (a.Diferenciadores || []).forEach(id => {
       if (!byId[id]) console.warn(`[LBFC] Diferenciador desconocido: ID "${id}" en partido ${a.ID_Partido}`);
     });
   });
+}
+
+function idsPartidosJugados() {
+  if (!_idsJugadosCache) _idsJugadosCache = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+  return _idsJugadosCache;
+}
+function getPartidoPorId(id) {
+  if (!_partidosPorIdCache) _partidosPorIdCache = new Map(MOCK_DATA.partidos.map(p => [p.ID_Partido, p]));
+  return _partidosPorIdCache.get(id);
+}
+function getLideresDistincion() {
+  if (!_lideresDistincionCache) _lideresDistincionCache = DISTINCIONES.map(d => liderDistincion(d));
+  return _lideresDistincionCache;
 }
 
 // Los IDs del mock son numéricos: se convierten a string una sola vez
@@ -1836,7 +1856,7 @@ function equipoDe(id, a) {
 function statsJugador(id) {
   const goles = MOCK_DATA.eventos.filter(e => e.Goleador === id && !esAutogol(e)).length;
   const asistencias = MOCK_DATA.eventos.filter(e => e.Asistente === id).length;
-  const idsJugados = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+  const idsJugados = idsPartidosJugados();
   let jugados = 0, vecesRojo = 0, vecesAzul = 0;
   MOCK_DATA.alineaciones.forEach(a => {
     if (!idsJugados.has(a.ID_Partido)) return;
@@ -1853,7 +1873,7 @@ function statsJugador(id) {
   let ganados = 0, perdidos = 0;
   MOCK_DATA.alineaciones.forEach(a => {
     if (!idsJugados.has(a.ID_Partido)) return;
-    const p = MOCK_DATA.partidos.find(p => p.ID_Partido === a.ID_Partido);
+    const p = getPartidoPorId(a.ID_Partido);
     if (!p || p.Goles_Rojo === p.Goles_Azul) return;
     const equipo = equipoDe(id, a);
     if (!equipo) return;
@@ -1898,7 +1918,7 @@ function esDelantero(id)     { return posicion(id) === "Delantero"; }
 
 // Veces que un jugador fue diferenciador (mejor de su posición) en un partido jugado
 function difsDe(id) {
-  const idsJugados = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+  const idsJugados = idsPartidosJugados();
   return MOCK_DATA.alineaciones
     .filter(a => idsJugados.has(a.ID_Partido) && (a.Diferenciadores || []).includes(id))
     .length;
@@ -1937,13 +1957,13 @@ function llegadaDe(id, idPartido) {
 
 // XP total de la temporada (suma de todos los partidos jugados)
 function xpJugador(id) {
-  const idsJugados = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+  const idsJugados = idsPartidosJugados();
   let xp = 0;
   MOCK_DATA.alineaciones.forEach(a => {
     if (!idsJugados.has(a.ID_Partido)) return;
     const equipo = equipoDe(id, a);
     if (!equipo) return;
-    const p = MOCK_DATA.partidos.find(x => x.ID_Partido === a.ID_Partido);
+    const p = getPartidoPorId(a.ID_Partido);
     if (!p) return;
     xp += XP.jugar;
     const gA = equipo === "Rojo" ? p.Goles_Rojo : p.Goles_Azul;
@@ -1975,13 +1995,13 @@ function nivelDe(xp) {
 
 // Vallas invictas en las que participó el jugador (su equipo no recibió goles)
 function vallasInvictas(id) {
-  const idsJugados = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+  const idsJugados = idsPartidosJugados();
   let n = 0;
   MOCK_DATA.alineaciones.forEach(a => {
     if (!idsJugados.has(a.ID_Partido)) return;
     const equipo = equipoDe(id, a);
     if (!equipo) return;
-    const p = MOCK_DATA.partidos.find(x => x.ID_Partido === a.ID_Partido);
+    const p = getPartidoPorId(a.ID_Partido);
     if (!p) return;
     const gC = equipo === "Rojo" ? p.Goles_Azul : p.Goles_Rojo;
     if (gC === 0) n++;
@@ -1993,7 +2013,7 @@ function vallasInvictas(id) {
 function puntosTemporada(id) {
   let pts = 0;
   MOCK_DATA.alineaciones.forEach(a => {
-    const p = MOCK_DATA.partidos.find(x => x.ID_Partido === a.ID_Partido);
+    const p = getPartidoPorId(a.ID_Partido);
     if (!p || !esJugado(p)) return;
     const equipo = equipoDe(id, a);
     if (!equipo) return;
@@ -2018,7 +2038,7 @@ function calcPromedio(fn) {
   return function(id) {
     let total = 0, count = 0;
     MOCK_DATA.alineaciones.forEach(a => {
-      const p = MOCK_DATA.partidos.find(x => x.ID_Partido === a.ID_Partido);
+      const p = getPartidoPorId(a.ID_Partido);
       if (!p || !esJugado(p)) return;
       const v = fn(id, p, a);
       if (v !== null) { total += v; count++; }
@@ -2045,17 +2065,17 @@ function esGolVictoria(e, p) {
 
 // Veces que el jugador anotó el Gol Victoria en la temporada
 function golesVictoriaDe(id) {
-  const idsJugados = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+  const idsJugados = idsPartidosJugados();
   return MOCK_DATA.eventos.filter(e => {
     if (e.Goleador !== id || esAutogol(e) || !idsJugados.has(e.ID_Partido)) return false;
-    const p = MOCK_DATA.partidos.find(x => x.ID_Partido === e.ID_Partido);
+    const p = getPartidoPorId(e.ID_Partido);
     return esGolVictoria(e, p);
   }).length;
 }
 
 // Partidos en los que el jugador anotó un gol Y dio una asistencia en el mismo partido
 function partidosCompletos(id) {
-  const idsJugados = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+  const idsJugados = idsPartidosJugados();
   return [...idsJugados].filter(idP => {
     const evs = MOCK_DATA.eventos.filter(e => e.ID_Partido === idP);
     return evs.some(e => e.Goleador === id && !esAutogol(e)) && evs.some(e => e.Asistente === id);
@@ -2064,7 +2084,7 @@ function partidosCompletos(id) {
 
 // Veces que el jugador fue capitán en un partido jugado
 function vecesCpitan(id) {
-  const idsJugados = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+  const idsJugados = idsPartidosJugados();
   return MOCK_DATA.alineaciones
     .filter(a => idsJugados.has(a.ID_Partido) && (a.Capitanes || {})[id])
     .length;
@@ -2126,10 +2146,10 @@ function liderDistincion(d) {
 
 // Distinciones que ostenta un jugador (para mostrar en su perfil)
 function distincionesDe(id) {
-  return DISTINCIONES.filter(d => {
-    const l = liderDistincion(d);
-    return l && l.id === id;
-  }).map(d => d.titulo);
+  const lideres = getLideresDistincion();
+  return DISTINCIONES
+    .filter((d, i) => { const l = lideres[i]; return l && l.id === id; })
+    .map(d => d.titulo);
 }
 
 // ---- Emblemas (logros permanentes, múltiples jugadores pueden tenerlos) ----
@@ -2139,7 +2159,7 @@ const EMBLEMAS = [
     glifo:  "tres",
     desc:   "3 o más goles en un mismo partido",
     cond: id => {
-      const ids = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+      const ids = idsPartidosJugados();
       return [...ids].some(pid =>
         MOCK_DATA.eventos.filter(e => e.ID_Partido === pid && e.Goleador === id && !esAutogol(e)).length >= 3
       );
@@ -2150,7 +2170,7 @@ const EMBLEMAS = [
     glifo:  "dos",
     desc:   "2 goles en un mismo partido",
     cond: id => {
-      const ids = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+      const ids = idsPartidosJugados();
       return [...ids].some(pid =>
         MOCK_DATA.eventos.filter(e => e.ID_Partido === pid && e.Goleador === id && !esAutogol(e)).length >= 2
       );
@@ -2161,7 +2181,7 @@ const EMBLEMAS = [
     glifo:  "doble_fl",
     desc:   "2 o más asistencias en un mismo partido",
     cond: id => {
-      const ids = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+      const ids = idsPartidosJugados();
       return [...ids].some(pid =>
         MOCK_DATA.eventos.filter(e => e.ID_Partido === pid && e.Asistente === id).length >= 2
       );
@@ -2237,7 +2257,7 @@ const ANTI_EMBLEMAS = [
     glifo:  "regalo",
     desc:   "Anotó al menos 1 autogol en la temporada",
     cond: id => {
-      const ids = new Set(MOCK_DATA.partidos.filter(esJugado).map(p => p.ID_Partido));
+      const ids = idsPartidosJugados();
       return MOCK_DATA.eventos.some(e => e.Goleador === id && esAutogol(e) && ids.has(e.ID_Partido));
     }
   },
@@ -2576,7 +2596,7 @@ let aliSeleccion = null; // ID_Partido elegido en el selector
 
 function listaAlineaciones() {
   return MOCK_DATA.alineaciones
-    .map(a => ({ ali: a, partido: MOCK_DATA.partidos.find(p => p.ID_Partido === a.ID_Partido) }))
+    .map(a => ({ ali: a, partido: getPartidoPorId(a.ID_Partido) }))
     .filter(x => x.partido)
     .sort((a, b) => b.partido.Fecha.localeCompare(a.partido.Fecha));
 }
