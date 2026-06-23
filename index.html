@@ -2547,14 +2547,18 @@ function lineasEquipo(ids, posiciones = {}) {
   return lineas;
 }
 
+function splitNombre(id) { return nombre(id).split(" "); }
 function nombreCorto(id) {
-  const partes = nombre(id).split(" ");
-  return partes.length > 1 ? `${partes[0]} ${partes[partes.length - 1]}` : partes[0];
+  const p = splitNombre(id);
+  return p.length > 1 ? `${p[0]} ${p[p.length - 1]}` : p[0];
 }
 function nombreDosLineas(id) {
-  const partes = nombre(id).split(" ");
-  if (partes.length < 2) return `<span class="n-nombre">${partes[0]}</span>`;
-  return `<span class="n-nombre">${partes[0]}</span><span class="n-ape">${partes[partes.length - 1]}</span>`;
+  const p = splitNombre(id);
+  if (p.length < 2) return `<span class="n-nombre">${p[0]}</span>`;
+  return `<span class="n-nombre">${p[0]}</span><span class="n-ape">${p[p.length - 1]}</span>`;
+}
+function rayoSVG({ cls = "", size = 0, fill = "currentColor", aria = false } = {}) {
+  return `<svg viewBox="0 0 24 24"${size ? ` width="${size}" height="${size}"` : ""}${cls ? ` class="${cls}"` : ""} fill="${fill}"${aria ? ' aria-hidden="true"' : ""}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`;
 }
 
 
@@ -2569,7 +2573,7 @@ function pitchHTML(ids, team, partido, posiciones = {}, capitanes = {}, ausentes
     return `
     <div class="pitch-player ${esCap ? "is-capitan" : ""} ${esAusente ? "ausente" : ""} ${esDif ? "is-dif" : ""}" data-id="${id}" onclick="abrirPerfil('${id}')">
       ${esCap ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="cap-corona-svg" aria-hidden="true"><path fill="#C9A84C" d="M384,167L256,51.1L128,167L0,98.6v274.5h512V98.6L384,167z"/><rect fill="#C9A84C" y="411.8" width="512" height="49.1"/></svg>` : ""}
-      ${esDif ? `<svg viewBox="0 0 24 24" class="dif-rayo-svg" aria-hidden="true" fill="#2cc4b4"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>` : ""}
+      ${esDif ? rayoSVG({ cls: "dif-rayo-svg", fill: "#2cc4b4", aria: true }) : ""}
       <div class="avatar ${esPortero ? "portero" : team}">${iniciales(nombre(id))}</div>
       <div class="pp-name">${nombreDosLineas(id)}</div>
       <div class="pp-pos-badge">${posEsp}</div>
@@ -2996,7 +3000,7 @@ function golesPartidoHTML(p) {
       <div class="gcol rojo">${golesDe("Rojo")}</div>
       <div class="gcol azul">${golesDe("Azul")}</div>
     </div>
-    ${difs.length ? `<div class="mc-difs">${difs.map(id => `<span class="dif-chip" onclick="abrirPerfil('${id}')"><svg viewBox="0 0 24 24" width="9" height="9" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>${nombreCorto(id)}</span>`).join("")}</div>` : ""}
+    ${difs.length ? `<div class="mc-difs">${difs.map(id => `<span class="dif-chip" onclick="abrirPerfil('${id}')">${rayoSVG({ size: 9 })}${nombreCorto(id)}</span>`).join("")}</div>` : ""}
     ${mvps.length ? `<div class="mc-mvp">
       <span class="badge mvp">MVP</span>
       ${mvps.map(id => `<span class="mvp-name" onclick="abrirPerfil('${id}')">${nombre(id)}</span>`).join(" · ")}
@@ -3179,7 +3183,7 @@ const ICONOS = {
   medalla:    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--color-gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="15" r="5"/><path d="M8.5 10L7 4h10l-1.5 6"/><path d="M8.5 10c1 1.5 2.2 2 3.5 2s2.5-.5 3.5-2"/></svg>`,
   trofeo:     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--color-gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8m-4-4v4m0-4a5 5 0 0 1-5-5V4h10v8a5 5 0 0 1-5 5z"/><path d="M7 4H4v3a3 3 0 0 0 3 3"/><path d="M17 4h3v3a3 3 0 0 1-3 3"/></svg>`,
   dos_jugadores: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--text-dim)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-  rayo:          `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="var(--color-gold)"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+  rayo:          rayoSVG({ size: 28, fill: "var(--color-gold)" }),
   buscar:        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--color-gold)" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7.5"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
   espada:        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--color-gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="22" x2="12" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><path d="M10 6l2-4 2 4"/></svg>`,
   llama:         `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="var(--color-gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 6-6 8-6 14a6 6 0 0 0 12 0c0-6-6-8-6-14z"/><path d="M12 12c0 3-2 4-2 6a2 2 0 0 0 4 0c0-2-2-3-2-6z"/></svg>`,
@@ -3276,7 +3280,6 @@ function renderJugadores() {
      </div>
      <div class="jugadores-grid">${cards}</div>`;
   FUENTES_AC["buscar-nombre"] = jugadores.map(j => j.Nombre).sort((a, b) => a.localeCompare(b, "es"));
-  initAutocomplete("buscar-nombre");
 }
 
 function renderTodo() {
@@ -3286,6 +3289,7 @@ function renderTodo() {
   renderPartidos();
   renderInformacion();
   renderJugadores();
+  initAutocomplete("buscar-nombre");
 }
 
 /* ============================================================
