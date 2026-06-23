@@ -610,6 +610,23 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
   height: 20px;
   pointer-events: none;
 }
+.dif-rayo-svg {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 13px; height: 13px;
+  pointer-events: none;
+  opacity: .75;
+}
+.pitch-player.is-capitan .dif-rayo-svg {
+  left: calc(50% + 11px);
+  transform: none;
+}
+.pitch-player.is-dif .avatar {
+  border-color: #2cc4b4;
+  box-shadow: 0 0 0 1px #2cc4b4;
+}
 .pitch-player.is-capitan .avatar {
   border: 2.5px solid var(--color-gold);
   box-shadow: 0 0 0 1px var(--color-gold);
@@ -2548,16 +2565,18 @@ function nombreDosLineas(id) {
 }
 
 
-function pitchHTML(ids, team, partido, posiciones = {}, capitanes = {}, ausentes = new Set()) {
+function pitchHTML(ids, team, partido, posiciones = {}, capitanes = {}, ausentes = new Set(), difs = new Set()) {
   const l = lineasEquipo(ids, posiciones);
   const chip = id => {
     const posEsp = posiciones[id]?.sigla || posiciones[id]?.especifica || posicion(id);
     const esCap = !!capitanes[id];
     const esPortero = (posiciones[id]?.linea || posicion(id)) === "Arquero";
     const esAusente = ausentes.has(id);
+    const esDif = difs.has(id);
     return `
-    <div class="pitch-player ${esCap ? "is-capitan" : ""} ${esAusente ? "ausente" : ""}" data-id="${id}" onclick="abrirPerfil('${id}')">
+    <div class="pitch-player ${esCap ? "is-capitan" : ""} ${esAusente ? "ausente" : ""} ${esDif ? "is-dif" : ""}" data-id="${id}" onclick="abrirPerfil('${id}')">
       ${esCap ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="cap-corona-svg" aria-hidden="true"><path fill="#C9A84C" d="M384,167L256,51.1L128,167L0,98.6v274.5h512V98.6L384,167z"/><rect fill="#C9A84C" y="411.8" width="512" height="49.1"/></svg>` : ""}
+      ${esDif ? `<svg viewBox="0 0 24 24" class="dif-rayo-svg" aria-hidden="true" fill="#2cc4b4"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>` : ""}
       <div class="avatar ${esPortero ? "portero" : team}">${iniciales(nombre(id))}</div>
       <div class="pp-name">${nombreDosLineas(id)}</div>
       <div class="pp-pos-badge">${posEsp}</div>
@@ -2642,14 +2661,15 @@ function renderAlineacion() {
     ${jugado ? golesPartidoHTML(p) : ""}
   `;
 
+  const difsSet = new Set(sel.ali.Diferenciadores || []);
   document.getElementById("alineacion-grid").innerHTML = `
     <div class="card team-card">
       <div class="team-head rojo">Equipo Rojo</div>
-      ${pitchHTML(sel.ali.Rojo, "rojo", p, sel.ali.Posiciones || {}, sel.ali.Capitanes || {}, new Set(sel.ali.Ausentes || []))}
+      ${pitchHTML(sel.ali.Rojo, "rojo", p, sel.ali.Posiciones || {}, sel.ali.Capitanes || {}, new Set(sel.ali.Ausentes || []), difsSet)}
     </div>
     <div class="card team-card">
       <div class="team-head azul">Equipo Azul</div>
-      ${pitchHTML(sel.ali.Azul, "azul", p, sel.ali.Posiciones || {}, sel.ali.Capitanes || {}, new Set(sel.ali.Ausentes || []))}
+      ${pitchHTML(sel.ali.Azul, "azul", p, sel.ali.Posiciones || {}, sel.ali.Capitanes || {}, new Set(sel.ali.Ausentes || []), difsSet)}
     </div>`;
 
   aplicarBusquedaAlineacion();
