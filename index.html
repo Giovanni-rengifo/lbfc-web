@@ -1107,8 +1107,6 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
 .pod-sub  { font-size: .68rem; color: var(--text-dim); font-style: italic; margin-top: .15rem; text-align: center; line-height: 1.3; }
 .sr-sub   { font-size: .7rem;  color: var(--text-dim); font-style: italic; margin-top: .05rem; line-height: 1.3; }
 
-/* Pilares del jugador (perfil) */
-.pilares { margin-top: 1.1rem; }
 .pilares-title {
   font-family: var(--font-title);
   font-weight: 700;
@@ -1118,21 +1116,6 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
   color: var(--color-gold);
   text-align: center;
   margin-bottom: .65rem;
-}
-.pilar-row { display: flex; align-items: center; gap: .6rem; padding: .3rem 0; }
-.pilar-nombre { flex: 0 0 8.2rem; font-size: .8rem; color: var(--color-text-light); }
-.pilar-bar { flex: 1; height: 9px; background: rgba(232,213,163,.1); border-radius: 4px; overflow: hidden; }
-.pilar-fill {
-  height: 100%;
-  border-radius: 4px;
-  background: linear-gradient(90deg, #8a7233, var(--color-gold));
-}
-.pilares-note {
-  margin-top: .6rem;
-  text-align: center;
-  font-size: .7rem;
-  font-style: italic;
-  color: var(--text-dim);
 }
 .perfil-distinciones { display: flex; flex-wrap: wrap; gap: .4rem; justify-content: center; margin-top: .8rem; }
 .dist-chip {
@@ -1151,16 +1134,6 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
   background: rgba(159,188,212,.08);
   border-color: rgba(159,188,212,.35);
 }
-.pilar-val {
-  flex: 0 0 2.9rem;
-  text-align: right;
-  font-weight: 700;
-  font-size: .88rem;
-  color: var(--color-gold);
-  font-variant-numeric: tabular-nums;
-}
-.pilar-row.pendiente .pilar-nombre { color: var(--text-dim); }
-.pilar-row.pendiente .pilar-val { color: var(--text-dim); font-weight: 400; font-size: .68rem; font-style: italic; }
 
 /* ---------- Footer ---------- */
 footer {
@@ -1713,6 +1686,7 @@ function iniciales(n) {
   return n.split(" ").map(p => p[0]).slice(0, 2).join("").toUpperCase();
 }
 function fmtFecha(iso) {
+  if (!iso) return "—";
   const [y, m, d] = iso.split("-").map(Number);
   const meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
   const dias = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
@@ -1720,6 +1694,7 @@ function fmtFecha(iso) {
   return `${dias[date.getDay()]} ${d} de ${meses[m - 1]} de ${y}`;
 }
 function fmtFechaCorta(iso) {
+  if (!iso) return "—";
   const [y, m, d] = iso.split("-").map(Number);
   const meses = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
   return `${d} ${meses[m - 1]} ${y}`;
@@ -1889,12 +1864,6 @@ function statsJugador(id) {
   return { goles, asistencias, jugados, ganados, perdidos, pct, mvps, difs,
            tipoDestacado: tipoDestacado ? tipoDestacado[0] : "—", equipoFrecuente };
 }
-
-/* ============================================================
-   PILARES — Sistema de Nivel Base + Deltas (jun-2026)
-   PO · VJ · PD: nivelBase (Excel) + Σ delta(resultado, margen, individual). Acotado [0,10].
-   Fair Play: porcentaje por partido. Temporada = PROMEDIO.
-   ============================================================ */
 
 const PESOS_TIPO_GOL = {
   "jugada": 1, "gol": 1, "penal": 1,
@@ -2321,7 +2290,7 @@ function toggleChip(el) {
 }
 
 function aplicarFiltros() {
-  const nombre  = normalizar((document.getElementById("buscar-nombre")?.value || "").trim().toLowerCase());
+  const nombre  = normalizar((document.getElementById("buscar-nombre")?.value || "").trim());
   const distEl  = document.querySelector('#buscar-panel .buscar-chip[data-tipo="dist"].activo');
   const emblEl  = document.querySelector('#buscar-panel .buscar-chip[data-tipo="embl"].activo');
   const dist    = distEl ? distEl.dataset.val : "";
@@ -2344,11 +2313,6 @@ function limpiarFiltros() {
   aplicarFiltros();
 }
 
-const PILARES = [
-  { nombre: "Nivel de Leyenda", calc: xpJugador,       fmt: v => "Niv " + nivelDe(v).nivel + " · " + v + " XP" },
-  { nombre: "Puntos Temporada", calc: puntosTemporada, fmt: v => v + " pts" },
-  { nombre: "Fair Play",        calc: fairPlay,        fmt: v => v + "%" }
-];
 
 /* ============================================================
    RENDERIZADO DE VISTAS
@@ -3232,10 +3196,11 @@ async function renderInformacion() {
 }
 
 function renderJugadores() {
+  const xpCache = new Map(MOCK_DATA.jugadores.map(j => [j.ID_Jugador, xpJugador(j.ID_Jugador)]));
   const jugadores = [...MOCK_DATA.jugadores]
-    .sort((a, b) => xpJugador(b.ID_Jugador) - xpJugador(a.ID_Jugador));
+    .sort((a, b) => xpCache.get(b.ID_Jugador) - xpCache.get(a.ID_Jugador));
   const cards = jugadores.map(j => {
-    const xp = xpJugador(j.ID_Jugador);
+    const xp = xpCache.get(j.ID_Jugador);
     const { nivel } = nivelDe(xp);
     const dist  = distincionesDe(j.ID_Jugador);
     const embl  = emblemasDeJugador(j.ID_Jugador);
@@ -3245,7 +3210,7 @@ function renderJugadores() {
       ...embl.map(e => `<span class="dist-chip emblema-chip">${e.titulo}</span>`),
       ...anti.map(e => `<span class="dist-chip anti-chip">${e.titulo}</span>`)
     ].join("");
-    const buscar = normalizar([j.Nombre, ...dist, ...embl.map(e => e.titulo), ...anti.map(e => e.titulo)].join(" ").toLowerCase());
+    const buscar = normalizar([j.Nombre, ...dist, ...embl.map(e => e.titulo), ...anti.map(e => e.titulo)].join(" "));
     return `<div class="jugador-card" data-buscar="${buscar}" onclick="abrirPerfil('${j.ID_Jugador}')">
       <div class="jugador-card-av">${iniciales(j.Nombre)}</div>
       <div class="jugador-card-body">
@@ -3270,15 +3235,15 @@ function renderJugadores() {
        </div>
        <div class="buscar-grupo-label">Distinción</div>
        <div class="buscar-chips-row">
-         ${DISTINCIONES.map(d => `<span class="buscar-chip" data-tipo="dist" data-val="${normalizar(d.titulo.toLowerCase())}" onclick="toggleChip(this)">${d.titulo}</span>`).join("")}
+         ${DISTINCIONES.map(d => `<span class="buscar-chip" data-tipo="dist" data-val="${normalizar(d.titulo)}" onclick="toggleChip(this)">${d.titulo}</span>`).join("")}
        </div>
        <div class="buscar-grupo-label">Emblema</div>
        <div class="buscar-chips-row">
-         ${EMBLEMAS.map(e => `<span class="buscar-chip" data-tipo="embl" data-val="${normalizar(e.titulo.toLowerCase())}" onclick="toggleChip(this)">${e.titulo}</span>`).join("")}
+         ${EMBLEMAS.map(e => `<span class="buscar-chip" data-tipo="embl" data-val="${normalizar(e.titulo)}" onclick="toggleChip(this)">${e.titulo}</span>`).join("")}
        </div>
        <div class="buscar-grupo-label" style="color:#c84040">Pergamino Negro</div>
        <div class="buscar-chips-row">
-         ${ANTI_EMBLEMAS.map(e => `<span class="buscar-chip" data-tipo="embl" data-anti="1" data-val="${normalizar(e.titulo.toLowerCase())}" onclick="toggleChip(this)">${e.titulo}</span>`).join("")}
+         ${ANTI_EMBLEMAS.map(e => `<span class="buscar-chip" data-tipo="embl" data-anti="1" data-val="${normalizar(e.titulo)}" onclick="toggleChip(this)">${e.titulo}</span>`).join("")}
        </div>
        <button class="buscar-limpiar" id="buscar-limpiar" onclick="limpiarFiltros()" style="display:none">✕ Limpiar filtros</button>
      </div>
