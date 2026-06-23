@@ -311,7 +311,9 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
   text-transform: uppercase;
 }
 .badge.mvp { background: var(--color-gold); color: var(--color-primary); }
-.badge.dif { background: #2cc4b4; color: #0a2a28; }
+.mc-difs { display:flex; flex-wrap:wrap; gap:.3rem; justify-content:center; padding:.5rem .5rem .15rem; margin-top:.6rem; border-top:1px solid var(--line); }
+.dif-chip { display:inline-flex; align-items:center; gap:.25rem; background:rgba(44,196,180,.1); border:1px solid rgba(44,196,180,.3); color:#2cc4b4; padding:2px 8px 2px 6px; border-radius:10px; font-size:.68rem; cursor:pointer; font-family:var(--font-title); letter-spacing:.02em; }
+.dif-chip:hover { background:rgba(44,196,180,.2); }
 
 .rank-num {
   font-weight: 700;
@@ -2981,10 +2983,7 @@ function golesPartidoHTML(p) {
       <div class="gcol rojo">${golesDe("Rojo")}</div>
       <div class="gcol azul">${golesDe("Azul")}</div>
     </div>
-    ${difs.length ? `<div class="mc-mvp">
-      <span class="badge dif"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="vertical-align:-1px;display:inline-block"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
-      ${difs.map(id => `<span class="mvp-name" onclick="abrirPerfil('${id}')">${nombre(id)}</span>`).join(" · ")}
-    </div>` : ""}
+    ${difs.length ? `<div class="mc-difs">${difs.map(id => `<span class="dif-chip" onclick="abrirPerfil('${id}')"><svg viewBox="0 0 24 24" width="9" height="9" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>${nombreCorto(id)}</span>`).join("")}</div>` : ""}
     ${mvps.length ? `<div class="mc-mvp">
       <span class="badge mvp">MVP</span>
       ${mvps.map(id => `<span class="mvp-name" onclick="abrirPerfil('${id}')">${nombre(id)}</span>`).join(" · ")}
