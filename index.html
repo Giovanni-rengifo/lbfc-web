@@ -135,6 +135,35 @@ nav::-webkit-scrollbar { display: none; }
 }
 .tab:hover { color: var(--color-text-light); }
 .tab.active { color: var(--color-gold); border-bottom-color: var(--color-gold); }
+.tab-comunicado { color: var(--color-gold); }
+.tab-comunicado:not(.active) { border-bottom-color: rgba(201,168,76,.4); }
+
+/* ---------- Comunicado (banner llamativo) ---------- */
+.comunicado-banner {
+  max-width: 640px;
+  margin: 1.2rem auto 0;
+  background: var(--surface-2);
+  border: 2px solid var(--color-gold);
+  border-radius: 10px;
+  padding: 2rem 1.6rem;
+  text-align: center;
+}
+.comunicado-icono { margin-bottom: .8rem; }
+.comunicado-titulo {
+  font-family: var(--font-title);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-gold);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.comunicado-texto {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: var(--color-text-light);
+  white-space: pre-line;
+}
 
 /* ---------- Layout ---------- */
 main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height: 80vh; touch-action: pan-y; }
@@ -1325,6 +1354,7 @@ details[open] > .info-body > div { padding-bottom: .5rem; }
 
 <div class="nav-outer">
 <nav id="nav">
+  <button class="tab tab-comunicado" data-view="comunicados" id="tab-comunicados" style="display:none">Comunicado</button>
   <button class="tab active" data-view="convocatoria">Convocatoria</button>
   <button class="tab" data-view="alineacion">Alineación</button>
   <button class="tab" data-view="jugadores">Jugadores</button>
@@ -1335,6 +1365,11 @@ details[open] > .info-body > div { padding-bottom: .5rem; }
 </div>
 
 <main>
+  <!-- Vista 0: Comunicado -->
+  <section class="view" id="view-comunicados">
+    <div class="comunicado-banner" id="comunicado-banner"></div>
+  </section>
+
   <!-- Vista 1: Convocatoria -->
   <section class="view active" id="view-convocatoria">
     <div class="ali-header">
@@ -1598,6 +1633,9 @@ const MOCK_DATA = {
     { ID_Jugador: 19, Nombre_Jugador: "Julián Acosta",     Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Lista de espera" },
     { ID_Jugador: 23, Nombre_Jugador: "Hernán Quintero",   Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Lista de espera" }
   ],
+
+  // Comunicado activo (vacío = no se muestra la pestaña). Ver COMUNICADOS.
+  comunicados: [],
 
   asistencia: [
     // Partido 1
@@ -3271,7 +3309,36 @@ function renderJugadores() {
   FUENTES_AC["buscar-nombre"] = jugadores.map(j => j.Nombre).sort((a, b) => a.localeCompare(b, "es"));
 }
 
+// ---- Vista 0: Comunicado ----
+// Vigente si Activo=TRUE y hoy cae entre Fecha_Publicacion y
+// Fecha_Publicacion + Duracion_Dias. Sin comunicado vigente → pestaña oculta.
+function comunicadoVigente() {
+  const hoy = fechaISO(new Date());
+  const vigentes = (MOCK_DATA.comunicados || []).filter(c => {
+    if (!c.Fecha_Publicacion || c.Fecha_Publicacion > hoy) return false;
+    const fin = new Date(c.Fecha_Publicacion + "T00:00:00");
+    fin.setDate(fin.getDate() + (c.Duracion_Dias || 7));
+    return hoy <= fechaISO(fin);
+  });
+  return vigentes.sort((a, b) => b.Fecha_Publicacion.localeCompare(a.Fecha_Publicacion))[0] || null;
+}
+const ICONO_MEGAFONO = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="var(--color-gold)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h2l3.5 5V5L6 10H4a1 1 0 0 0-1 1Z"/><path d="M14 8a3 3 0 0 1 0 8"/><path d="M17.5 5a7.5 7.5 0 0 1 0 14"/></svg>`;
+let _comunicadoMostrado = false;
+function renderComunicado() {
+  const tab = document.getElementById("tab-comunicados");
+  const c = comunicadoVigente();
+  if (!c) { tab.style.display = "none"; return; }
+  tab.style.display = "";
+  document.getElementById("comunicado-banner").innerHTML = `
+    <div class="comunicado-icono">${ICONO_MEGAFONO}</div>
+    <div class="comunicado-titulo">Comunicado del club</div>
+    <div class="comunicado-texto">${c.Mensaje}</div>`;
+  // Solo se auto-selecciona al cargar la app la primera vez, no en cada render
+  if (!_comunicadoMostrado) { _comunicadoMostrado = true; irAVista("comunicados"); }
+}
+
 function renderTodo() {
+  renderComunicado();
   renderConvocatoria();
   renderAlineacion();
   renderEstadisticas();
@@ -3413,7 +3480,10 @@ function categorizarLlegada(sePresento, pendiente, horaLlegada) {
      Motivo_Inasistencia, Tiempo_Cancha, Razon_Salida, MVP, Capitan,
      Diferenciador.
    - EVENTOS: Fecha_Partido, Gol_Equipo, ID_Goleador, Tipo_Gol,
-     ID_Asistidor, Tipo_Asistencia, Minuto.                          */
+     ID_Asistidor, Tipo_Asistencia, Minuto.
+   - COMUNICADOS: Mensaje, Fecha_Publicacion, Duracion_Dias, Activo.
+     Vigente si Activo=TRUE y hoy está entre Fecha_Publicacion y
+     Fecha_Publicacion+Duracion_Dias. Sin fila vigente → pestaña oculta. */
 
 const POS_CANON = {
   "portero": "Arquero", "arquero": "Arquero",
@@ -3516,6 +3586,18 @@ function transformarDatosReales(json) {
   });
 }
 
+// Sanea COMUNICADOS: solo Mensaje/Fecha_Publicacion/Duracion_Dias de las
+// filas con Activo=TRUE — el resto (histórico, inactivos) no se procesa.
+function sanearComunicados(filas) {
+  return filas
+    .filter(f => f && campo(f, "mensaje") !== "" && campo(f, "activo") === true)
+    .map(f => ({
+      Mensaje: String(campo(f, "mensaje")),
+      Fecha_Publicacion: aFechaISO(campo(f, "fecha_publicacion")),
+      Duracion_Dias: Number(campo(f, "duracion_dias")) || 7
+    }));
+}
+
 // Vuelca el JSON {Hoja: [filas]} sobre los datos activos
 function aplicarDatos(json) {
   // Asignacion_Pagos (tolerante a tildes en el nombre de la pestaña)
@@ -3524,6 +3606,7 @@ function aplicarDatos(json) {
     MOCK_DATA.asignacionPagos = sanearAsignaciones(json[claveAsig]);
   }
   if (esFormatoReal(json)) transformarDatosReales(json);
+  if (Array.isArray(json.COMUNICADOS)) MOCK_DATA.comunicados = sanearComunicados(json.COMUNICADOS);
   indexarJugadores();
 }
 

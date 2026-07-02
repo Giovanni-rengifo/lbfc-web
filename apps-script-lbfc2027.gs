@@ -25,11 +25,11 @@
  *      Ejecutar como: Yo · Acceso: Cualquier usuario.
  * 4. Copiar la URL /exec → pegarla en index.html → FUENTES.
  * 5. Probar la URL en el navegador: debe verse el JSON con ALINEACIONES,
- *    EVENTOS y PARTIDOS completas, y JUGADORES/ASIGNACION_PAGOS con
- *    solo sus 4 campos públicos por fila (sin Jerarquia/VIP/Monto/etc.).
+ *    EVENTOS, PARTIDOS y COMUNICADOS completas, y JUGADORES/ASIGNACION_PAGOS
+ *    con solo sus 4 campos públicos por fila (sin Jerarquia/VIP/Monto/etc.).
  */
 
-var HOJAS_PUBLICAS = ["ALINEACIONES", "EVENTOS", "PARTIDOS"];
+var HOJAS_PUBLICAS = ["ALINEACIONES", "EVENTOS", "PARTIDOS", "COMUNICADOS"];
 var CAMPOS_JUGADORES = ["id_jugador", "nombre_jugador", "posicion_jugador", "ubicacion"];
 var CAMPOS_ASIGNACION_PAGOS = ["id_jugador", "nombre_jugador", "fecha_partido", "tipo_asignacion"];
 
