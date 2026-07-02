@@ -14,18 +14,23 @@
  * y Registro_Cancelado NUNCA salen de aquí. Las filas con
  * Registro_Cancelado=TRUE tampoco salen (se tratan como si no existieran).
  *
+ * JUGADORES también es un caso especial: solo los 4 campos públicos
+ * (CAMPOS_JUGADORES). Jerarquia y VIP son internos de la directiva y
+ * NUNCA salen de aquí, aunque la web tampoco los use.
+ *
  * ─── MONTAJE (una sola vez) ───
  * 1. Abrir la Sheet "LBFC Web App 2027" → Extensiones → Apps Script.
  * 2. Pegar este código y guardar.
  * 3. Implementar → Nueva implementación → Aplicación web:
  *      Ejecutar como: Yo · Acceso: Cualquier usuario.
  * 4. Copiar la URL /exec → pegarla en index.html → FUENTES.
- * 5. Probar la URL en el navegador: debe verse el JSON con JUGADORES,
- *    ALINEACIONES, EVENTOS, PARTIDOS completas, y ASIGNACION_PAGOS con
- *    solo 4 campos por fila.
+ * 5. Probar la URL en el navegador: debe verse el JSON con ALINEACIONES,
+ *    EVENTOS y PARTIDOS completas, y JUGADORES/ASIGNACION_PAGOS con
+ *    solo sus 4 campos públicos por fila (sin Jerarquia/VIP/Monto/etc.).
  */
 
-var HOJAS_PUBLICAS = ["JUGADORES", "ALINEACIONES", "EVENTOS", "PARTIDOS"];
+var HOJAS_PUBLICAS = ["ALINEACIONES", "EVENTOS", "PARTIDOS"];
+var CAMPOS_JUGADORES = ["id_jugador", "nombre_jugador", "posicion_jugador", "ubicacion"];
 var CAMPOS_ASIGNACION_PAGOS = ["id_jugador", "nombre_jugador", "fecha_partido", "tipo_asignacion"];
 
 function doGet() {
@@ -37,12 +42,33 @@ function doGet() {
     if (hoja) resultado[nombre] = hojaAObjetos(hoja);
   });
 
+  var hojaJug = libro.getSheetByName("JUGADORES");
+  if (hojaJug) resultado.JUGADORES = jugadoresPublicos(hojaJug);
+
   var hojaAsig = libro.getSheetByName("ASIGNACION_PAGOS");
   if (hojaAsig) resultado.ASIGNACION_PAGOS = asignacionPagosPublica(hojaAsig);
 
   return ContentService
     .createTextOutput(JSON.stringify(resultado))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// Solo los 4 campos públicos; Jerarquia y VIP nunca salen de aquí
+function jugadoresPublicos(hoja) {
+  var valores = hoja.getDataRange().getValues();
+  var cabecera = valores.shift().map(normalizar);
+  var indices = CAMPOS_JUGADORES.map(function (c) { return cabecera.indexOf(c); });
+
+  return valores
+    .filter(function (f) { return f[indices[0]] !== "" && f[indices[0]] != null; })
+    .map(function (f) {
+      return {
+        ID_Jugador: f[indices[0]],
+        Nombre_Jugador: f[indices[1]],
+        Posicion_Jugador: String(f[indices[2]] || ""),
+        Ubicacion: String(f[indices[3]] || "")
+      };
+    });
 }
 
 // Convierte una hoja completa en lista de objetos {cabecera: valor}
