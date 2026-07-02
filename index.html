@@ -3503,9 +3503,8 @@ function transformarDatosReales(json) {
     (json.PARTIDOS || []).map(p => aFechaISO(campo(p, "fecha_partido"))).filter(Boolean)
   );
   Object.keys(porFecha).forEach(f => fechas.add(f));
-  const hoy = fechaISO(new Date());
   MOCK_DATA.partidos = [...fechas].sort().map(f => {
-    const jugado = f <= hoy;
+    const jugado = !!porFecha[f];
     const d = porFecha[f] || { MVP: [], Dif: [] };
     return {
       ID_Partido: f,
