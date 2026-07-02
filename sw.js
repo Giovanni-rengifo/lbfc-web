@@ -1,17 +1,10 @@
-const CACHE = 'lbfc-v6';
+const CACHE = 'lbfc-v7';
 
 // CDN externos versionados: cache-first (nunca cambian)
-const CDN_HOSTS = ['cdn.sheetjs.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];
+const CDN_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
 // Solo recursos estáticos que no cambian entre deploys
 const PRECACHE = ['icon-192.png', 'icon-512.png', 'manifest.json', 'info.json'];
-
-// datos.xlsx se pide con ?v=timestamp; guardar sin query para fallback offline
-function normalizarClave(url) {
-  const u = new URL(url);
-  if (/\.xlsx$/i.test(u.pathname)) u.search = '';
-  return u.href;
-}
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -62,15 +55,15 @@ self.addEventListener('fetch', e => {
     // Garantiza que todos los usuarios siempre reciban la versión más reciente
     e.respondWith(fetch(e.request));
   } else {
-    // Otros assets propios (xlsx, png, etc.): network-first con fallback offline
-    const clave = normalizarClave(url);
+    // Otros assets propios y la Sheet en vivo (Apps Script): network-first
+    // con fallback offline a la última respuesta buena conocida
     e.respondWith(
       fetch(e.request)
         .then(res => {
-          if (res.ok) caches.open(CACHE).then(c => c.put(clave, res.clone()));
+          if (res.ok) caches.open(CACHE).then(c => c.put(url, res.clone()));
           return res;
         })
-        .catch(() => caches.match(clave))
+        .catch(() => caches.match(url))
     );
   }
 });

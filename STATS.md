@@ -7,13 +7,12 @@
 
 ## 1. Fuentes de datos
 
-| Tabla Excel | Qué aporta |
+| Hoja (Sheet "LBFC Web App 2027") | Qué aporta |
 |---|---|
-| `Jugadores` | ID, nombre, posición (Arquero / Defensa / Mediocampista / Delantero) |
-| `Partidos` | ID, fecha, Goles_Rojo, Goles_Azul, MVP |
-| `Alineaciones` | Quién jugó, en qué equipo (Rojo/Azul), columna `Diferenciador` (VERDADERO/FALSO por jugador), columna `Capitán` (VERDADERO/FALSO) |
-| `Eventos` | Cada gol: quién marcó, quién asistió, tipo de gol, tipo de pase, minuto, equipo |
-| `Asistencia` | Hora de llegada al partido (fuente de Fair Play y puntualidad) |
+| `JUGADORES` | ID, nombre, posición (Arquero / Defensa / Mediocampista / Delantero) |
+| `PARTIDOS` | Solo fechas — el marcador (Goles_Rojo/Goles_Azul) y el MVP se derivan de `EVENTOS`/`ALINEACIONES` |
+| `ALINEACIONES` | Quién jugó, en qué equipo (Rojo/Azul), `Diferenciador`/`MVP`/`Capitan` (booleanos), `Se_Presento`+`Pendiente`+`Hora_Llegada` (fuente de Fair Play), `Motivo_Inasistencia`, `Tiempo_Cancha`, `Razon_Salida` |
+| `EVENTOS` | Cada gol: quién marcó, quién asistió, tipo de gol, tipo de pase, minuto, equipo |
 
 Solo cuentan los partidos con `Goles_Rojo` y `Goles_Azul` registrados ("partidos jugados").
 
@@ -93,18 +92,22 @@ Premia presentarse, ganar y aportar; los goles ayudan pero no lo son todo.
 
 | Acción (por partido) | XP |
 |---|---|
-| Jugar (presentarse) | +10 |
-| Victoria del equipo | +5 |
-| Gol (no autogol) | +8 c/u |
-| Asistencia (pase gol) | +6 c/u |
-| Valla invicta (su equipo no recibió goles) | +4 |
-| MVP del partido | +10 |
-| Diferenciador (mejor de su posición) | +6 (victoria/empate) · +3 (derrota) |
+| Jugar (presentarse) | +5 |
+| Victoria del equipo | +10 |
+| Gol (no autogol) | +5 c/u |
+| Asistencia (pase gol) | +5 c/u |
+| Valla invicta (su equipo no recibió goles) | +10 |
+| MVP del partido | +6 |
+| Diferenciador (mejor de su posición) | +3 (victoria/empate) · +2 (derrota, redondeado) |
+| Capitán del equipo | +5 (gana) · +2 (empata) · +1 (pierde) |
 | Llegó temprano | +3 |
 | Llegó a tiempo | +2 |
+| No asistió sin registrar motivo (`Motivo_Inasistencia="No registra"`) | −5 |
 
 **Nivel** = `floor(XP / 20) + 1` (constante `XP_POR_NIVEL = 20`).
 La barra de progreso muestra el avance dentro del nivel actual.
+
+**Tiempo_Cancha = "Parcial":** se suma todo lo de la tabla de arriba (jugar, victoria, valla, MVP, diferenciador, capitán, llegada) y el total se **divide entre 2** (redondeado). Gol y asistencia nunca se ven afectados por esto — se suman completos aparte.
 
 ### 4b. Distinciones (medallas)
 
@@ -182,8 +185,9 @@ Temporada = PROMEDIO. Aparece en el perfil y alimenta la distinción "El Puntual
 
 ```js
 // Nivel de Leyenda (XP por acción en cada partido)
-XP = { jugar: 10, victoria: 5, gol: 8, asistencia: 6,
-       valla: 4, mvp: 10, temprano: 3, tiempo: 2 }
+XP = { jugar: 5, victoria: 10, gol: 5, asistencia: 5,
+       valla: 10, mvp: 6, diferenciador: 3, capitan: 5,
+       temprano: 3, tiempo: 2, sinRegistro: -5 }
 XP_POR_NIVEL = 20
 
 // Puntos Temporada
@@ -221,4 +225,8 @@ FP_PESOS = { Temprano: 100, Tiempo: 85, Tarde: 75, No: 0, Sancionado: 0 }
 - **Nombre del jugador:** los rankings muestran el nombre tal cual está en la hoja `Jugadores`. "GR7" es el alias de Giovanni Rengifo en el Excel (intencional).
 - **Emblemas permanentes:** Hat-trick, Doblete, Asistidor Épico se conquistan para siempre una vez logrados en la temporada.
 - **Emblemas que pueden cambiar:** Centella y Nocturno los ostenta quien tenga el menor/mayor minuto de gol registrado — cambian si alguien supera ese récord. Inmortal desaparece si el jugador falta a algún partido futuro.
-- **Diferenciador en Alineaciones:** 3 valores VERDADERO por partido (uno por grupo: Arq/Def, Med, Del). El jugador con VERDADERO recibe +6 XP si su equipo no perdió, +3 si perdió.
+- **Diferenciador en Alineaciones:** 3 valores VERDADERO por partido (uno por grupo: Arq/Def, Med, Del). El jugador con VERDADERO recibe +3 XP si su equipo no perdió, +2 si perdió (redondeado).
+- **No asistió con motivo justificado:** `Se_Presento="No asistió"` con cualquier `Motivo_Inasistencia` distinto de "N/A" y "No registra" → no genera XP ni stats de ese partido, pero tampoco penaliza.
+- **No asistió sin justificar:** `Motivo_Inasistencia="No registra"` → penalización fija de −5 XP (no depende de si su equipo ganó o perdió).
+- **Tiempo_Cancha="Parcial":** el jugador sí cuenta como presente, pero todo el XP de "presencia" de ese partido (jugar/victoria/valla/MVP/diferenciador/capitán/llegada) se divide entre 2. Gol y asistencia quedan intactos.
+- **Razon_Salida="Lesión":** solo visual — ícono de cruz sobre el jugador en la vista Alineación, mismo tratamiento que el rayo de Diferenciador. No afecta XP ni stats.

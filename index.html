@@ -623,6 +623,21 @@ main { max-width: 1100px; margin: 0 auto; padding: 1.4rem .9rem 3rem; min-height
   left: calc(50% + 11px);
   transform: none;
 }
+.lesion-cruz-svg {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 13px; height: 13px;
+  pointer-events: none;
+}
+.pitch-player.is-capitan .lesion-cruz-svg {
+  left: calc(50% - 11px);
+  transform: none;
+}
+.pitch-player.is-capitan.is-dif .lesion-cruz-svg {
+  left: calc(50% - 24px);
+}
 .pitch-player.is-dif .avatar {
   border: 2.5px solid #2cc4b4;
   box-shadow: 0 0 0 1px #2cc4b4;
@@ -1411,34 +1426,34 @@ const MOCK_DATA = {
 
   // SHEET 1 — Estadísticas :: tabla Jugadores
   jugadores: [
-    { ID_Jugador: 1,  Nombre: "Alex Diaz",          Posicion: "Delantero",      Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 2,  Nombre: "Carlos Rengifo",     Posicion: "Mediocampista",  Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 3,  Nombre: "Jhonattan Tibocha",  Posicion: "Defensa",        Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 4,  Nombre: "Jose Oviedo",        Posicion: "Arquero",        Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 5,  Nombre: "Giovanni Rengifo",   Posicion: "Mediocampista",  Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 6,  Nombre: "Andrés Mora",        Posicion: "Defensa",        Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 7,  Nombre: "David Pardo",        Posicion: "Delantero",      Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 8,  Nombre: "Felipe Castro",      Posicion: "Mediocampista",  Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 9,  Nombre: "Juan Camilo Ríos",   Posicion: "Defensa",        Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 10, Nombre: "Miguel Suárez",      Posicion: "Delantero",      Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 11, Nombre: "Oscar Vargas",       Posicion: "Mediocampista",  Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 12, Nombre: "Ricardo León",       Posicion: "Defensa",        Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 13, Nombre: "Santiago Peña",      Posicion: "Arquero",        Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 14, Nombre: "Sebastián Cruz",     Posicion: "Delantero",      Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 15, Nombre: "Diego Herrera",      Posicion: "Mediocampista",  Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 16, Nombre: "Luis Beltrán",       Posicion: "Defensa",        Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 17, Nombre: "Mauricio Pinto",     Posicion: "Mediocampista",  Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 18, Nombre: "Camilo Duarte",      Posicion: "Delantero",      Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 19, Nombre: "Julián Acosta",      Posicion: "Arquero",        Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 20, Nombre: "Esteban Gil",        Posicion: "Defensa",        Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 21, Nombre: "Nicolás Lara",       Posicion: "Defensa",        Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 22, Nombre: "Pedro Salazar",      Posicion: "Defensa",        Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 23, Nombre: "Hernán Quintero",    Posicion: "Defensa",        Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 24, Nombre: "Iván Cárdenas",      Posicion: "Mediocampista",  Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 25, Nombre: "Manuel Rojas",       Posicion: "Mediocampista",  Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 26, Nombre: "Jorge Patiño",       Posicion: "Mediocampista",  Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 27, Nombre: "Fabián Torres",      Posicion: "Delantero",      Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 },
-    { ID_Jugador: 28, Nombre: "Wilson Niño",        Posicion: "Delantero",      Nivel_PO: 5, Nivel_VJ: 5, Nivel_PD: 5 }
+    { ID_Jugador: 1,  Nombre: "Alex Diaz",          Posicion: "Delantero" },
+    { ID_Jugador: 2,  Nombre: "Carlos Rengifo",     Posicion: "Mediocampista" },
+    { ID_Jugador: 3,  Nombre: "Jhonattan Tibocha",  Posicion: "Defensa" },
+    { ID_Jugador: 4,  Nombre: "Jose Oviedo",        Posicion: "Arquero" },
+    { ID_Jugador: 5,  Nombre: "Giovanni Rengifo",   Posicion: "Mediocampista" },
+    { ID_Jugador: 6,  Nombre: "Andrés Mora",        Posicion: "Defensa" },
+    { ID_Jugador: 7,  Nombre: "David Pardo",        Posicion: "Delantero" },
+    { ID_Jugador: 8,  Nombre: "Felipe Castro",      Posicion: "Mediocampista" },
+    { ID_Jugador: 9,  Nombre: "Juan Camilo Ríos",   Posicion: "Defensa" },
+    { ID_Jugador: 10, Nombre: "Miguel Suárez",      Posicion: "Delantero" },
+    { ID_Jugador: 11, Nombre: "Oscar Vargas",       Posicion: "Mediocampista" },
+    { ID_Jugador: 12, Nombre: "Ricardo León",       Posicion: "Defensa" },
+    { ID_Jugador: 13, Nombre: "Santiago Peña",      Posicion: "Arquero" },
+    { ID_Jugador: 14, Nombre: "Sebastián Cruz",     Posicion: "Delantero" },
+    { ID_Jugador: 15, Nombre: "Diego Herrera",      Posicion: "Mediocampista" },
+    { ID_Jugador: 16, Nombre: "Luis Beltrán",       Posicion: "Defensa" },
+    { ID_Jugador: 17, Nombre: "Mauricio Pinto",     Posicion: "Mediocampista" },
+    { ID_Jugador: 18, Nombre: "Camilo Duarte",      Posicion: "Delantero" },
+    { ID_Jugador: 19, Nombre: "Julián Acosta",      Posicion: "Arquero" },
+    { ID_Jugador: 20, Nombre: "Esteban Gil",        Posicion: "Defensa" },
+    { ID_Jugador: 21, Nombre: "Nicolás Lara",       Posicion: "Defensa" },
+    { ID_Jugador: 22, Nombre: "Pedro Salazar",      Posicion: "Defensa" },
+    { ID_Jugador: 23, Nombre: "Hernán Quintero",    Posicion: "Defensa" },
+    { ID_Jugador: 24, Nombre: "Iván Cárdenas",      Posicion: "Mediocampista" },
+    { ID_Jugador: 25, Nombre: "Manuel Rojas",       Posicion: "Mediocampista" },
+    { ID_Jugador: 26, Nombre: "Jorge Patiño",       Posicion: "Mediocampista" },
+    { ID_Jugador: 27, Nombre: "Fabián Torres",      Posicion: "Delantero" },
+    { ID_Jugador: 28, Nombre: "Wilson Niño",        Posicion: "Delantero" }
   ],
 
   // SHEET 1 — Estadísticas :: tabla Partidos
@@ -1554,34 +1569,34 @@ const MOCK_DATA = {
   // "Torneo" (no aplica a esta vista).
   asignacionPagos: [
     // Próximo partido: domingo 14 de junio de 2026
-    { ID_Jugador: 1,  Nombre_Jugador: "Alex Diaz",         Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 2,  Nombre_Jugador: "Carlos Rengifo",    Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 3,  Nombre_Jugador: "Jhonattan Tibocha", Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 4,  Nombre_Jugador: "Jose Oviedo",       Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 5,  Nombre_Jugador: "Giovanni Rengifo",  Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 6,  Nombre_Jugador: "Andrés Mora",       Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 7,  Nombre_Jugador: "David Pardo",       Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 8,  Nombre_Jugador: "Felipe Castro",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 9,  Nombre_Jugador: "Juan Camilo Ríos",  Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 10, Nombre_Jugador: "Miguel Suárez",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 11, Nombre_Jugador: "Oscar Vargas",      Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 12, Nombre_Jugador: "Ricardo León",      Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 13, Nombre_Jugador: "Santiago Peña",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 14, Nombre_Jugador: "Sebastián Cruz",    Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 15, Nombre_Jugador: "Diego Herrera",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 16, Nombre_Jugador: "Luis Beltrán",      Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 20, Nombre_Jugador: "Esteban Gil",       Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 21, Nombre_Jugador: "Nicolás Lara",      Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 22, Nombre_Jugador: "Pedro Salazar",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 24, Nombre_Jugador: "Iván Cárdenas",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 25, Nombre_Jugador: "Manuel Rojas",      Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 26, Nombre_Jugador: "Jorge Patiño",      Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 27, Nombre_Jugador: "Fabián Torres",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 28, Nombre_Jugador: "Wilson Niño",       Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Convocado" },
-    { ID_Jugador: 17, Nombre_Jugador: "Mauricio Pinto",    Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Lista de espera" },
-    { ID_Jugador: 18, Nombre_Jugador: "Camilo Duarte",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Lista de espera" },
-    { ID_Jugador: 19, Nombre_Jugador: "Julián Acosta",     Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Lista de espera" },
-    { ID_Jugador: 23, Nombre_Jugador: "Hernán Quintero",   Fecha_Asignacion: "2026-06-14", Tipo_Asignacion: "Lista de espera" }
+    { ID_Jugador: 1,  Nombre_Jugador: "Alex Diaz",         Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 2,  Nombre_Jugador: "Carlos Rengifo",    Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 3,  Nombre_Jugador: "Jhonattan Tibocha", Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 4,  Nombre_Jugador: "Jose Oviedo",       Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 5,  Nombre_Jugador: "Giovanni Rengifo",  Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 6,  Nombre_Jugador: "Andrés Mora",       Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 7,  Nombre_Jugador: "David Pardo",       Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 8,  Nombre_Jugador: "Felipe Castro",     Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 9,  Nombre_Jugador: "Juan Camilo Ríos",  Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 10, Nombre_Jugador: "Miguel Suárez",     Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 11, Nombre_Jugador: "Oscar Vargas",      Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 12, Nombre_Jugador: "Ricardo León",      Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 13, Nombre_Jugador: "Santiago Peña",     Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 14, Nombre_Jugador: "Sebastián Cruz",    Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 15, Nombre_Jugador: "Diego Herrera",     Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 16, Nombre_Jugador: "Luis Beltrán",      Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 20, Nombre_Jugador: "Esteban Gil",       Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 21, Nombre_Jugador: "Nicolás Lara",      Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 22, Nombre_Jugador: "Pedro Salazar",     Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 24, Nombre_Jugador: "Iván Cárdenas",     Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 25, Nombre_Jugador: "Manuel Rojas",      Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 26, Nombre_Jugador: "Jorge Patiño",      Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 27, Nombre_Jugador: "Fabián Torres",     Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 28, Nombre_Jugador: "Wilson Niño",       Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Convocado" },
+    { ID_Jugador: 17, Nombre_Jugador: "Mauricio Pinto",    Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Lista de espera" },
+    { ID_Jugador: 18, Nombre_Jugador: "Camilo Duarte",     Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Lista de espera" },
+    { ID_Jugador: 19, Nombre_Jugador: "Julián Acosta",     Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Lista de espera" },
+    { ID_Jugador: 23, Nombre_Jugador: "Hernán Quintero",   Fecha_Partido: "2026-06-14", Tipo_Asignacion: "Lista de espera" }
   ],
 
   asistencia: [
@@ -1937,16 +1952,17 @@ function difConMin3(id) {
 
 // Valores de XP por acción en cada partido jugado
 const XP = {
-  jugar: 10,          // por presentarse y jugar
-  victoria: 5,        // si su equipo ganó
-  gol: 8,             // por cada gol (no autogol)
-  asistencia: 6,      // por cada pase gol
-  valla: 4,           // valla invicta: su equipo no recibió goles
-  mvp: 10,            // MVP del partido
-  diferenciador: 6,   // mejor de su posición (Arq/Def, Med o Del) en el partido
+  jugar: 5,           // por presentarse y jugar
+  victoria: 10,       // si su equipo ganó
+  gol: 5,             // por cada gol (no autogol)
+  asistencia: 5,      // por cada pase gol
+  valla: 10,          // valla invicta: su equipo no recibió goles
+  mvp: 6,             // MVP del partido
+  diferenciador: 3,   // mejor de su posición (Arq/Def, Med o Del) en el partido
   capitan: 5,         // capitán del equipo: 5 gana, 2 empata, 1 pierde
   temprano: 3,        // llegó temprano
-  tiempo: 2           // llegó a tiempo
+  tiempo: 2,          // llegó a tiempo
+  sinRegistro: -5     // no asistió y no registró el motivo de inasistencia
 };
 const XP_POR_NIVEL = 20;
 
@@ -1961,21 +1977,24 @@ function xpJugador(id) {
   let xp = 0;
   MOCK_DATA.alineaciones.forEach(a => {
     if (!idsJugados.has(a.ID_Partido)) return;
+    if ((a.SinRegistro || []).includes(id)) { xp += XP.sinRegistro; return; }
     const equipo = equipoDe(id, a);
     if (!equipo) return;
     const p = getPartidoPorId(a.ID_Partido);
     if (!p) return;
-    xp += XP.jugar;
+    let sub = XP.jugar;
     const gA = equipo === "Rojo" ? p.Goles_Rojo : p.Goles_Azul;
     const gC = equipo === "Rojo" ? p.Goles_Azul : p.Goles_Rojo;
-    if (gA > gC) xp += XP.victoria;
-    if (gC === 0) xp += XP.valla;
-    if (mvpsDe(p).includes(id)) xp += XP.mvp;
-    if ((a.Diferenciadores || []).includes(id)) xp += gA < gC ? Math.round(XP.diferenciador / 2) : XP.diferenciador;
-    if ((a.Capitanes || {})[id]) xp += gA > gC ? XP.capitan : gA === gC ? Math.round(XP.capitan / 2) : 1;
+    if (gA > gC) sub += XP.victoria;
+    if (gC === 0) sub += XP.valla;
+    if (mvpsDe(p).includes(id)) sub += XP.mvp;
+    if ((a.Diferenciadores || []).includes(id)) sub += gA < gC ? Math.round(XP.diferenciador / 2) : XP.diferenciador;
+    if ((a.Capitanes || {})[id]) sub += gA > gC ? XP.capitan : gA === gC ? Math.round(XP.capitan / 2) : 1;
     const ll = llegadaDe(id, a.ID_Partido);
-    if (ll === "Temprano") xp += XP.temprano;
-    else if (ll === "Tiempo") xp += XP.tiempo;
+    if (ll === "Temprano") sub += XP.temprano;
+    else if (ll === "Tiempo") sub += XP.tiempo;
+    // Tiempo_Cancha = Parcial: mitad de todo lo anterior; gol/asistencia (abajo) no se tocan
+    xp += (a.Parcial || []).includes(id) ? Math.round(sub / 2) : sub;
   });
   MOCK_DATA.eventos.forEach(e => {
     if (!idsJugados.has(e.ID_Partido)) return;
@@ -2379,7 +2398,7 @@ function renderConvocatoria() {
 
   const TIPOS_PARTIDO = ["Convocado", "Lista de espera", "Partido"];
   const relevantes = MOCK_DATA.asignacionPagos.filter(p => TIPOS_PARTIDO.includes(p.Tipo_Asignacion));
-  const deLaFecha = relevantes.filter(p => p.Fecha_Asignacion === domingo);
+  const deLaFecha = relevantes.filter(p => p.Fecha_Partido === domingo);
 
   // Sin datos para el próximo domingo → estado de espera
   if (deLaFecha.length === 0) {
@@ -2482,19 +2501,8 @@ const FORMACION = [
   { pos: "Delantero",     cupo: 3 }
 ];
 
-// Orden dentro de cada línea (izquierda → derecha). Menor número = más a la izquierda.
-const POS_ORDER = {
-  // Texto genérico (fallback)
-  "Portero": 2, "Arquero": 2,
-  "Lateral Izquierdo": 0, "Central": 2, "Defensa": 2, "Lateral Derecho": 4,
-  "Mediocampista Izquierdo": 0, "Mediocampista": 2, "Mediocampista Derecho": 4,
-  "Extremo Izquierdo": 0, "Delantero": 2, "Extremo Derecho": 4,
-  // Siglas Tipo_Posicion
-  "POR": 2,
-  "LTI": 0, "CAI": 1, "DFC": 2, "CAD": 3, "LTD": 4,
-  "MI":  0, "MCD": 1, "MC":  2, "MCO": 2, "MD":  4,
-  "EI":  0, "SD":  1, "DC":  2, "MP":  3, "ED":  4
-};
+// Orden dentro de cada línea (izquierda → derecha), según Ubicacion del jugador.
+const ORDEN_UBICACION = { "Izquierda": 0, "Centro": 1, "Derecha": 2 };
 
 function lineasEquipo(ids, posiciones = {}) {
   const lineas = { Arquero: [], Defensa: [], Mediocampista: [], Delantero: [] };
@@ -2511,38 +2519,13 @@ function lineasEquipo(ids, posiciones = {}) {
   // Más de 12: las líneas se amplían de abajo hacia arriba (desde defensa)
   let i = 1;
   while (sobrantes.length) { lineas[FORMACION[Math.min(i, 3)].pos].push(sobrantes.shift()); i++; }
-  // Ordenar cada línea: jugadores CON sigla se ubican por POS_ORDER;
-  // los SIN sigla se distribuyen a los lados para centrar a los que sí tienen sigla.
+  // Ordenar cada línea de izquierda a derecha según Ubicacion
   Object.keys(lineas).forEach(linea => {
-    const arr = lineas[linea];
-    if (arr.length <= 1) return;
-
-    const conSigla = arr.filter(id => posiciones[id]?.sigla)
-      .sort((a, b) => POS_ORDER[posiciones[a].sigla] - POS_ORDER[posiciones[b].sigla]);
-    const sinSigla = arr.filter(id => !posiciones[id]?.sigla);
-
-    if (!conSigla.length) {
-      arr.sort((a, b) => {
-        const pA = POS_ORDER[posiciones[a]?.especifica] ?? POS_ORDER[posicion(a)] ?? 2;
-        const pB = POS_ORDER[posiciones[b]?.especifica] ?? POS_ORDER[posicion(b)] ?? 2;
-        return pA - pB;
-      });
-      return;
-    }
-    if (!sinSigla.length) { lineas[linea] = conSigla; return; }
-
-    const hasLeft  = conSigla.some(id => POS_ORDER[posiciones[id].sigla] <= 1);
-    const hasRight = conSigla.some(id => POS_ORDER[posiciones[id].sigla] >= 3);
-    let leftFill, rightFill;
-    if (!hasLeft && !hasRight) {
-      const mid = Math.floor(sinSigla.length / 2);
-      leftFill = sinSigla.slice(0, mid); rightFill = sinSigla.slice(mid);
-    } else if (!hasLeft) {
-      leftFill = sinSigla; rightFill = [];
-    } else {
-      leftFill = []; rightFill = sinSigla;
-    }
-    lineas[linea] = [...leftFill, ...conSigla, ...rightFill];
+    lineas[linea].sort((a, b) => {
+      const pA = ORDEN_UBICACION[posiciones[a]?.ubicacion] ?? 1;
+      const pB = ORDEN_UBICACION[posiciones[b]?.ubicacion] ?? 1;
+      return pA - pB;
+    });
   });
   return lineas;
 }
@@ -2560,20 +2543,25 @@ function nombreDosLineas(id) {
 function rayoSVG({ cls = "", size = 0, fill = "currentColor", aria = false } = {}) {
   return `<svg viewBox="0 0 24 24"${size ? ` width="${size}" height="${size}"` : ""}${cls ? ` class="${cls}"` : ""} fill="${fill}"${aria ? ' aria-hidden="true"' : ""}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`;
 }
+function cruzSVG({ cls = "", size = 0, fill = "currentColor", aria = false } = {}) {
+  return `<svg viewBox="0 0 24 24"${size ? ` width="${size}" height="${size}"` : ""}${cls ? ` class="${cls}"` : ""} fill="${fill}"${aria ? ' aria-hidden="true"' : ""}><polygon points="8,0 16,0 16,8 24,8 24,16 16,16 16,24 8,24 8,16 0,16 0,8 8,8"/></svg>`;
+}
 
 
-function pitchHTML(ids, team, partido, posiciones = {}, capitanes = {}, ausentes = new Set(), difs = new Set()) {
+function pitchHTML(ids, team, partido, posiciones = {}, capitanes = {}, ausentes = new Set(), difs = new Set(), lesionados = new Set()) {
   const l = lineasEquipo(ids, posiciones);
   const chip = id => {
-    const posEsp = posiciones[id]?.sigla || posiciones[id]?.especifica || posicion(id);
+    const posEsp = posiciones[id]?.especifica || posicion(id);
     const esCap = !!capitanes[id];
     const esPortero = (posiciones[id]?.linea || posicion(id)) === "Arquero";
     const esAusente = ausentes.has(id);
     const esDif = difs.has(id);
+    const esLesionado = lesionados.has(id);
     return `
-    <div class="pitch-player ${esCap ? "is-capitan" : ""} ${esAusente ? "ausente" : ""} ${esDif ? "is-dif" : ""}" data-id="${id}" onclick="abrirPerfil('${id}')">
+    <div class="pitch-player ${esCap ? "is-capitan" : ""} ${esAusente ? "ausente" : ""} ${esDif ? "is-dif" : ""} ${esLesionado ? "is-lesionado" : ""}" data-id="${id}" onclick="abrirPerfil('${id}')">
       ${esCap ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="cap-corona-svg" aria-hidden="true"><path fill="#C9A84C" d="M384,167L256,51.1L128,167L0,98.6v274.5h512V98.6L384,167z"/><rect fill="#C9A84C" y="411.8" width="512" height="49.1"/></svg>` : ""}
       ${esDif ? rayoSVG({ cls: "dif-rayo-svg", fill: "#2cc4b4", aria: true }) : ""}
+      ${esLesionado ? cruzSVG({ cls: "lesion-cruz-svg", fill: "#b23b3b", aria: true }) : ""}
       <div class="avatar ${esPortero ? "portero" : team}">${iniciales(nombre(id))}</div>
       <div class="pp-name">${nombreDosLineas(id)}</div>
       <div class="pp-pos-badge">${posEsp}</div>
@@ -2659,14 +2647,15 @@ function renderAlineacion() {
   `;
 
   const difsSet = new Set(sel.ali.Diferenciadores || []);
+  const lesionadosSet = new Set(sel.ali.Lesionados || []);
   document.getElementById("alineacion-grid").innerHTML = `
     <div class="card team-card">
       <div class="team-head rojo">Equipo Rojo</div>
-      ${pitchHTML(sel.ali.Rojo, "rojo", p, sel.ali.Posiciones || {}, sel.ali.Capitanes || {}, new Set(sel.ali.Ausentes || []), difsSet)}
+      ${pitchHTML(sel.ali.Rojo, "rojo", p, sel.ali.Posiciones || {}, sel.ali.Capitanes || {}, new Set(sel.ali.Ausentes || []), difsSet, lesionadosSet)}
     </div>
     <div class="card team-card">
       <div class="team-head azul">Equipo Azul</div>
-      ${pitchHTML(sel.ali.Azul, "azul", p, sel.ali.Posiciones || {}, sel.ali.Capitanes || {}, new Set(sel.ali.Ausentes || []), difsSet)}
+      ${pitchHTML(sel.ali.Azul, "azul", p, sel.ali.Posiciones || {}, sel.ali.Capitanes || {}, new Set(sel.ali.Ausentes || []), difsSet, lesionadosSet)}
     </div>`;
 
   aplicarBusquedaAlineacion();
@@ -3298,17 +3287,13 @@ function renderTodo() {
    Si la URL está vacía o el fetch falla, se usan los datos
    mock / los últimos datos cargados.
    ============================================================ */
-// MODO DE DATOS (decisión final): archivo manual `datos.xlsx` en la
-// carpeta de la app. Los originales son .xlsx conectados a AppSheet y
-// Apps Script no puede leerlos, así que el camino automático no existe.
-// Flujo de Giovanni: copia de Estadísticas + pestaña con las 4 columnas
-// públicas de Asignacion_Pagos → guardar como datos.xlsx aquí → subir.
-// ⚠ A esta carpeta JAMÁS entran los archivos reales: todo se publica.
-// Las URLs quedan por si algún día se migra a Sheets nativas (en vivo).
-const FUENTES = {
-  estadisticas: "",
-  finanzas: ""
-};
+// MODO DE DATOS: lectura en vivo vía Apps Script publicado sobre la
+// Sheet nativa "LBFC Web App 2027" (ver apps-script-lbfc2027.gs). El
+// script filtra ASIGNACION_PAGOS a los 4 campos públicos y excluye
+// PAGOS por completo — la web no necesita sanear nada más, pero
+// sanearAsignaciones() igual lo vuelve a filtrar como defensa extra.
+// Pegar aquí la URL /exec una vez implementado como Web App.
+const FUENTES = "";
 
 // Convierte cualquier representación de fecha del xlsx a "yyyy-MM-dd":
 // objeto Date, serial de Excel (p.ej. 46040) o texto.
@@ -3342,7 +3327,7 @@ function sanearAsignaciones(filas) {
     .map(f => ({
       ID_Jugador: String(campo(f, "id_jugador")),
       Nombre_Jugador: String(campo(f, "nombre_jugador")),
-      Fecha_Asignacion: aFechaISO(campo(f, "fecha_asignacion")),
+      Fecha_Partido: aFechaISO(campo(f, "fecha_partido")),
       Tipo_Asignacion: String(campo(f, "tipo_asignacion"))
     }));
 }
@@ -3352,10 +3337,6 @@ async function fetchJson(url) {
   if (!resp.ok) throw new Error("HTTP " + resp.status);
   return resp.json();
 }
-
-// Datos crudos de Estadísticas (hojas reales); se mapearán a las
-// tablas internas en el siguiente paso de la Fase 2.
-let DATOS_ESTADISTICAS = null;
 
 function fechaISO(d) {
   const mm = String(d.getMonth() + 1).padStart(2, "0");
@@ -3405,10 +3386,9 @@ function gestosDetalle(id, tipo) {
 function tiempoHHMM(d) {
   return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
 }
-function categorizarLlegada(asistencia, horaLlegada) {
-  const asNorm = normalizar(String(asistencia || ""));
-  if (asNorm.includes("no asisti")) return "No";
-  if (asNorm === "pendiente" || asNorm === "") return null;
+function categorizarLlegada(sePresento, pendiente, horaLlegada) {
+  if (pendiente === true) return null;
+  if (normalizar(String(sePresento || "")).includes("no asisti")) return "No";
   // Valor directo (Enum): Temprano / A Tiempo / Tarde
   const hrNorm = normalizar(String(horaLlegada || ""));
   if (hrNorm === "temprano")  return "Temprano";
@@ -3423,84 +3403,16 @@ function categorizarLlegada(asistencia, horaLlegada) {
   return "Tarde";
 }
 
-const _XLSX_CDN = "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js";
-const _LS_XLSX  = "lbfc_xlsx_cache_v1";
-
-function _cargarSheetJS() {
-  return new Promise((ok, err) => {
-    const s = document.createElement("script");
-    s.src = _XLSX_CDN; s.onload = ok; s.onerror = err;
-    document.head.appendChild(s);
-  });
-}
-
-// Lee datos.xlsx de la carpeta de la app y lo convierte al mismo
-// formato JSON que entregaría un Apps Script: {NombreHoja: [filas]}
-// — SheetJS solo se carga si el archivo existe.
-// — Si el archivo no cambió (Last-Modified igual), se usa el JSON en localStorage.
-async function leerDatosXlsx() {
-  // 1. HEAD: detectar archivo y obtener Last-Modified (no descarga cuerpo)
-  let urlArchivo = null, lastMod = null;
-  for (const nombre of ["LBFC 2026.xlsx", "datos.xlsx"]) {
-    const head = await fetch(encodeURI(nombre), { method: "HEAD" }).catch(() => null);
-    if (head?.ok) {
-      urlArchivo = encodeURI(nombre);
-      lastMod = head.headers.get("last-modified");
-      break;
-    }
-  }
-  if (!urlArchivo) return null; // sin archivo → mock
-
-  // 2. Caché local: si el archivo no cambió, evitar descarga y parseo
-  if (lastMod) {
-    try {
-      const c = JSON.parse(localStorage.getItem(_LS_XLSX) || "null");
-      if (c?.lastMod === lastMod && c?.url === urlArchivo) return c.json;
-    } catch {}
-  }
-
-  // 3. Descargar xlsx y cargar SheetJS en PARALELO
-  const [resp] = await Promise.all([
-    fetch(urlArchivo + "?v=" + Date.now()).catch(() => null),
-    typeof XLSX === "undefined" ? _cargarSheetJS() : Promise.resolve()
-  ]);
-  if (!resp?.ok) return null;
-
-  // 4. Parsear
-  const buffer = await resp.arrayBuffer();
-  const libro = XLSX.read(buffer, { cellDates: true });
-  const json = {};
-  libro.SheetNames.forEach(nombre => {
-    json[nombre] = XLSX.utils.sheet_to_json(libro.Sheets[nombre], { defval: "" })
-      .map(fila => {
-        const obj = {};
-        for (const k in fila) {
-          obj[k] = fila[k] instanceof Date
-          ? (fila[k].getFullYear() <= 1900 ? tiempoHHMM(fila[k]) : fechaISO(fila[k]))
-          : fila[k];
-        }
-        return obj;
-      });
-  });
-
-  // 5. Guardar en caché local para la próxima visita
-  if (lastMod) {
-    try { localStorage.setItem(_LS_XLSX, JSON.stringify({ lastMod, url: urlArchivo, json })); }
-    catch {}
-  }
-
-  return json;
-}
-
 /* ── Mapeo de las hojas reales a las tablas internas ──
-   Estructura real (LBFC 2026.xlsx):
-   - Jugadores: ID_Jugador ("J01"), Nombre_Jugador, Posición_Jugador
-     (Portero/Defensa/Mediocampista/Delantero), Estado, Fotos.
-   - Partidos: solo la lista de fechas → el marcador se DERIVA de Evento.
-   - Alineaciones (fila-jugador): Fecha_Partido, ID_Jugador, Equipo,
-     Asistencia (Asistió/No asistió/Pendiente), Hora_Llegada,
-     Tiempo_Cancha, MVP (SI/NO), Diferenciador.
-   - Evento: Fecha_Partido, Gol_Equipo, ID_Goleador, Tipo_Gol,
+   Estructura real (Sheet "LBFC Web App 2027"):
+   - JUGADORES: ID_Jugador ("JUG001"), Nombre_Jugador, Jerarquia, VIP,
+     Posicion_Jugador (Portero/Defensa/Mediocampista/Delantero), Ubicacion.
+   - PARTIDOS: solo la lista de fechas → el marcador se DERIVA de EVENTOS.
+   - ALINEACIONES (fila-jugador): Fecha_Partido, ID_Jugador, Equipo,
+     Posicion_Jugador, Ubicacion, Hora_Llegada, Se_Presento, Pendiente,
+     Motivo_Inasistencia, Tiempo_Cancha, Razon_Salida, MVP, Capitan,
+     Diferenciador.
+   - EVENTOS: Fecha_Partido, Gol_Equipo, ID_Goleador, Tipo_Gol,
      ID_Asistidor, Tipo_Asistencia, Minuto.                          */
 
 const POS_CANON = {
@@ -3514,26 +3426,22 @@ const POS_CANON = {
 };
 
 function esFormatoReal(json) {
-  return Array.isArray(json.Alineaciones) && json.Alineaciones.length > 0
-    && campo(json.Alineaciones[0], "fecha_partido") !== "";
+  return Array.isArray(json.ALINEACIONES) && json.ALINEACIONES.length > 0
+    && campo(json.ALINEACIONES[0], "fecha_partido") !== "";
 }
 
 function transformarDatosReales(json) {
   // Jugadores
-  MOCK_DATA.jugadores = (json.Jugadores || [])
+  MOCK_DATA.jugadores = (json.JUGADORES || [])
     .filter(j => campo(j, "id_jugador") !== "")
     .map(j => ({
       ID_Jugador: String(campo(j, "id_jugador")),
       Nombre: String(campo(j, "nombre_jugador")),
-      Posicion: POS_CANON[normalizar(String(campo(j, "posicion_jugador")))] || "",
-      Estado: String(campo(j, "estado")),
-      Nivel_PO: parseFloat(campo(j, "po")) || 5,
-      Nivel_VJ: parseFloat(campo(j, "vj")) || 5,
-      Nivel_PD: parseFloat(campo(j, "pd")) || 5
+      Posicion: POS_CANON[normalizar(String(campo(j, "posicion_jugador")))] || ""
     }));
 
   // Eventos (goles): conserva Tipo_Asistencia para el pilar VJ
-  MOCK_DATA.eventos = (json.Evento || [])
+  MOCK_DATA.eventos = (json.EVENTOS || [])
     .filter(e => campo(e, "id_goleador") !== "")
     .map(e => ({
       ID_Partido: aFechaISO(campo(e, "fecha_partido")),
@@ -3550,39 +3458,49 @@ function transformarDatosReales(json) {
   const idsValidos = new Set(MOCK_DATA.jugadores.map(j => j.ID_Jugador));
   const porFecha = {};
   const asistenciaArr = [];
-  (json.Alineaciones || []).forEach(a => {
+  (json.ALINEACIONES || []).forEach(a => {
     const f = aFechaISO(campo(a, "fecha_partido"));
     const id = String(campo(a, "id_jugador"));
     if (!f || !id || !idsValidos.has(id)) return;
-    if (!porFecha[f]) porFecha[f] = { Rojo: [], Azul: [], MVP: [], Dif: [], Posiciones: {}, Capitanes: {}, Ausentes: [] };
+    if (!porFecha[f]) porFecha[f] = { Rojo: [], Azul: [], MVP: [], Dif: [], Posiciones: {}, Capitanes: {}, Ausentes: [], SinRegistro: [], Parcial: [], Lesionados: [] };
     const equipo = String(campo(a, "equipo"));
-    const noAsistio = normalizar(String(campo(a, "asistencia"))) === "no asistio";
+    const pendiente = campo(a, "pendiente") === true;
+    const noAsistio = pendiente || normalizar(String(campo(a, "se_presento"))) === "no asistio";
     if (equipo === "Rojo" || equipo === "Azul") {
       porFecha[f][equipo].push(id);
       if (noAsistio) porFecha[f].Ausentes.push(id);
     }
-    if (String(campo(a, "mvp")).toUpperCase() === "SI") porFecha[f].MVP.push(id);
+    if (noAsistio && normalizar(String(campo(a, "motivo_inasistencia"))) === "no registra") {
+      porFecha[f].SinRegistro.push(id);
+    }
+    if (normalizar(String(campo(a, "tiempo_cancha"))) === "parcial") porFecha[f].Parcial.push(id);
+    if (normalizar(String(campo(a, "razon_salida"))) === "lesion") porFecha[f].Lesionados.push(id);
+    if (campo(a, "mvp") === true) porFecha[f].MVP.push(id);
     const difRaw = campo(a, "diferenciador");
     const esDif = difRaw === true || ["si", "verdadero", "true", "1"].includes(normalizar(String(difRaw)));
     if (esDif) porFecha[f].Dif.push(id);
     const posJRaw = String(campo(a, "posicion_jugador")).trim();
     const posJ = normalizar(posJRaw);
-    const tipoPos = String(campo(a, "tipo_posicion") || "").trim().toUpperCase();
-    if (posJ && POS_CANON[posJ]) porFecha[f].Posiciones[id] = { linea: POS_CANON[posJ], especifica: posJRaw, sigla: tipoPos || null };
+    const ubicacion = String(campo(a, "ubicacion") || "").trim();
+    if (posJ && POS_CANON[posJ]) porFecha[f].Posiciones[id] = { linea: POS_CANON[posJ], especifica: posJRaw, ubicacion };
     const capRaw = campo(a, "capitan");
     const esCapitan = capRaw === true || ["true", "verdadero"].includes(normalizar(String(capRaw)));
     if (esCapitan && (equipo === "Rojo" || equipo === "Azul")) porFecha[f].Capitanes[id] = true;
-    const ll = categorizarLlegada(campo(a, "asistencia"), campo(a, "hora_llegada"));
+    const ll = categorizarLlegada(campo(a, "se_presento"), pendiente, campo(a, "hora_llegada"));
     if (ll !== null) asistenciaArr.push({ ID_Jugador: id, ID_Partido: f, Llegada: ll });
   });
   MOCK_DATA.alineaciones = Object.entries(porFecha)
-    .map(([f, d]) => ({ ID_Partido: f, Rojo: d.Rojo, Azul: d.Azul, Diferenciadores: d.Dif || [], Posiciones: d.Posiciones, Capitanes: d.Capitanes || {}, Ausentes: d.Ausentes || [] }));
+    .map(([f, d]) => ({
+      ID_Partido: f, Rojo: d.Rojo, Azul: d.Azul, Diferenciadores: d.Dif || [],
+      Posiciones: d.Posiciones, Capitanes: d.Capitanes || {}, Ausentes: d.Ausentes || [],
+      SinRegistro: d.SinRegistro || [], Parcial: d.Parcial || [], Lesionados: d.Lesionados || []
+    }));
   MOCK_DATA.asistencia = asistenciaArr;
 
   // Partidos: fechas de la hoja Partidos + las vistas en Alineaciones.
   // Marcador derivado de Evento; sin resultado si la fecha es futura.
   const fechas = new Set(
-    (json.Partidos || []).map(p => aFechaISO(campo(p, "fecha_partido"))).filter(Boolean)
+    (json.PARTIDOS || []).map(p => aFechaISO(campo(p, "fecha_partido"))).filter(Boolean)
   );
   Object.keys(porFecha).forEach(f => fechas.add(f));
   const hoy = fechaISO(new Date());
@@ -3607,37 +3525,17 @@ function aplicarDatos(json) {
     MOCK_DATA.asignacionPagos = sanearAsignaciones(json[claveAsig]);
   }
   if (esFormatoReal(json)) transformarDatosReales(json);
-  DATOS_ESTADISTICAS = json;
   indexarJugadores();
 }
 
 async function cargarDatos() {
   let aviso = null;
+  if (!FUENTES) return aviso; // sin URL configurada → mock, sin avisos (desarrollo)
   try {
-    if (FUENTES.finanzas || FUENTES.estadisticas) {
-      // Modo en vivo (solo si algún día se migra a Sheets nativas)
-      const tareas = [];
-      if (FUENTES.finanzas) {
-        tareas.push(fetchJson(FUENTES.finanzas).then(json => {
-          const filas = Array.isArray(json) ? json : json.Asignacion_Pagos;
-          if (Array.isArray(filas)) MOCK_DATA.asignacionPagos = sanearAsignaciones(filas);
-        }));
-      }
-      if (FUENTES.estadisticas) {
-        tareas.push(fetchJson(FUENTES.estadisticas).then(json => { DATOS_ESTADISTICAS = json; }));
-      }
-      const resultados = await Promise.allSettled(tareas);
-      if (resultados.some(r => r.status === "rejected")) {
-        aviso = "Sin conexión con la Sheet — mostrando últimos datos";
-      }
-    } else {
-      // Modo archivo (el elegido): datos.xlsx junto al index
-      const json = await leerDatosXlsx();
-      if (json) aplicarDatos(json);
-      // Sin datos.xlsx → mock, sin avisos (desarrollo)
-    }
+    const json = await fetchJson(FUENTES);
+    aplicarDatos(json);
   } catch (err) {
-    aviso = "No se pudo leer datos.xlsx — mostrando últimos datos";
+    aviso = "Sin conexión con la Sheet — mostrando datos de ejemplo";
   }
   renderTodo();
   return aviso;
